@@ -1,0 +1,140 @@
+<div class="card">
+    <p-table
+        #dt1
+        [value]="mainList()"
+        [globalFilterFields]="['invoice_no','purchase_date','total','discount','created_at','grand_total','supplier_name','supplier_phone']"
+        dataKey="id"
+        [tableStyle]="{ 'min-width': '50rem' }"
+        [rows]="5"
+        [paginator]="true"
+        [rowsPerPageOptions]="[5,10,20]"
+        [loading]="loading()"
+    >
+
+<ng-template #caption>
+<div class="flex justify-between items-center">
+<h2 class="text-xl font-semibold">Purchases</h2>
+
+<p-iconfield iconPosition="left">
+<p-inputicon>
+<i class="pi pi-search"></i>
+</p-inputicon>
+
+<input
+pInputText
+type="text"
+(input)="dt1.filterGlobal($any($event.target).value, 'contains')"
+placeholder="Search..."
+/>
+
+</p-iconfield>
+</div>
+</ng-template>
+
+<ng-template #header>
+<tr>
+
+<th pSortableColumn="invoice_no">
+<div class="flex items-center gap-2">
+Invoice No
+<p-sortIcon field="invoice_no" />
+</div>
+</th>
+
+<th pSortableColumn="supplier_name">
+<div class="flex items-center gap-2">
+Supplier Name
+<p-sortIcon field="supplier_name" />
+</div>
+</th>
+
+<th pSortableColumn="supplier_phone">
+<div class="flex items-center gap-2">
+Supplier Phone
+<p-sortIcon field="supplier_phone" />
+</div>
+</th>
+
+<th pSortableColumn="purchase_date">
+<div class="flex items-center gap-2">
+Purchase Date
+<p-sortIcon field="purchase_date" />
+</div>
+</th>
+
+<th pSortableColumn="created_at">
+<div class="flex items-center gap-2">
+Create Date
+<p-sortIcon field="created_at" />
+</div>
+</th>
+
+<th pSortableColumn="grand_total">
+<div class="flex items-center gap-2">
+Grand Total
+<p-sortIcon field="grand_total" />
+</div>
+</th>
+
+<th pSortableColumn="status">
+<div class="flex items-center gap-2">
+Status
+<p-sortIcon field="status" />
+</div>
+</th>
+
+<th>Action</th>
+
+</tr>
+</ng-template>
+
+<ng-template #body let-row>
+<tr>
+
+<td>{{ row.invoice_no }}</td>
+<td>{{ row.supplier_name }}</td>
+<td>{{ row.supplier_phone }}</td>
+<td>{{ row.purchase_date | date:'dd-MM-yyyy' }}</td>
+<td>{{ row.created_at | date:'dd-MM-yyyy' }}</td>
+<td>{{ row.grand_total }}</td>
+<td>{{ row.status }}</td>
+
+<td class="flex gap-2">
+
+<button
+pButton
+type="button"
+icon="pi pi-pencil"
+class="p-button-warning"
+(click)="edit(row.id)">
+</button>
+
+<button
+pButton
+type="button"
+icon="pi pi-eye"
+class="p-button-info"
+(click)="report(row.id)">
+</button>
+
+<button
+pButton
+type="button"
+icon="pi pi-trash"
+class="p-button-danger"
+(click)="delete(row.id)">
+</button>
+
+</td>
+
+</tr>
+</ng-template>
+
+<ng-template #emptymessage>
+<tr>
+<td colspan="8">No data found.</td>
+</tr>
+</ng-template>
+
+</p-table>
+</div>

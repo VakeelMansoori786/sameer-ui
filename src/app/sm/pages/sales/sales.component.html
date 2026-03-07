@@ -1,0 +1,169 @@
+<p-toast key="tst"></p-toast>
+
+<form [formGroup]="salesForm" (ngSubmit)="onSubmit()" class="card p-5 flex flex-col gap-6">
+
+  <!-- Customer + Date -->
+  <div class="flex flex-col md:flex-row gap-6">
+
+    <div class="w-full">
+      <label>Customer</label>
+      <p-select
+        formControlName="customer_id"
+        [options]="customersList()"
+        optionLabel="name"
+        optionValue="id"
+        placeholder="Select Customer"
+      [filter]="true"
+      [invalid]="salesForm.get('customer_id')?.invalid && salesForm.get('customer_id')?.touched"
+        class="w-full">
+      </p-select>
+    </div>
+
+    <div class="w-full">
+      <label>Sale Date</label>
+      <input pInputText type="date" formControlName="sale_date" class="w-full p-3"
+        [invalid]="salesForm.get('sale_date')?.invalid && salesForm.get('sale_date')?.touched"
+      />
+    </div>
+<div class="w-full">
+      <label>Status</label>
+      <p-select
+        formControlName="status"
+        [options]="statusList()"
+        optionLabel="name"
+        optionValue="name"
+        placeholder="Select status"
+      [filter]="true"
+      [invalid]="salesForm.get('status')?.invalid && salesForm.get('status')?.touched"
+        class="w-full">
+      </p-select>
+    </div>
+  </div>
+
+    <p-table [value]="items.controls">
+      <ng-template #header>
+        <tr>
+<th style="width:40%">Product</th>
+<th style="width:10%">Qty</th>
+<th style="width:15%">Price</th>
+<th style="width:15%">Discount</th>
+<th style="width:10%">Total</th>
+<th style="width:10%">Action</th>
+        </tr>
+      </ng-template>
+
+      <ng-template #body let-row let-i="rowIndex">
+        <tr [formGroup]="row">
+          <td>
+         <p-autoComplete
+         minQueryLength="2"
+  formControlName="product"
+  [suggestions]="filteredProducts"
+  (completeMethod)="searchProduct($event)"
+  optionLabel="name"
+  placeholder="Search Product"
+  (onSelect)="onProductSelect($event, i)"
+  appendTo="body"
+  [invalid]="row.get('product')?.invalid && row.get('product')?.touched"
+  styleClass="w-full"
+  inputStyleClass="w-full">
+</p-autoComplete>
+          </td>
+
+          <td>
+            <input pInputText type="number" formControlName="qty" [invalid]="row.get('qty')?.invalid && row.get('qty')?.touched"
+              (input)="calculateRow(i)" />
+          </td>
+
+          <td>
+            <input pInputText type="number" formControlName="price"  [invalid]="row.get('price')?.invalid && row.get('price')?.touched"
+              (input)="calculateRow(i)" />
+          </td>
+
+          <td>
+            <input pInputText type="number" formControlName="discount"  [invalid]="row.get('discount')?.invalid && row.get('discount')?.touched"
+              (input)="calculateRow(i)" />
+          </td>
+
+          <td>
+            {{ row.value.total | number:'1.2-2' }}
+          </td>
+ 
+          <td class="flex gap-2">
+         
+            <button pButton type="button" icon="pi pi-trash"
+              (click)="removeItem(i)">
+            </button>
+      
+   @if (i === items.length - 1) {
+    <button 
+      pButton 
+      type="button"  
+      icon="pi pi-plus"
+      (click)="addItem()">
+    </button>
+  }
+          </td>
+        </tr>
+      </ng-template>
+    </p-table>
+
+ 
+  
+
+  <!-- Summary -->
+  <div class="flex flex-col md:flex-row gap-6 justify-end">
+
+    <div>
+      <label>Total</label>
+      <input pInputText readonly formControlName="total" />
+    </div>
+
+    <div>
+      <label>Discount</label>
+      <input pInputText type="number" formControlName="discount"
+        (input)="calculateGrandTotal()" />
+    </div>
+<!-- VAT Toggle -->
+<div class="flex items-center gap-2">
+  <p-checkbox 
+    formControlName="vat_enabled" 
+    binary="true"
+    inputId="vat_enabled"
+    (onChange)="calculateGrandTotal()">
+  </p-checkbox>
+  <label for="vat_enabled">Add VAT (5%)</label>
+</div>
+
+<!-- VAT Amount -->
+<div>
+  <label>VAT (5%)</label>
+  <input pInputText readonly formControlName="vat_amount" />
+</div>
+    <div>
+      <label>Grand Total</label>
+      <input pInputText readonly formControlName="grand_total" />
+    </div>
+
+  </div>
+  
+ <div class="flex flex-wrap gap-2 w-full">
+  <button pButton type="submit" label="Save"
+    class="p-3 text-xl">
+  </button>
+</div>
+</form>
+@if(this.id()!='0'){
+<div class="flex flex-wrap gap-2 w-full">
+  <button pButton type="button" label="Proforma" (click)="GetReport('proforma')"
+    class="p-3 text-xl">
+  </button>
+  
+  <button pButton type="button" label="Invoice" (click)="GetReport('invoice')"
+    class="p-3 text-xl">
+  </button>
+  <button pButton type="button" label="Delivery Note" (click)="GetReport('delivery-note')"
+    class="p-3 text-xl">
+  </button>
+</div>
+}

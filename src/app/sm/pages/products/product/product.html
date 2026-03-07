@@ -1,0 +1,81 @@
+<p-toast key="tst"></p-toast>
+<p-confirmDialog />
+
+<form [formGroup]="mainForm" (ngSubmit)="onSubmit()" class="card flex flex-col gap-6 w-full p-5">
+
+  <!-- Product Name -->
+  <div class="flex flex-wrap gap-2 w-full">
+    <label for="name">Product Name</label>
+    <input pInputText id="name" type="text" formControlName="name" class="w-full p-3" />
+    <small *ngIf="f['name'].invalid && (f['name'].dirty || f['name'].touched)" class="text-red-600">
+      Name is required
+    </small>
+  </div>
+
+  <!-- Category Dropdown -->
+  <div class="flex flex-wrap gap-2 w-full">
+    <label for="category">Category</label>
+    <p-select 
+      id="category" 
+      formControlName="category" 
+      [options]="categoriesList()" 
+      optionLabel="name" 
+      optionValue="id" 
+      [filter]="true"
+      placeholder="Select One"
+      class="w-full">
+    </p-select>
+    <small *ngIf="f['category'].invalid && (f['category'].dirty || f['category'].touched)" class="text-red-600">
+      Category is required
+    </small>
+  </div>
+
+  <!-- Purchase Price, Sale Price, Stock -->
+  <div class="flex flex-col md:flex-row gap-6">
+    <div class="flex flex-wrap gap-2 w-full">
+      <label for="purchase_price">Purchase Price</label>
+      <input pInputText id="purchase_price" type="number" formControlName="purchase_price" class="w-full p-3" />
+      <small *ngIf="f['purchase_price'].invalid && (f['purchase_price'].dirty || f['purchase_price'].touched)" class="text-red-600">
+        Purchase price must be ≥ 0
+      </small>
+    </div>
+
+    <div class="flex flex-wrap gap-2 w-full">
+      <label for="sale_price">Sale Price</label>
+      <input pInputText id="sale_price" type="number" formControlName="sale_price" class="w-full p-3" />
+      <small *ngIf="f['sale_price'].invalid && (f['sale_price'].dirty || f['sale_price'].touched)" class="text-red-600">
+        Sale price must be ≥ 0
+      </small>
+    </div>
+
+    <div class="flex flex-wrap gap-2 w-full">
+      <label for="stock">Stock</label>
+      <input pInputText id="stock" type="number" formControlName="stock" class="w-full p-3" />
+      <small *ngIf="f['stock'].invalid && (f['stock'].dirty || f['stock'].touched)" class="text-red-600">
+        Stock must be ≥ 0
+      </small>
+    </div>
+  </div>
+
+  <!-- Unit -->
+  <div class="flex flex-wrap gap-2 w-full">
+    <label for="unit">Unit</label>
+    <p-select 
+      id="category" 
+      formControlName="unit" 
+      [options]="unitsList()" 
+      optionLabel="name" 
+      optionValue="id" 
+      [filter]="true"
+      placeholder="Select One"
+      class="w-full">
+    </p-select>
+    <small *ngIf="f['unit'].invalid && (f['unit'].dirty || f['unit'].touched)" class="text-red-600">
+      Unit is required
+    </small>
+  </div>
+ <div class="flex flex-wrap gap-2 w-full">
+  <button pButton pRipple type="submit" label="Save" class="p-3 text-xl"></button>
+  <button pButton pRipple label="Reset" click="Reset()" class="p-3 text-xl ml-2"></button>
+  </div>
+</form>

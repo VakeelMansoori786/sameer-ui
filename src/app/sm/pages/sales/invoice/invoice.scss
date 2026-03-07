@@ -1,0 +1,127 @@
+.invoice{
+  width:210mm;
+  min-height:297mm;
+  margin:auto;
+  padding:20px;
+  background:white;
+  font-family:Arial, Helvetica, sans-serif;
+}
+
+.print-btn{
+  text-align:right;
+  margin-bottom:10px;
+}
+
+/* HEADER */
+
+.header{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  border-bottom:2px solid #000;
+  padding-bottom:10px;
+}
+
+.logo{
+  width:80px;
+}
+
+.company-info{
+  text-align:center;
+}
+
+.company-info h2{
+  margin:0;
+}
+
+.invoice-info{
+  text-align:right;
+}
+
+.invoice-info h1{
+  margin:0;
+  color:#f36c21;
+}
+
+/* CUSTOMER */
+
+.customer-box{
+  border:1px solid #ccc;
+  margin-top:20px;
+  padding:10px;
+}
+
+.customer-grid{
+  display:grid;
+  grid-template-columns:repeat(2,1fr);
+  gap:10px;
+}
+
+/* TABLE */
+
+.items-table{
+  width:100%;
+  border-collapse:collapse;
+  margin-top:20px;
+}
+
+.items-table th,
+.items-table td{
+  border:1px solid #999;
+  padding:8px;
+  text-align:center;
+}
+
+.items-table th{
+  background:#f3f3f3;
+}
+
+.left{
+  text-align:left;
+}
+
+/* TOTALS */
+
+.totals{
+  display:flex;
+  justify-content:flex-end;
+  margin-top:20px;
+}
+
+.totals table{
+  width:300px;
+  border-collapse:collapse;
+}
+
+.totals td{
+  border:1px solid #999;
+  padding:8px;
+}
+
+.grand-total td{
+  font-weight:bold;
+  background:#f3f3f3;
+}
+
+/* FOOTER */
+
+.footer{
+  text-align:center;
+  margin-top:40px;
+  font-size:12px;
+  color:#666;
+}
+
+/* PRINT */
+
+@media print{
+
+  .no-print{
+    display:none;
+  }
+
+  body{
+    background:white;
+  }
+
+}
