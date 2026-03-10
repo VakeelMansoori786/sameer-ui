@@ -1,6 +1,6 @@
 import { Component, inject } from '@angular/core';
 import { MenuItem } from 'primeng/api';
-import { RouterModule } from '@angular/router';
+import { Router, RouterModule } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { StyleClassModule } from 'primeng/styleclass';
 import { AppConfigurator } from './app.configurator';
@@ -84,6 +84,7 @@ export class AppTopbar {
 
     layoutService = inject(LayoutService);
     authService = inject(AuthService);
+    router = inject(Router);
 
     toggleDarkMode() {
         this.layoutService.layoutConfig.update((state) => ({
@@ -92,6 +93,7 @@ export class AppTopbar {
         }));
     }
     logout(){
-        this.authService.signOut()
+        this.authService.signOut();
+        this.router.navigate(['/login']);
     }
 }

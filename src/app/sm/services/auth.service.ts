@@ -42,6 +42,7 @@ public makeLogin(returnUrl:any){
    this.setUserAndToken(null,null,false);
    this.ls.clear();
    
+   
  }
  isLoggedIn():Boolean{
 if(this.getJwtToken()) return true;

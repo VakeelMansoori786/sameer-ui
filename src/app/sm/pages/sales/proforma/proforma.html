@@ -62,7 +62,7 @@
 
 </div>
 <div style="text-align:center; font-weight:700; font-size:12pt; margin-top:20px; letter-spacing:1px;">
-  PROFORMA
+  PROFORMA INVOICE
 </div>
   <!-- CUSTOMER DETAILS -->
   <div style="display:flex; justify-content:space-between; margin:20px 0; flex-wrap:wrap;">
@@ -75,7 +75,7 @@
     </div>
 
     <div style="margin-bottom:10px;">
-      <p style="margin:2px 0;"><b>Proforma No:</b> {{ data.sale[0].invoice_no}}</p>
+      <p style="margin:2px 0;"><b>Proforma No:</b> {{ data.sale[0].invoice_no.replace('IN','PR')}}</p>
       <p style="margin:2px 0;"><b>Date:</b> {{ data.sale[0].sale_date | date:'dd-MM-yyyy'}}</p>
     </div>
 
@@ -120,11 +120,14 @@
         <td style="padding:5px 15px;">Discount</td>
         <td style="padding:5px 15px; text-align:right;">{{ data.sale[0].discount | number:'1.2-2' }} AED</td>
       </tr>
+      @if(data.sale[0].vat!='0.00'){
       <tr>
         <td style="padding:5px 15px;">VAT (5%)</td>
         <td style="padding:5px 15px; text-align:right;">{{ data.sale[0].vat | number:'1.2-2' }} AED</td>
       </tr>
+       }
       <tr>
+     
     <td style="padding:5px 15px;font-weight:bold;font-size:9pt;">Grand Total (AED)</td>
         <td style="padding:5px 15px;text-align:right;font-weight:bold;font-size:9pt;">{{ data.sale[0].grand_total | number:'1.2-2' }} AED</td>
       </tr>
@@ -136,25 +139,23 @@
 <h4 style="margin-bottom:5px;">Notes</h4>
 <p style="margin:0;">Please supply the above materials as per terms and conditions.</p>
 </div>
-
 <!-- SIGNATURE -->
 <div style="display:flex;justify-content:space-between;margin-top:70px;">
 
+
+
 <div style="text-align:center;">
 <p>Prepared By</p>
-<div style="width:200px;border-top:1px solid #000;margin-top:30px;"></div>
+
+<div style="width:200px;border-top:1px solid #000;margin-top:30px;font-size:9pt;">
+  ({{companyDetail.name}})
+</div>
 </div>
 
 <div style="text-align:center;">
-<p>Checked By</p>
-<div style="width:200px;border-top:1px solid #000;margin-top:30px;"></div>
-</div>
-
-<div style="text-align:center;">
-<p>Approved By</p>
+<p>Received By</p>
 <div style="width:200px;border-top:1px solid #000;margin-top:30px;"></div>
 </div>
 
 </div>
-
 </div>
