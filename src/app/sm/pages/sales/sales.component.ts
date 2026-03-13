@@ -230,15 +230,33 @@ onSubmit() {
 if(this.id()!='0'){
  this.saleService.update(payload).subscribe((data: any) => {
       this.messageService.add({ key: 'tst', severity: 'success', summary: 'Success', detail: 'Supplier saved successfully' });
-     
-       this.router.navigate(['/invoice',{ id: btoa(this.id()) },]);
+  debugger
+      const type=payload.status?.toLowerCase()
+        if(type==='invoice'){
+          this.router.navigate(['/invoice',{ id: btoa(this.id()) },]);
+  }
+  if(type==='proforma'){
+          this.router.navigate(['/proforma',{ id: btoa(this.id()) },]);
+  }
+  if(type==='delivery-note'){
+          this.router.navigate(['/delivery-note',{ id: btoa(this.id()) },]);
+  }
     });
 }
 else{
  this.saleService.create(payload).subscribe((data: any) => {
       this.messageService.add({ key: 'tst', severity: 'success', summary: 'Success', detail: 'Supplier saved successfully' });
-      this.router.navigate(['/supplier-list']);
-         this.router.navigate(['/invoice',{ id: btoa(data[0].v_last_id) },]);
+    const type=payload.status?.toLowerCase()
+      if(type==='invoice'){
+          this.router.navigate(['/invoice',{ id: btoa(data[0].v_last_id) },]);
+  }
+  if(type==='proforma'){
+          this.router.navigate(['/proforma',{ id: btoa(data[0].v_last_id) },]);
+  }
+  if(type==='delivery-note'){
+          this.router.navigate(['/delivery-note',{ id: btoa(data[0].v_last_id) },]);
+  }
+       //  this.router.navigate(['/invoice',{ id: btoa(data[0].v_last_id) },]);
     });
 }
 

@@ -39,7 +39,9 @@
 
  <!-- PRINT BUTTON -->
 <div style="margin-bottom:20px;" class="no-print">
-<button pButton icon="pi pi-print" label="Print" (click)="print()"></button>
+<button pButton icon="pi pi-arrow-left" label="Back" (click)="goBack()"></button>
+<button pButton icon="pi pi-download" class="ml-2" label="Download" (click)="report('download')"></button>
+<button pButton icon="pi pi-print" class="ml-2" label="Print" (click)="report('print')"></button>
 </div>
 
 <!-- HEADER -->

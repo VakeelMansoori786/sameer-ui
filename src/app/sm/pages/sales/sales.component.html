@@ -21,7 +21,7 @@
 
     <div class="w-full">
       <label>Sale Date</label>
-      <input pInputText type="date" formControlName="sale_date" class="w-full p-3"
+      <input pInputText type="date" formControlName="sale_date" class="w-full p-3"  dateFormat="dd.mm.yy"
         [invalid]="salesForm.get('sale_date')?.invalid && salesForm.get('sale_date')?.touched"
       />
     </div>

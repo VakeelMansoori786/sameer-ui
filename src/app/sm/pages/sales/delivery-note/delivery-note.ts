@@ -1,6 +1,6 @@
 import { companyDetail } from '@/app/environments/environment';
 import { SaleService } from '@/app/sm/services/sale.service';
-import { CommonModule } from '@angular/common';
+import { CommonModule, Location } from '@angular/common';
 import { Component, signal } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { ButtonModule } from 'primeng/button';
@@ -14,7 +14,7 @@ import autoTable from 'jspdf-autotable';
     styleUrl: './delivery-note.scss'
 })
 export class DeliveryNote  {
-     constructor(private route: ActivatedRoute,private saleService:SaleService,private router:Router){}
+     constructor(private location: Location,private route: ActivatedRoute,private saleService:SaleService,private router:Router){}
       companyDetail=companyDetail
  id=signal<string>('0');
  mainList = signal<any>({});
@@ -35,121 +35,166 @@ getSale() {
     print() {
   window.print();
 }
-downloadPDF() {
+goBack() {
+    this.location.back();
+  }
+report(type:string) {
+  const data: any = this.mainList();
+  if (!data) return;
 
-  const data = this.mainList();
-  const doc = new jsPDF('p','mm','a4');
+  const doc = new jsPDF('p', 'mm', 'a4');
+  const pageWidth = doc.internal.pageSize.getWidth();
+  const pageHeight = doc.internal.pageSize.getHeight();
 
-  /* LOGO */
-  const logo = this.companyDetail.logo;
+  const logoImg = this.companyDetail.logo;
 
-  doc.addImage(logo, 'PNG', 10, 10, 25, 25);
+  // Helper to draw header on each page
+  const drawHeader = (doc: any) => {
+    let yOffset = 15;
 
-  /* COMPANY HEADER */
-
-  doc.setFontSize(14);
-  doc.setFont('helvetica','bold');
-  doc.text(this.companyDetail.owner + ' ' + this.companyDetail.bussiness_type, 40, 15);
-
-  doc.setFontSize(10);
-  doc.setFont('helvetica','normal');
-  doc.text(this.companyDetail.address, 40, 21);
-  doc.text("Mobile " + this.companyDetail.tel + " / " + this.companyDetail.mobile1, 40, 26);
-  doc.text("Email: " + this.companyDetail.email, 40, 31);
-
-  /* LINE */
-  doc.line(10, 38, 200, 38);
-
-  /* TITLE */
-
-  doc.setFontSize(13);
-  doc.setFont('helvetica','bold');
-  doc.text("DELIVERY NOTE", 105, 45, {align:'center'});
-
-  /* CUSTOMER INFO */
-
-  doc.setFontSize(10);
-  doc.setFont('helvetica','normal');
-
-  doc.text("Name: " + data.sale[0].customer_name, 10, 55);
-  doc.text("Phone: " + data.sale[0].phone, 10, 60);
-  doc.text("Address: " + data.sale[0].address, 10, 65);
-  doc.text("TRN: " + (data.sale[0].trn || '-'), 10, 70);
-
-  doc.text("Delivery Note No: " + data.sale[0].invoice_no, 140, 55);
-  doc.text("Date: " + data.sale[0].sale_date, 140, 60);
-
-  /* TABLE */
-
-  const rows = data.sale_detail.map((item:any,i:number)=>[
-    i+1,
-    item.product,
-    item.qty,
-   Number(item.price).toFixed(2),
-    Number(item.discount).toFixed(2),
-    Number(item.total).toFixed(2)
-  ]);
-
-  autoTable(doc,{
-    startY: 75,
-    head:[['#','Description','Qty','Price','Discount','Total']],
-    body:rows,
-    theme:'grid',
-    styles:{
-      fontSize:9
-    },
-    headStyles:{
-      fillColor:[240,240,240],
-      textColor:0
-    },
-    columnStyles:{
-      0:{halign:'center',cellWidth:10},
-      2:{halign:'center',cellWidth:20},
-      3:{halign:'right',cellWidth:25},
-      4:{halign:'right',cellWidth:30},
-      5:{halign:'right',cellWidth:25}
+    if (logoImg) {
+      const img = new Image();
+      img.src = logoImg;
+      // We cannot await here, so use a fixed size
+      doc.addImage(logoImg, 'PNG', 15, yOffset, 20, 20);
     }
-  });
 
-  const finalY = (doc as any).lastAutoTable.finalY + 10;
+    doc.setFontSize(9);
+    doc.setFont('helvetica','bold');
+    doc.setTextColor(31,78,121);
+    doc.text(`${this.companyDetail.owner} ${this.companyDetail.bussiness_type}`, 40, yOffset + 3);
 
-  /* TOTALS */
+    doc.setFont('helvetica','normal');
+    doc.setFontSize(8);
+    doc.setTextColor(0,0,0);
+    doc.text(this.companyDetail.address, 40, yOffset + 7);
+    doc.text(`Mobile: ${this.companyDetail.tel} / ${this.companyDetail.mobile1}`, 40, yOffset + 11);
+    doc.text(`Email: ${this.companyDetail.email}`, 40, yOffset + 15);
 
-  doc.text("Subtotal", 140, finalY);
-  doc.text(Number(data.sale[0].total.toFixed(2)) + " AED", 200, finalY,{align:'right'});
+    doc.setDrawColor(0,0,0);
+    doc.setLineWidth(0.3);
+    doc.line(15, yOffset + 20, pageWidth - 15, yOffset + 20);
 
-  doc.text("Discount", 140, finalY+6);
-  doc.text(Number(data.sale[0].discount.toFixed(2)) + " AED", 200, finalY+6,{align:'right'});
+    return yOffset + 25; // return starting Y after header
+  };
 
-  doc.text("VAT (5%)", 140, finalY+12);
-  doc.text(Number(data.sale[0].vat.toFixed(2)) + " AED", 200, finalY+12,{align:'right'});
+  const footer = (pageNum: number, totalPages: number) => {
+    doc.setFontSize(7);
+    doc.setTextColor(0,0,0);
+    doc.text(`Page ${pageNum} of ${totalPages}`, pageWidth - 30, pageHeight - 10);
+  };
 
+  let yStart = drawHeader(doc);
+
+  // PROFORMA INVOICE TITLE
+  doc.setFontSize(8);
   doc.setFont('helvetica','bold');
-  doc.text("Grand Total (AED)", 140, finalY+20);
-  doc.text(Number(data.sale[0].grand_total).toFixed(2) + " AED", 200, finalY+20,{align:'right'});
+  doc.text('DELIVERY NOTE', pageWidth/2, yStart, {align:'center'});
+  yStart += 6;
 
-  /* NOTES */
-
-  doc.setFont('helvetica','bold');
-  doc.text("Notes",10,finalY+35);
-
+  // CUSTOMER DETAILS
+  doc.setFontSize(7);
   doc.setFont('helvetica','normal');
-  doc.text("Please supply the above materials as per terms and conditions.",10,finalY+42);
+  doc.text(`Name: ${data.sale[0].customer_name}`, 15, yStart);
+  doc.text(`Phone: ${data.sale[0].phone}`, 15, yStart + 4);
+  doc.text(`Address: ${data.sale[0].address}`, 15, yStart + 8);
+  doc.text(`TRN: ${data.sale[0].trn || '-'}`, 15, yStart + 12);
+  doc.text(`Delivery Note No: ${data.sale[0].invoice_no.replace('IN','DN')}`, pageWidth - 70, yStart);
+  doc.text(`Date: ${data.sale[0].sale_date?.split('T')[0]}`, pageWidth - 70, yStart + 4);
+  yStart += 16;
 
-  /* SIGNATURES */
+  // ITEMS TABLE
+  const tableColumns = [
+    { header: '#', dataKey: 'no' },
+    { header: 'Description', dataKey: 'product' },
+    { header: 'Qty', dataKey: 'qty' },
+    { header: 'Price', dataKey: 'price' },
+    { header: 'Discount', dataKey: 'discount' },
+    { header: 'Total', dataKey: 'total' },
+  ];
 
-  const signY = finalY + 70;
+  const tableRows = data.sale_detail.map((item:any, i:number) => ({
+    no: i+1,
+    product: item.product,
+    qty: Number(item.qty || 0),
+    price: parseFloat(item.price || 0).toFixed(2),
+    discount: parseFloat(item.discount || 0).toFixed(2),
+    total: parseFloat(item.total || 0).toFixed(2)
+  }));
 
-  doc.text("Prepared By",30,signY);
-  doc.text("Checked By",95,signY);
-  doc.text("Approved By",160,signY);
+autoTable(doc, {
+  startY: yStart, // initial start
+  head: [tableColumns.map(c => c.header)],
+  body: tableRows.map((r:any) => Object.values(r)),
+  theme: 'grid',
+  headStyles: { fillColor: [242,242,242], textColor:0, fontStyle:'bold' },
+  styles: { fontSize: 7 },
+  margin: { left: 15, right: 15, top: 40 }, // reserve space for header
+  showHead: 'everyPage', // repeat table header
+  didDrawPage: (dataArg) => {
+    const pageNum = doc.getCurrentPageInfo().pageNumber;
+    footer(pageNum, doc.getNumberOfPages());
 
-  doc.line(15,signY+5,60,signY+5);
-  doc.line(80,signY+5,125,signY+5);
-  doc.line(145,signY+5,190,signY+5);
+    // Draw company header only for new pages
+    drawHeader(doc);
 
-  doc.save("delivery-note.pdf");
+    // Reset the table's margin.top to avoid overlapping
+    (dataArg as any).settings.margin.top = 35; // header height
+  }
+});
 
+  // TOTALS AFTER TABLE
+  const finalY = (autoTable as any).previous?.finalY || yStart + 5;
+
+const labelX = pageWidth - 70;   // label column
+const valueX = pageWidth - 15;   // value column (right aligned)
+
+doc.setFontSize(7);
+doc.setFont('helvetica','normal');
+
+// Subtotal
+doc.text('Sub Total', labelX, finalY + 5);
+doc.text(parseFloat(data.sale[0].total || 0).toFixed(2) + ' AED', valueX, finalY + 5, { align: 'right' });
+
+// Discount
+doc.text('Discount', labelX, finalY + 10);
+doc.text(parseFloat(data.sale[0].discount || 0).toFixed(2) + ' AED', valueX, finalY + 10, { align: 'right' });
+
+// VAT
+if (data.sale[0].vat !== '0.00') {
+  doc.text('VAT (5%)', labelX, finalY + 15);
+  doc.text(parseFloat(data.sale[0].vat || 0).toFixed(2) + ' AED', valueX, finalY + 15, { align: 'right' });
+}
+
+// Grand Total
+doc.setFont('helvetica','bold');
+doc.text('Grand Total (AED)', labelX, finalY + 20);
+doc.text(parseFloat(data.sale[0].grand_total || 0).toFixed(2) + ' AED', valueX, finalY + 20, { align: 'right' });
+  // NOTES
+  doc.setFont('helvetica','normal');
+  doc.text('Notes: Please supply the above materials as per terms and conditions.', 15, finalY + 35);
+
+  // SIGNATURES
+  const sigY = finalY + 50;
+  doc.text('Prepared By', 15, sigY);
+  doc.line(15, sigY + 2, 60, sigY + 2);
+  doc.text('Received By', pageWidth - 70, sigY);
+  doc.line(pageWidth - 70, sigY + 2, pageWidth - 20, sigY + 2);
+
+
+  if(type==='download'){
+  doc.save(`DN-${data.sale[0].invoice_no}.pdf`);
+  }
+  else{
+    let blob:any={}
+   blob = doc.output('bloburl');
+const iframe = document.createElement('iframe');
+iframe.style.display = 'none';
+iframe.src = blob;
+document.body.appendChild(iframe);
+iframe.contentWindow?.focus();
+iframe.contentWindow?.print();
+  }
 }
 
 }

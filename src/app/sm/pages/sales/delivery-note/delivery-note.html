@@ -38,12 +38,10 @@
 style="width:100%;margin:0;background:#fff;font-family:Arial,Helvetica,sans-serif;color:#000;font-size:9pt;">
 
 <!-- BUTTONS -->
-<div style="margin:20px;" class="no-print">
-<button pButton icon="pi pi-print" label="Print" (click)="print()"></button>
-<button pButton icon="pi pi-download" label="Download"
-        class="ml-2"
-        (click)="downloadPDF()">
-</button>
+<div style="margin-bottom:20px;" class="no-print">
+<button pButton icon="pi pi-arrow-left" label="Back" (click)="goBack()"></button>
+<button pButton icon="pi pi-download" class="ml-2" label="Download" (click)="report('download')"></button>
+<button pButton icon="pi pi-print" class="ml-2" label="Print" (click)="report('print')"></button>
 </div>
 
 
@@ -69,7 +67,9 @@ style="width:100%;margin:0;background:#fff;font-family:Arial,Helvetica,sans-seri
       Mobile {{companyDetail.tel}} / {{companyDetail.mobile1}}
     </p>
     <p style="margin:2px 0;font-size:10pt;">
-      Email: {{companyDetail.email}}
+    @if(companyDetail.trn!=''){
+      TRN: {{companyDetail.trn}}
+    }  Email: {{companyDetail.email}}
     </p>
   </div>
 
@@ -93,7 +93,7 @@ DELIVERY NOTE
   </div>
 
   <div>
-    <p style="margin:2px 0;"><b>Delivery Note No:</b> {{ data.sale[0].invoice_no }}</p>
+    <p style="margin:2px 0;"><b>Delivery Note No:</b> {{ data.sale[0].invoice_no.replace('IN','DN')}}</p>
     <p style="margin:2px 0;">
       <b>Date:</b> {{ data.sale[0].sale_date | date:'dd-MM-yyyy' }}
     </p>

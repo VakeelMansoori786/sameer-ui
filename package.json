@@ -22,6 +22,7 @@
         "@tailwindcss/postcss": "^4.1.11",
         "chart.js": "4.4.2",
         "html2canvas": "^1.4.1",
+        "html2pdf.js": "^0.14.0",
         "jspdf": "^4.2.0",
         "jspdf-autotable": "^5.0.7",
         "primeclt": "^0.1.5",

@@ -34,12 +34,14 @@
   }
 }
 </style>
-<div *ngIf="mainList() as data" 
+<div id="printSection" *ngIf="mainList() as data" 
       style="max-width:900px;margin:auto;background:#fff;padding:30px;font-family:Arial,Helvetica,sans-serif;color:#000;font-size:9pt">
 
  <!-- PRINT BUTTON -->
 <div style="margin-bottom:20px;" class="no-print">
-<button pButton icon="pi pi-print" label="Print" (click)="print()"></button>
+<button pButton icon="pi pi-arrow-left" label="Back" (click)="goBack()"></button>
+<button pButton icon="pi pi-download" class="ml-2" label="Download" (click)="report('download')"></button>
+<button pButton icon="pi pi-print" class="ml-2" label="Print" (click)="report('print')"></button>
 </div>
 
 <!-- HEADER -->
