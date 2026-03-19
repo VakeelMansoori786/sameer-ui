@@ -54,11 +54,23 @@ export class AppMenu {
                 items: [
                     { label: 'Add', icon: 'pi pi-fw pi-id-card', routerLink: ['/sale'] },
                     { label: 'List', icon: 'pi pi-fw pi-list', routerLink: ['/sale-list'] },
+                    { label: 'Payment Received', icon: 'pi pi-fw pi-briefcase', routerLink: ['/payment-list'] },
+            ]
+            },
+            
+            {
+                label: 'Reports',
+                items: [
+                    { label: 'Statements',  icon: 'pi pi-fw pi-book', routerLink: ['/statements'] },
             ]
             },
               {
-                label: 'Setting',
-                items: [{ label: 'Dropdown', icon: 'pi pi-fw pi-wrench', routerLink: ['/dropdown'] }]
+                label: 'Common',
+                items: [
+                    { label: 'Expenses',  icon: 'pi pi-fw pi-briefcase', routerLink: ['/expenses'] },
+                    { label: 'Dropdown', icon: 'pi pi-fw pi-wrench', routerLink: ['/dropdown'] }
+                        
+            ]
             },
             // {
             //     label: 'UI Components',

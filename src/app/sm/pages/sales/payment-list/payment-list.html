@@ -1,0 +1,248 @@
+<p-toast key="tst"></p-toast>
+<p-confirmDialog></p-confirmDialog>
+<div class="card">
+    <p-table
+        #dt1
+        [value]="mainList()"      
+        [globalFilterFields]="['payment_date','invoice_no','total','payment_method','customer_name']"
+        dataKey="id"
+        [tableStyle]="{ 'min-width': '50rem' }"
+        [rows]="5"
+        [paginator]="true"
+        [rowsPerPageOptions]="[5,10,20]"
+        [loading]="loading()"
+    >
+<ng-template #caption>
+    <div class="flex justify-between items-center w-full">
+
+        <!-- Title -->
+        <h2 class="text-xl font-semibold">Payment Received</h2>
+
+        <!-- Right Side -->
+        <div class="flex items-center gap-3">
+
+            <!-- Search -->
+            <p-iconfield iconPosition="left">
+                <p-inputicon>
+                    <i class="pi pi-search"></i>
+                </p-inputicon>
+                <input pInputText
+                       type="text"
+                       (input)="dt1.filterGlobal($any($event.target).value, 'contains')"
+                       placeholder="Search..." />
+            </p-iconfield>
+
+            <!-- Add Button -->
+            <button pButton
+                    type="button"
+                    title="Add Payment"
+                    icon="pi pi-plus"
+                    (click)="addPayment()">
+            </button>
+
+        </div>
+
+    </div>
+</ng-template>
+
+        <ng-template #header>
+            <tr>
+                   <th pSortableColumn="payment_date">
+<div class="flex items-center gap-2">
+                         Date
+                        <p-sortIcon field="payment_date" />
+                    </div>
+                  </th>
+                <th pSortableColumn="invoice_no">
+                    <div class="flex items-center gap-2">
+                        Invoice No.
+                        <p-sortIcon field="invoice_no" />
+                    </div>
+                    
+                
+                </th>
+                <th pSortableColumn="customer_name">
+                    <div class="flex items-center gap-2">
+                        Customer Name
+                        <p-sortIcon field="customer_name" />
+                    </div>
+                </th>
+                  
+                
+                  <th pSortableColumn="amount">
+                    <div class="flex items-center gap-2">
+                       Invoice Amount
+                        <p-sortIcon field="amount" />
+                    </div>
+                  </th>
+                  <th pSortableColumn="balance_amount">
+                    <div class="flex items-center gap-2">
+                      Balance
+                        <p-sortIcon field="balance_amount" />
+                    </div>
+                  </th>
+                  <th pSortableColumn="payment_method">
+                    <div class="flex items-center gap-2">
+                      Mode
+                        <p-sortIcon field="payment_method" />
+                    </div>
+                  </th>
+                  <th pSortableColumn="status">
+                    <div class="flex items-center gap-2">
+                       Status
+                        <p-sortIcon field="status" />
+                    </div>
+                  </th>
+                <th>Action</th>
+            </tr>
+        </ng-template>
+
+        <ng-template #body let-row>
+            <tr>
+                <td>{{ row.payment_date | date:'dd-MM-yyyy'}}</td>
+                <td>{{ row.invoice_no }}</td>
+                <td>{{ row.customer_name }}</td>
+                <td> {{ row.amount | currency:'AED'}}</td>
+                <td> {{ row.balance_amount |  currency:'AED' }}</td>
+                <td>{{ row.payment_method }}</td>
+                <td>{{ row.payment_type }}</td>
+                 <td class="flex gap-2">
+                    <button pButton 
+                            type="button" 
+                            icon="pi pi-pencil"
+                            class="p-button-warning"
+                            (click)="getPayment(row.id)">
+                    </button>
+                    <button pButton 
+                            type="button" 
+                            icon="pi pi-trash" 
+                            class="p-button-danger"
+                            (click)="delete(row.id)">
+                    </button>
+                </td>
+                    
+            </tr>
+        </ng-template>
+
+        <ng-template #emptymessage>
+            <tr>
+                <td colspan="4">No data found.</td>
+            </tr>
+        </ng-template>
+
+    </p-table>
+</div>
+<p-dialog 
+  header="Payment Invoice" 
+ [(visible)]="isVisible" 
+  [modal]="true"
+  [breakpoints]="{ '960px': '90vw', '640px': '100vw' }"
+  [style]="{ width: '70vw' }"
+  [draggable]="false"
+  [resizable]="false"
+>
+
+<form [formGroup]="paymentForm" class="p-5 flex flex-col gap-6" (ngSubmit)="savePayment()">
+
+  <!-- Grid Layout -->
+  <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-5">
+
+    <!-- Customer -->
+    <div>
+      <label class="block mb-1">Customer</label>
+      <input pInputText formControlName="customer_name" readonly class="w-full"/>
+    </div>
+
+    <!-- Amount -->
+    <div>
+      <label class="block mb-1">Amount Received</label>
+      <input 
+        pInputText 
+        type="number"
+        formControlName="amount"
+        class="w-full"
+        [invalid]=" paymentForm.get('amount')?.invalid && paymentForm.get('amount')?.touched"
+      />
+    </div>
+
+    <!-- Date -->
+    <div>
+      <label class="block mb-1">Payment Date</label>
+      <input 
+        pInputText 
+        type="date"
+        formControlName="payment_date"
+        class="w-full"
+       [invalid]="paymentForm.get('payment_date')?.invalid && paymentForm.get('payment_date')?.touched"
+      />
+    </div>
+
+    <!-- Mode -->
+    <div>
+      <label class="block mb-1">Payment Mode</label>
+     <p-select
+        formControlName="payment_method"
+        [options]="paymentModes"
+        optionLabel="name"
+        optionValue="name"
+        placeholder="Select Payment"
+          [invalid]="paymentForm.get('payment_method')?.invalid && paymentForm.get('payment_method')?.touched"
+        class="w-full">
+      </p-select>
+    </div>
+
+  </div>
+
+  <!-- Cheque / Card Section -->
+  <div 
+    *ngIf="paymentForm.value.payment_method === 'Cheque' || paymentForm.value.payment_method === 'Card'"
+    class="grid grid-cols-1 md:grid-cols-2 gap-5"
+  >
+
+    <div>
+      <label class="block mb-1">{{paymentForm.value.payment_method}} Number</label>
+      <input 
+        pInputText 
+        type="text"
+        formControlName="cheque_number"
+        placeholder="Enter Number"
+        class="w-full"
+      />
+    </div>
+
+    <div>
+      <label class="block mb-1">{{paymentForm.value.payment_method}} Date</label>
+      <input 
+        pInputText 
+        type="date"
+        formControlName="cheque_date"
+        class="w-full"
+      />
+    </div>
+
+  </div>
+
+  <!-- Notes -->
+  <div>
+    <label class="block mb-1">Notes</label>
+    <textarea 
+      pTextarea 
+      autoResize="true"
+      formControlName="note"
+      rows="3"
+      class="w-full"
+    ></textarea>
+  </div>
+
+<div class="flex justify-end gap-3">
+   
+
+      <button 
+        pButton 
+        type="submit" 
+        label="Pay" 
+        icon="pi pi-check"
+      ></button>
+    </div>
+</form>
+</p-dialog>

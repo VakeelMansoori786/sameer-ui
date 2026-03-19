@@ -1,0 +1,80 @@
+<div class="card p-4">
+
+  <!-- Filters -->
+  <form [formGroup]="filters" class="grid grid-cols-1 md:grid-cols-4 gap-4 mb-4" (ngSubmit)="loadLedger()">
+
+    <div>
+      <label>Customer</label>
+     <p-select
+        formControlName="customer_id"
+        [options]="customersList()"
+        optionLabel="name"
+        optionValue="id"
+        placeholder="Select Customer"
+        [filter]="true"
+          [invalid]="filters.get('customer_id')?.invalid && filters.get('customer_id')?.touched"
+        class="w-full">
+      </p-select>
+    </div>
+
+    <div>
+      <label>From</label>
+        <p-datepicker [showIcon]="true" [showButtonBar]="true" formControlName="from" class="w-full" dateFormat="dd/mm/yy"></p-datepicker>
+    </div>
+
+    <div>
+      <label>To</label>
+       <p-datepicker [showIcon]="true" [showButtonBar]="true" formControlName="to" class="w-full" dateFormat="dd/mm/yy"></p-datepicker>
+    </div>
+
+    <div class="flex items-end">
+      <button pButton label="Load" type="submit"  class="p-2 text-xl"></button>
+    </div>
+
+ 
+  </form>
+
+@if(ledgerList().length>0){
+  <!-- Ledger Table -->
+  <p-table 
+    [value]="ledgerList()" 
+    [loading]="loading()" 
+    responsiveLayout="scroll"
+    class="p-datatable-sm"
+  >
+
+    <ng-template pTemplate="header">
+      <tr>
+        <th>Date</th>
+        <th>Type</th>
+        <th>Debit</th>
+        <th>Credit</th>
+        <th>Balance</th>
+        <th>Note</th>
+      </tr>
+    </ng-template>
+
+    <ng-template pTemplate="body" let-row>
+      <tr>
+        <td>{{row.txn_date | date:'dd-MM-yyyy'}}</td>
+        <td>{{row.txn_type}}</td>
+
+        <td class="text-red-500 font-semibold">
+          {{row.debit || '-'}}
+        </td>
+
+        <td class="text-green-600 font-semibold">
+          {{row.credit || '-'}}
+        </td>
+
+        <td class="font-bold">
+          {{row.running_balance}}
+        </td>
+
+        <td>{{row.note}}</td>
+      </tr>
+    </ng-template>
+
+  </p-table>
+}
+</div>

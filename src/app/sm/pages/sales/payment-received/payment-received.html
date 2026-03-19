@@ -1,1 +1,164 @@
-<p>payment-received works!</p>
+<p-toast key="tst"></p-toast>
+
+<form [formGroup]="paymentForm" class="card p-5 flex flex-col gap-6" (ngSubmit)="savePayment()">
+
+  <!-- Customer + Amount -->
+  <div class="flex flex-col md:flex-row gap-6">
+
+    <!-- Customer -->
+    <div class="w-full">
+      <label>Customer</label>
+      <p-select
+        formControlName="customer_id"
+        [options]="customersList()"
+        optionLabel="name"
+        optionValue="id"
+        placeholder="Select Customer"
+        [filter]="true"
+        (onChange)="loadInvoices()"
+          [invalid]="paymentForm.get('customer_id')?.invalid && paymentForm.get('customer_id')?.touched"
+        class="w-full">
+      </p-select>
+    </div>
+
+    <!-- Pending -->
+    <div class="w-full">
+      <label>Pending Amount</label>
+      <input type="number" formControlName="pending_amount" pInputText readonly />
+    </div>
+
+    <!-- Amount Received -->
+    <div class="w-full">
+      <label>Amount Received</label>
+      <input pInputText
+        type="number"
+        formControlName="amount_received"
+        (input)="calculateDistribution()"
+          [invalid]="paymentForm.get('amount_received')?.invalid && paymentForm.get('amount_received')?.touched"
+        class="w-full" />
+    </div>
+
+    <!-- Payment Date -->
+    <div class="w-full">
+      <label>Payment Date</label>
+      <input pInputText
+        type="date"
+        formControlName="payment_date"
+          [invalid]="paymentForm.get('payment_date')?.invalid && paymentForm.get('payment_date')?.touched"
+        class="w-full p-3" />
+    </div>
+
+    <!-- Payment Mode -->
+    <div class="w-full">
+      <label>Payment Mode</label>
+      <p-select
+        formControlName="payment_method"
+        [options]="paymentModes"
+        optionLabel="name"
+        optionValue="name"
+        placeholder="Select Payment"
+          [invalid]="paymentForm.get('payment_method')?.invalid && paymentForm.get('payment_method')?.touched"
+        class="w-full">
+      </p-select>
+    </div>
+
+  </div>
+
+  <!-- Cheque Fields -->
+  @if(paymentForm.value.payment_method === 'Cheque' || paymentForm.value.payment_method === 'Card'){
+  <div class="flex flex-col md:flex-row gap-6">
+
+    <div class="w-full">
+      <label>{{paymentForm.value.payment_method}} Number</label>
+      <input pInputText
+        type="text"
+        formControlName="cheque_number"
+        placeholder="Enter Cheque Number"
+        class="w-full" />
+    </div>
+
+    <div class="w-full">
+      <label>{{paymentForm.value.payment_method}} Date</label>
+      <input pInputText
+        type="date"
+        formControlName="cheque_date"
+        class="w-full" />
+    </div>
+
+  </div>
+  }
+
+
+  <!-- Invoices -->
+  @if(invoices.controls.length > 0){
+
+  <p-table [value]="invoices.controls">
+    <ng-template pTemplate="header">
+      <tr>
+        <th>Date</th>
+        <th>Invoice</th>
+        <th>Amount</th>
+        <th>Due</th>
+        <th>Payment</th>
+      </tr>
+    </ng-template>
+
+    <ng-template pTemplate="body" let-row>
+      <tr>
+        <td>{{ row.value.sale_date | date:'dd/MM/yyyy' }}</td>
+        <td>{{ row.value.invoice_no }}</td>
+        <td>{{ row.value.grand_total || 0 }}</td>
+        <td>{{ row.value.balance_amount }}</td>
+        <td>
+          <input pInputText
+            type="number"
+            [formControl]="row.get('pay_amount')"
+            (input)="updateTotals()"
+            class="w-32" />
+        </td>
+      </tr>
+    </ng-template>
+  </p-table>
+
+  <!-- Payment Summary -->
+  <div class="grid grid-cols-4 gap-4 bg-gray-100 p-4">
+
+    <div>
+      <label>Amount Received</label>
+      <div>{{ summary.received }}</div>
+    </div>
+
+    <div>
+      <label>Used for Payments</label>
+      <div>{{ summary.used }}</div>
+    </div>
+
+    <div>
+      <label>Refund</label>
+      <div>{{ summary.refund }}</div>
+    </div>
+
+    <div>
+      <label>Excess</label>
+      <div>{{ summary.excess }}</div>
+    </div>
+
+  </div>
+
+  <!-- Notes -->
+  <div class="w-full">
+    <label>Notes</label>
+    <textarea pTextarea
+      [autoResize]="true"
+      formControlName="note"
+      class="w-full"></textarea>
+  </div>
+
+  }
+
+  <!-- Submit -->
+  <div class="flex gap-3">
+    <button pButton type="submit" label="Pay"></button>
+  </div>
+
+</form>

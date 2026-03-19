@@ -1,1 +1,231 @@
-<p>expenses works!</p>
+<p-toast></p-toast>
+<p-confirmDialog></p-confirmDialog>
+
+<!-- ================= FILTER + TOTAL ================= -->
+<div class="card mb-4 p-4">
+
+  <div class="grid grid-cols-1 md:grid-cols-4 gap-4 items-end">
+
+    <!-- From -->
+    <div class="flex flex-col gap-1">
+      <label>From</label>
+      <p-datepicker [(ngModel)]="fromDate" dateFormat="dd-mm-yy"></p-datepicker>
+    </div>
+
+    <!-- To -->
+    <div class="flex flex-col gap-1">
+      <label>To</label>
+      <p-datepicker [(ngModel)]="toDate" dateFormat="dd-mm-yy"></p-datepicker>
+    </div>
+
+    <!-- Buttons -->
+    <div class="flex gap-2">
+      <button pButton label="Search" icon="pi pi-filter" (click)="applyFilter()"></button>
+     <button pButton
+                    type="button"
+                    label="Add New"
+                    icon="pi pi-plus"
+                    (click)="add()">
+            </button>
+    </div>
+
+    <!-- Total -->
+    <div class="text-right">
+      <div class="text-sm text-gray-500">Total Expense</div>
+      <div class="text-2xl font-bold">
+        {{ totalExpense | number:'1.2-2' }}
+      </div>
+    </div>
+
+  </div>
+
+</div>
+
+
+<!-- ================= CATEGORY CARDS ================= -->
+<div class="grid grid-cols-12 gap-4">
+
+  <div *ngFor="let item of categorySummary(); let i = index"
+       class="col-span-12 sm:col-span-6 lg:col-span-3">
+
+    <div class="card h-full" style="padding: 0.5rem;">
+      <div class="flex justify-between items-center mb-3">
+
+        <!-- Left -->
+        <div>
+          <div class="text-muted-color text-sm mb-1">
+            {{ item.category }}
+          </div>
+
+          <div class="text-xl font-semibold">
+            {{ item.total | number:'1.2-2' }}
+          </div>
+        </div>
+
+        <!-- Icon -->
+        <div class="flex items-center justify-center rounded-full"
+             [ngClass]="getCardColor(i)"
+             style="width: 2.5rem; height: 2.5rem">
+
+          <i class="pi text-lg" [ngClass]="getCardIcon(i)"></i>
+        </div>
+
+      </div>
+
+      <!-- Footer -->
+      <div class="text-xs text-gray-400">
+        Expense Category
+      </div>
+    </div>
+
+  </div>
+
+</div>
+<!-- ================= FORM ================= -->
+
+
+
+<!-- ================= TABLE ================= -->
+
+<p-table 
+  *ngIf="list().length > 0"
+  [value]="list()" 
+  #dt1    
+  [globalFilterFields]="['amount','category_name','expense_date','title']"
+  dataKey="id"
+  [rows]="10"
+  [paginator]="true"
+  [rowsPerPageOptions]="[5,10,20]"
+  [loading]="loading()"
+  class="mt-4">
+
+  <!-- Search -->
+  <ng-template pTemplate="caption">
+ <div class="flex items-center gap-3">
+       <!-- Search -->
+            <p-iconfield iconPosition="left">
+                <p-inputicon>
+                    <i class="pi pi-search"></i>
+                </p-inputicon>
+                <input pInputText
+                       type="text"
+                       (input)="dt1.filterGlobal($any($event.target).value, 'contains')"
+                       placeholder="Search..." />
+            </p-iconfield>
+
+            <!-- Add Button -->
+            <button pButton
+                    type="button"
+                    title="Add Payment"
+                    icon="pi pi-plus"
+                    (click)="add()">
+            </button>
+        
+      <button pButton title="Export" icon="pi pi-download" (click)="exportExcel()"></button>
+    </div>
+  </ng-template>
+
+  <!-- Header -->
+  <ng-template pTemplate="header">
+    <tr>
+      <th pSortableColumn="expense_date">Date <p-sortIcon field="expense_date" /></th>
+      <th pSortableColumn="title">Title <p-sortIcon field="title" /></th>
+      <th pSortableColumn="category_name">Category <p-sortIcon field="category_name" /></th>
+      <th pSortableColumn="amount">Amount <p-sortIcon field="amount" /></th>
+      <th>Action</th>
+    </tr>
+  </ng-template>
+
+  <!-- Body -->
+  <ng-template pTemplate="body" let-row>
+    <tr>
+      <td>{{ row.expense_date | date:'dd-MM-yyyy' }}</td>
+      <td>{{ row.title }}</td>
+      <td>{{ row.category_name }}</td>
+      <td class="font-semibold">{{ row.amount }}</td>
+      <td class="flex gap-2">
+        <button pButton icon="pi pi-pencil" (click)="edit(row)"></button>
+        <button pButton icon="pi pi-trash" class="p-button-danger" (click)="delete(row.id)"></button>
+      </td>
+    </tr>
+  </ng-template>
+
+</p-table>
+
+<p-dialog 
+  header="Expenses" 
+ [(visible)]="isVisible" 
+  [modal]="true"
+  [breakpoints]="{ '960px': '90vw', '640px': '100vw' }"
+  [style]="{ width: '70vw' }"
+  [draggable]="false"
+  [resizable]="false"
+  >
+    <form [formGroup]="form" class="card p-4 grid grid-cols-1 md:grid-cols-4 gap-4 mb-4">
+
+  <!-- Title -->
+  <div class="flex flex-col gap-1">
+    <label>Title</label>
+    <input pInputText formControlName="title"
+      [ngClass]="{'ng-invalid ng-dirty': form.get('title')?.invalid && form.get('title')?.touched}" />
+    <small class="text-red-500" *ngIf="form.get('title')?.invalid && form.get('title')?.touched">
+      Required
+    </small>
+  </div>
+
+  <!-- Category -->
+  <div class="flex flex-col gap-1">
+    <label>Category</label>
+    <p-select 
+      [options]="categories()" 
+      optionLabel="name" 
+      optionValue="id"
+      [filter]="true"
+      formControlName="category_id"
+      placeholder="Select"
+      [ngClass]="{'ng-invalid ng-dirty': form.get('category_id')?.invalid && form.get('category_id')?.touched}">
+    </p-select>
+    <small class="text-red-500" *ngIf="form.get('category_id')?.invalid && form.get('category_id')?.touched">
+      Required
+    </small>
+  </div>
+
+  <!-- Amount -->
+  <div class="flex flex-col gap-1">
+    <label>Amount</label>
+    <input type="number" pInputText formControlName="amount"
+      [ngClass]="{'ng-invalid ng-dirty': form.get('amount')?.invalid && form.get('amount')?.touched}" />
+    <small class="text-red-500" *ngIf="form.get('amount')?.invalid && form.get('amount')?.touched">
+      Required
+    </small>
+  </div>
+
+  <!-- Date -->
+  <div class="flex flex-col gap-1">
+    <label>Date</label>
+    <p-datepicker 
+      formControlName="expense_date"
+      [showIcon]="true"
+      dateFormat="dd-mm-yy"
+      [ngClass]="{'ng-invalid ng-dirty': form.get('expense_date')?.invalid && form.get('expense_date')?.touched}">
+    </p-datepicker>
+    <small class="text-red-500" *ngIf="form.get('expense_date')?.invalid && form.get('expense_date')?.touched">
+      Required
+    </small>
+  </div>
+
+  <!-- Description -->
+  <div class="flex flex-col gap-1 md:col-span-3">
+    <label>Description</label>
+    <textarea pInputTextarea formControlName="description"></textarea>
+  </div>
+
+  <!-- Buttons -->
+  <div class="flex items-end gap-2">
+    <button pButton type="button" label="Save" icon="pi pi-check" (click)="save()"></button>
+    <button pButton type="button" label="Reset" icon="pi pi-refresh" class="p-button-secondary" (click)="reset()"></button>
+  </div>
+
+</form>
+
+</p-dialog>

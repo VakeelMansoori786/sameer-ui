@@ -26,4 +26,7 @@ export class SaleService {
    return this.httpClient.delete(`${baseApiUrl}/api/sales/${id}`)
   }
   
+   getUnpaidInvoices(id:any) {
+   return this.httpClient.get(`${baseApiUrl}/api/sales/unpaid/${id}`)
+  }
 }

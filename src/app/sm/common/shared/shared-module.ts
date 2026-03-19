@@ -22,6 +22,9 @@ import { ConfirmPopupModule } from 'primeng/confirmpopup';
 import { ConfirmDialogModule } from 'primeng/confirmdialog';
 import { TextareaModule } from 'primeng/textarea';
 import { AutoCompleteModule } from 'primeng/autocomplete';
+import { IndianCurrencyPipe } from '../indian-currency.pipe';
+import { DialogModule } from 'primeng/dialog';
+import { DatePickerModule } from 'primeng/datepicker';
 
 @NgModule({
     declarations: [],
@@ -47,7 +50,9 @@ import { AutoCompleteModule } from 'primeng/autocomplete';
     ConfirmPopupModule,
     ConfirmDialogModule,
     TextareaModule,
-    AutoCompleteModule
+    AutoCompleteModule,
+    DialogModule,
+    DatePickerModule
   ],
   exports: [
     // Export modules so other modules can use them
@@ -72,7 +77,10 @@ import { AutoCompleteModule } from 'primeng/autocomplete';
     ConfirmPopupModule,
     ConfirmDialogModule,
     TextareaModule,
-    AutoCompleteModule
+    AutoCompleteModule,
+    DialogModule,
+    DatePickerModule
+    
   ]
 })
 export class SharedModule {}

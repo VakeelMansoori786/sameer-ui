@@ -1,3 +1,4 @@
+import { IndianCurrencyPipe } from '@/app/sm/common/indian-currency.pipe';
 import { SharedModule } from '@/app/sm/common/shared/shared-module';
 import { CommonService } from '@/app/sm/services/common-service';
 import { SaleService } from '@/app/sm/services/sale.service';
