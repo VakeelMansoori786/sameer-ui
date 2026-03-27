@@ -79,7 +79,8 @@ import { DatePickerModule } from 'primeng/datepicker';
     TextareaModule,
     AutoCompleteModule,
     DialogModule,
-    DatePickerModule
+    DatePickerModule,
+
     
   ]
 })
