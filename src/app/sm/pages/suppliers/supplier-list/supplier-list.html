@@ -5,26 +5,45 @@
         [globalFilterFields]="['name','phone','email','trn','address']"
         dataKey="id"
         [tableStyle]="{ 'min-width': '60rem' }"
-        [rows]="5"
+        [rows]="20"
         [paginator]="true"
         [rowsPerPageOptions]="[5,10,20]"
         [loading]="loading()"
     >
 
         <!-- Search -->
-        <ng-template #caption>
-            <div class="flex justify-between items-center">
-                <h2 class="text-xl font-semibold">Suppliers/Customers</h2>
-                <p-iconfield iconPosition="left">
-                    <p-inputicon>
-                        <i class="pi pi-search"></i>
-                    </p-inputicon>
-                    <input pInputText 
-                           type="text"  
-                           (input)="dt1.filterGlobal($any($event.target).value, 'contains')" 
-                           placeholder="Search supplier..." />
-                </p-iconfield>
-            </div>
+   
+<ng-template #caption>
+             <div class="flex justify-between items-center w-full">
+
+        <!-- Title -->
+        <h2 class="text-xl font-semibold">Supplier/Customer</h2>
+
+        <!-- Right Side -->
+        <div class="flex items-center gap-3">
+
+            <!-- Search -->
+            <p-iconfield iconPosition="left">
+                <p-inputicon>
+                    <i class="pi pi-search"></i>
+                </p-inputicon>
+                <input pInputText
+                       type="text"
+                       (input)="dt1.filterGlobal($any($event.target).value, 'contains')"
+                       placeholder="Search..." />
+            </p-iconfield>
+
+            <!-- Add Button -->
+            <button pButton
+                    type="button"
+                    title="Add"
+                    icon="pi pi-plus"
+                    (click)="add()">
+            </button>
+
+        </div>
+
+    </div>
         </ng-template>
 
         <!-- Header -->

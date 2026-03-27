@@ -183,6 +183,7 @@
       [filter]="true"
       formControlName="category_id"
       placeholder="Select"
+      appendTo="body"
       [ngClass]="{'ng-invalid ng-dirty': form.get('category_id')?.invalid && form.get('category_id')?.touched}">
     </p-select>
     <small class="text-red-500" *ngIf="form.get('category_id')?.invalid && form.get('category_id')?.touched">

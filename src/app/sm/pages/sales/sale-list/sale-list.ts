@@ -42,4 +42,8 @@ this.mainList.set(this.mainList().filter(x=>x.id!==id));
    invoice(id:any){
       this.router.navigate(['/invoice',{ id: btoa(id) },]);
   }
+  
+   add(){
+      this.router.navigate(['/sale',{  },]);
+  }
 }

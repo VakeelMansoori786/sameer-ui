@@ -51,5 +51,8 @@ this.mainList.set(this.mainList().filter(x=>x.id !== id));
 report(id:any){
 this.router.navigate(['/purchase-order',{ id: btoa(id) }]);
 }
-
+add(){
+    
+this.router.navigate(['/purchase',{  }]);
+}
 }

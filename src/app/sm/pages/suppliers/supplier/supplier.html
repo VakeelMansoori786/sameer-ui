@@ -4,51 +4,96 @@
 <form [formGroup]="mainForm" (ngSubmit)="onSubmit()" class="card flex flex-col gap-6 w-full p-5">
 
   <!-- Name -->
-  <div class="flex flex-wrap gap-2 w-full">
-    <label for="name">Supplier/Customer Name</label>
-    <input pInputText id="name" type="text" formControlName="name" class="w-full p-3" />
-    <small *ngIf="f['name'].invalid && (f['name'].dirty || f['name'].touched)" class="text-red-600">
+  <div class="flex flex-col gap-2 w-full">
+    <label>Supplier Name</label>
+    <input pInputText type="text" formControlName="name"
+      class="w-full p-3"
+      [ngClass]="{'ng-invalid ng-dirty': f['name'].invalid && (f['name'].touched || f['name'].dirty)}" />
+    
+    <small *ngIf="f['name'].invalid && f['name'].touched" class="text-red-500">
       Name is required
     </small>
   </div>
 
-  <!-- Phone & Email -->
+  <!-- Phone + Telephone -->
   <div class="flex flex-col md:flex-row gap-6">
-    
-    <div class="flex flex-wrap gap-2 w-full">
-      <label for="phone">Phone</label>
-      <input pInputText id="phone" type="text" formControlName="phone" class="w-full p-3" />
-      <small *ngIf="f['phone'].invalid && (f['phone'].dirty || f['phone'].touched)" class="text-red-600">
-        Valid phone is required
+
+    <!-- Mobile -->
+    <div class="w-full">
+      <label>Mobile</label>
+      <input pInputText type="text" formControlName="phone"
+        class="w-full p-3"
+        [ngClass]="{'ng-invalid ng-dirty': f['phone'].invalid && f['phone'].touched}" />
+
+      <small *ngIf="f['phone'].invalid && f['phone'].touched" class="text-red-500">
+        Valid mobile is required (e.g. 05XXXXXXXX)
       </small>
     </div>
 
-    <div class="flex flex-wrap gap-2 w-full">
-      <label for="email">Email</label>
-      <input pInputText id="email" type="email" formControlName="email" class="w-full p-3" />
-      <small *ngIf="f['email'].invalid && (f['email'].dirty || f['email'].touched)" class="text-red-600">
-        Valid email is required
+    <!-- Telephone -->
+    <div class="w-full">
+      <label>Telephone</label>
+      <input pInputText type="text" formControlName="telephone"
+        class="w-full p-3"
+        [ngClass]="{'ng-invalid ng-dirty': f['telephone'].invalid && f['telephone'].touched}" />
+
+      <small *ngIf="f['telephone'].invalid && f['telephone'].touched" class="text-red-500">
+        Invalid telephone number
       </small>
     </div>
 
+  </div>
+
+  <!-- Email -->
+  <div class="w-full">
+    <label>Email</label>
+    <input pInputText type="email" formControlName="email"
+      class="w-full p-3"
+      [ngClass]="{'ng-invalid ng-dirty': f['email'].invalid && f['email'].touched}" />
+
+    <small *ngIf="f['email'].invalid && f['email'].touched" class="text-red-500">
+      Valid email is required
+    </small>
+  </div>
+
+  <!-- Contact Person -->
+  <div class="w-full">
+    <label>Contact Person</label>
+    <input pInputText type="text" formControlName="contact_person"
+      class="w-full p-3"
+      [ngClass]="{'ng-invalid ng-dirty': f['contact_person'].invalid && f['contact_person'].touched}" />
+  </div>
+
+  <!-- Credit Limit -->
+  <div class="w-full">
+    <label>Credit Limit</label>
+    <input pInputText type="number" formControlName="credit_limit"
+      class="w-full p-3"
+      [ngClass]="{'ng-invalid ng-dirty': f['credit_limit'].invalid && f['credit_limit'].touched}" />
+
+    <small *ngIf="f['credit_limit'].invalid && f['credit_limit'].touched" class="text-red-500">
+      Must be 0 or greater
+    </small>
   </div>
 
   <!-- Address -->
-  <div class="flex flex-wrap gap-2 w-full">
-    <label for="address">Address</label>
-    <textarea pInputTextarea id="address" rows="3" formControlName="address" class="w-full p-3"></textarea>
+  <div class="w-full">
+    <label>Address</label>
+    <textarea pInputTextarea rows="3" formControlName="address" class="w-full p-3"></textarea>
   </div>
 
   <!-- TRN -->
-  <div class="flex flex-wrap gap-2 w-full">
-    <label for="trn">TRN</label>
-    <input pInputText id="trn" type="text" formControlName="trn" class="w-full p-3" />
+  <div class="w-full">
+    <label>TRN</label>
+    <input pInputText type="text" formControlName="trn"
+      class="w-full p-3"
+      [ngClass]="{'ng-invalid ng-dirty': f['trn'].invalid && f['trn'].touched}" />
   </div>
 
   <!-- Buttons -->
-  <div class="flex flex-wrap gap-2 w-full">
-    <button pButton pRipple type="submit" label="Save" class="p-3 text-xl"></button>
-    <button pButton pRipple type="button" label="Reset" (click)="Reset()" class="p-3 text-xl ml-2"></button>
+  <div class="flex gap-3">
+    <button pButton type="submit" label="Save"></button>
+    <button pButton type="button" label="Reset" (click)="Reset()" severity="secondary"></button>
   </div>
 
 </form>

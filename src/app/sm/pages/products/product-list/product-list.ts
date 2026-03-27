@@ -38,4 +38,7 @@ this.mainList.set(this.mainList().filter(x=>x.id!==id));
   edit(id:any){
       this.router.navigate(['/product',{ id: btoa(id) },]);
   }
+  add(){
+    this.router.navigate(['/product',{}]);
+  }
 }

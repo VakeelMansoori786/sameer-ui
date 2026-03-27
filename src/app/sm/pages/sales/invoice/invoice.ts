@@ -37,7 +37,7 @@ getSale() {
 goBack() {
     this.location.back();
   }
-report(type:string) {
+report(type: string) {
   const data: any = this.mainList();
   if (!data) return;
 
@@ -47,152 +47,191 @@ report(type:string) {
 
   const logoImg = this.companyDetail.logo;
 
-  // Helper to draw header on each page
-  const drawHeader = (doc: any) => {
+  // ================= HEADER =================
+  const drawHeader = () => {
     let yOffset = 15;
 
     if (logoImg) {
-      const img = new Image();
-      img.src = logoImg;
-      // We cannot await here, so use a fixed size
       doc.addImage(logoImg, 'PNG', 15, yOffset, 20, 20);
     }
 
     doc.setFontSize(9);
-    doc.setFont('helvetica','bold');
-    doc.setTextColor(31,78,121);
+    doc.setFont('helvetica', 'bold');
+    doc.setTextColor(31, 78, 121);
     doc.text(`${this.companyDetail.owner} ${this.companyDetail.bussiness_type}`, 40, yOffset + 3);
 
-    doc.setFont('helvetica','normal');
+    doc.setFont('helvetica', 'normal');
     doc.setFontSize(8);
-    doc.setTextColor(0,0,0);
+    doc.setTextColor(0, 0, 0);
     doc.text(this.companyDetail.address, 40, yOffset + 7);
     doc.text(`Mobile: ${this.companyDetail.tel} / ${this.companyDetail.mobile1}`, 40, yOffset + 11);
     doc.text(`Email: ${this.companyDetail.email}`, 40, yOffset + 15);
 
-    doc.setDrawColor(0,0,0);
+    doc.setDrawColor(0, 0, 0);
     doc.setLineWidth(0.3);
     doc.line(15, yOffset + 20, pageWidth - 15, yOffset + 20);
 
-    return yOffset + 25; // return starting Y after header
+    return yOffset + 25;
   };
 
-  const footer = (pageNum: number, totalPages: number) => {
+  // ================= FOOTER =================
+  const drawFooter = (pageNum: number, totalPages: number) => {
     doc.setFontSize(7);
-    doc.setTextColor(0,0,0);
     doc.text(`Page ${pageNum} of ${totalPages}`, pageWidth - 30, pageHeight - 10);
   };
 
-  let yStart = drawHeader(doc);
+  let yStart = drawHeader();
 
-  // PROFORMA INVOICE TITLE
+  // ================= TITLE =================
   doc.setFontSize(8);
-  doc.setFont('helvetica','bold');
-  doc.text('INVOICE', pageWidth/2, yStart, {align:'center'});
+  doc.setFont('helvetica', 'bold');
+  doc.text('INVOICE', pageWidth / 2, yStart, { align: 'center' });
   yStart += 6;
 
-  // CUSTOMER DETAILS
+  // ================= CUSTOMER =================
   doc.setFontSize(7);
-  doc.setFont('helvetica','normal');
+  doc.setFont('helvetica', 'normal');
+
   doc.text(`Name: ${data.sale[0].customer_name}`, 15, yStart);
   doc.text(`Phone: ${data.sale[0].phone}`, 15, yStart + 4);
   doc.text(`Address: ${data.sale[0].address}`, 15, yStart + 8);
   doc.text(`TRN: ${data.sale[0].trn || '-'}`, 15, yStart + 12);
+
   doc.text(`Invoice No: ${data.sale[0].invoice_no}`, pageWidth - 70, yStart);
   doc.text(`Date: ${data.sale[0].sale_date?.split('T')[0]}`, pageWidth - 70, yStart + 4);
+
   yStart += 16;
 
-  // ITEMS TABLE
-  const tableColumns = [
-    { header: '#', dataKey: 'no' },
-    { header: 'Description', dataKey: 'product' },
-    { header: 'Qty', dataKey: 'qty' },
-    { header: 'Price', dataKey: 'price' },
-    { header: 'Discount', dataKey: 'discount' },
-    { header: 'Total', dataKey: 'total' },
-  ];
+  // ================= TABLE =================
+  const tableColumns = ['#', 'Description', 'Qty', 'Price', 'Discount', 'Total'];
 
-  const tableRows = data.sale_detail.map((item:any, i:number) => ({
-    no: i+1,
-    product: item.product,
-    qty: Number(item.qty || 0),
-    price: parseFloat(item.price || 0).toFixed(2),
-    discount: parseFloat(item.discount || 0).toFixed(2),
-    total: parseFloat(item.total || 0).toFixed(2)
-  }));
+  const tableRows = data.sale_detail.map((item: any, i: number) => ([
+    i + 1,
+    item.product,
+    Number(item.qty || 0),
+    parseFloat(item.price || 0).toFixed(2),
+    parseFloat(item.discount || 0).toFixed(2),
+    parseFloat(item.total || 0).toFixed(2)
+  ]));
 
-autoTable(doc, {
-  startY: yStart, // initial start
-  head: [tableColumns.map(c => c.header)],
-  body: tableRows.map((r:any) => Object.values(r)),
+ autoTable(doc, {
+  startY: yStart,
+  head: [tableColumns],
+  body: tableRows,
+
   theme: 'grid',
-  headStyles: { fillColor: [242,242,242], textColor:0, fontStyle:'bold' },
-  styles: { fontSize: 7 },
-  margin: { left: 15, right: 15, top: 40 }, // reserve space for header
-  showHead: 'everyPage', // repeat table header
-  didDrawPage: (dataArg) => {
+
+  styles: {
+    fontSize: 7,
+    textColor: [0, 0, 0],
+    lineColor: [0, 0, 0],   // 🔥 black borders
+    lineWidth: 0.2          // 🔥 thin single line
+  },
+
+  headStyles: {
+    fillColor: [255, 255, 255], // 🔥 white background (no grey)
+    textColor: [0, 0, 0],
+    fontStyle: 'bold',          // 🔥 bold header
+    lineColor: [0, 0, 0],
+    lineWidth: 0.2
+  },
+
+  bodyStyles: {
+    lineColor: [0, 0, 0],
+    lineWidth: 0.2
+  },
+
+  alternateRowStyles: {
+    fillColor: [255, 255, 255] // 🔥 remove zebra shading
+  },
+
+  margin: { left: 15, right: 15, top: 40 },
+  showHead: 'everyPage',
+
+  didDrawPage: (dataArg: any) => {
+    drawHeader();
     const pageNum = doc.getCurrentPageInfo().pageNumber;
-    footer(pageNum, doc.getNumberOfPages());
-
-    // Draw company header only for new pages
-    drawHeader(doc);
-
-    // Reset the table's margin.top to avoid overlapping
-    (dataArg as any).settings.margin.top = 35; // header height
+    drawFooter(pageNum, doc.getNumberOfPages());
+    dataArg.settings.margin.top = 35;
   }
 });
 
-  // TOTALS AFTER TABLE
-  const finalY = (autoTable as any).previous?.finalY || yStart + 5;
+  // ================= SAFE POSITION =================
+  let finalY = (doc as any).lastAutoTable?.finalY || yStart + 10;
+  let safeY = finalY + 8;
 
-const labelX = pageWidth - 70;   // label column
-const valueX = pageWidth - 15;   // value column (right aligned)
+  // ================= PAGE BREAK =================
+  if (safeY + 50 > pageHeight) {
+    doc.addPage();
+    drawHeader();
+    safeY = 40;
+  }
 
-doc.setFontSize(7);
-doc.setFont('helvetica','normal');
+  const labelX = pageWidth - 70;
+  const valueX = pageWidth - 15;
 
-// Subtotal
-doc.text('Sub Total', labelX, finalY + 5);
-doc.text(parseFloat(data.sale[0].total || 0).toFixed(2) + ' AED', valueX, finalY + 5, { align: 'right' });
+  doc.setFontSize(7);
+  doc.setFont('helvetica', 'normal');
 
-// Discount
-doc.text('Discount', labelX, finalY + 10);
-doc.text(parseFloat(data.sale[0].discount || 0).toFixed(2) + ' AED', valueX, finalY + 10, { align: 'right' });
+  // ================= TOTALS (DYNAMIC) =================
+  let y = safeY + 5;
 
-// VAT
-if (data.sale[0].vat !== '0.00') {
-  doc.text('VAT (5%)', labelX, finalY + 15);
-  doc.text(parseFloat(data.sale[0].vat || 0).toFixed(2) + ' AED', valueX, finalY + 15, { align: 'right' });
-}
+  const subTotal = parseFloat(data.sale[0].total || 0);
+  const discount = parseFloat(data.sale[0].discount || 0);
+  const vatAmount = parseFloat(data.sale[0].vat || 0);
+  const grandTotal = parseFloat(data.sale[0].grand_total || 0);
 
-// Grand Total
-doc.setFont('helvetica','bold');
-doc.text('Grand Total (AED)', labelX, finalY + 20);
-doc.text(parseFloat(data.sale[0].grand_total || 0).toFixed(2) + ' AED', valueX, finalY + 20, { align: 'right' });
-  // NOTES
-  doc.setFont('helvetica','normal');
-  doc.text('Notes: Please supply the above materials as per terms and conditions.', 15, finalY + 35);
+  // Subtotal
+  doc.text('Sub Total', labelX, y);
+  doc.text(subTotal.toFixed(2) + ' AED', valueX, y, { align: 'right' });
+  y += 5;
 
-  // SIGNATURES
-  const sigY = finalY + 50;
+  // Discount (only if > 0)
+  if (discount > 0) {
+    doc.text('Discount', labelX, y);
+    doc.text(discount.toFixed(2) + ' AED', valueX, y, { align: 'right' });
+    y += 5;
+  }
+
+  // VAT (only if > 0)
+  if (vatAmount > 0) {
+    doc.text('VAT (5%)', labelX, y);
+    doc.text(vatAmount.toFixed(2) + ' AED', valueX, y, { align: 'right' });
+    y += 5;
+  }
+
+  // Grand Total
+  doc.setFont('helvetica', 'bold');
+  doc.text('Grand Total (AED)', labelX, y);
+  doc.text(grandTotal.toFixed(2) + ' AED', valueX, y, { align: 'right' });
+
+  // ================= NOTES =================
+  if (data.sale[0].note) {
+    doc.setFont('helvetica', 'normal');
+    doc.text(`Notes: ${data.sale[0].note}`, 15, y + 15);
+  }
+
+  // ================= SIGNATURE =================
+  const sigY = y + 30;
+
   doc.text('Prepared By', 15, sigY);
   doc.line(15, sigY + 2, 60, sigY + 2);
+
   doc.text('Received By', pageWidth - 70, sigY);
   doc.line(pageWidth - 70, sigY + 2, pageWidth - 20, sigY + 2);
 
-
-  if(type==='download'){
-  doc.save(`Invoice-${data.sale[0].invoice_no}.pdf`);
-  }
-  else{
-    let blob:any={}
-   blob = doc.output('bloburl');
-const iframe = document.createElement('iframe');
-iframe.style.display = 'none';
-iframe.src = blob;
-document.body.appendChild(iframe);
-iframe.contentWindow?.focus();
-iframe.contentWindow?.print();
+  // ================= OUTPUT =================
+  if (type === 'download') {
+    doc.save(`Invoice-${data.sale[0].invoice_no}.pdf`);
+  } else {
+    const blob = doc.output('bloburl');
+    let iframe:any;
+     iframe = document.createElement('iframe');
+    iframe.style.display = 'none';
+    iframe.src = blob;
+    document.body.appendChild(iframe);
+    iframe.contentWindow?.focus();
+    iframe.contentWindow?.print();
   }
 }
 }

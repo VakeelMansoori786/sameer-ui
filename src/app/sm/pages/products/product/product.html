@@ -4,78 +4,100 @@
 <form [formGroup]="mainForm" (ngSubmit)="onSubmit()" class="card flex flex-col gap-6 w-full p-5">
 
   <!-- Product Name -->
-  <div class="flex flex-wrap gap-2 w-full">
-    <label for="name">Product Name</label>
-    <input pInputText id="name" type="text" formControlName="name" class="w-full p-3" />
-    <small *ngIf="f['name'].invalid && (f['name'].dirty || f['name'].touched)" class="text-red-600">
+  <div class="w-full">
+    <label>Product Name</label>
+    <input pInputText type="text" formControlName="name"
+      class="w-full p-3"
+      [ngClass]="{'ng-invalid ng-dirty': f['name'].invalid && f['name'].touched}" />
+
+    <small *ngIf="f['name'].invalid && f['name'].touched" class="text-red-500">
       Name is required
     </small>
   </div>
 
-  <!-- Category Dropdown -->
-  <div class="flex flex-wrap gap-2 w-full">
-    <label for="category">Category</label>
-    <p-select 
-      id="category" 
-      formControlName="category" 
-      [options]="categoriesList()" 
-      optionLabel="name" 
-      optionValue="id" 
+  <!-- Size -->
+  <div class="w-full">
+    <label>Size</label>
+    <input pInputText type="text" formControlName="size"
+      placeholder="e.g. S, M, L, XL, 500ml"
+      class="w-full p-3"
+      [ngClass]="{'ng-invalid ng-dirty': f['size'].invalid && f['size'].touched}" />
+
+    <small *ngIf="f['size'].invalid && f['size'].touched" class="text-red-500">
+      Size is required
+    </small>
+  </div>
+
+  <!-- Category -->
+  <div class="w-full">
+    <label>Category</label>
+    <p-select
+      formControlName="category"
+      [options]="categoriesList()"
+      optionLabel="name"
+      optionValue="id"
       [filter]="true"
       placeholder="Select One"
-      class="w-full">
+      class="w-full"
+      [ngClass]="{'ng-invalid ng-dirty': f['category'].invalid && f['category'].touched}">
     </p-select>
-    <small *ngIf="f['category'].invalid && (f['category'].dirty || f['category'].touched)" class="text-red-600">
+
+    <small *ngIf="f['category'].invalid && f['category'].touched" class="text-red-500">
       Category is required
     </small>
   </div>
 
-  <!-- Purchase Price, Sale Price, Stock -->
+  <!-- Prices + Stock -->
   <div class="flex flex-col md:flex-row gap-6">
-    <div class="flex flex-wrap gap-2 w-full">
-      <label for="purchase_price">Purchase Price</label>
-      <input pInputText id="purchase_price" type="number" formControlName="purchase_price" class="w-full p-3" />
-      <small *ngIf="f['purchase_price'].invalid && (f['purchase_price'].dirty || f['purchase_price'].touched)" class="text-red-600">
-        Purchase price must be ≥ 0
-      </small>
+
+    <div class="w-full">
+      <label>Purchase Price</label>
+      <input pInputText type="number" formControlName="purchase_price"
+        class="w-full p-3"
+        [ngClass]="{'ng-invalid ng-dirty': f['purchase_price'].invalid && f['purchase_price'].touched}" />
     </div>
 
-    <div class="flex flex-wrap gap-2 w-full">
-      <label for="sale_price">Sale Price</label>
-      <input pInputText id="sale_price" type="number" formControlName="sale_price" class="w-full p-3" />
-      <small *ngIf="f['sale_price'].invalid && (f['sale_price'].dirty || f['sale_price'].touched)" class="text-red-600">
-        Sale price must be ≥ 0
-      </small>
+    <div class="w-full">
+      <label>Sale Price</label>
+      <input pInputText type="number" formControlName="sale_price"
+        class="w-full p-3"
+        [ngClass]="{'ng-invalid ng-dirty': f['sale_price'].invalid && f['sale_price'].touched}" />
     </div>
 
-    <div class="flex flex-wrap gap-2 w-full">
-      <label for="stock">Stock</label>
-      <input pInputText id="stock" type="number" formControlName="stock" class="w-full p-3" />
-      <small *ngIf="f['stock'].invalid && (f['stock'].dirty || f['stock'].touched)" class="text-red-600">
-        Stock must be ≥ 0
-      </small>
+    <div class="w-full">
+      <label>Stock</label>
+      <input pInputText type="number" formControlName="stock"
+        class="w-full p-3"
+        [ngClass]="{'ng-invalid ng-dirty': f['stock'].invalid && f['stock'].touched}" />
     </div>
+
   </div>
 
   <!-- Unit -->
-  <div class="flex flex-wrap gap-2 w-full">
-    <label for="unit">Unit</label>
-    <p-select 
-      id="category" 
-      formControlName="unit" 
-      [options]="unitsList()" 
-      optionLabel="name" 
-      optionValue="id" 
+  <div class="w-full">
+    <label>Unit</label>
+    <p-select
+      formControlName="unit"
+      [options]="unitsList()"
+      optionLabel="name"
+      optionValue="id"
       [filter]="true"
       placeholder="Select One"
-      class="w-full">
+      class="w-full"
+      [ngClass]="{'ng-invalid ng-dirty': f['unit'].invalid && f['unit'].touched}">
     </p-select>
-    <small *ngIf="f['unit'].invalid && (f['unit'].dirty || f['unit'].touched)" class="text-red-600">
+
+    <small *ngIf="f['unit'].invalid && f['unit'].touched" class="text-red-500">
       Unit is required
     </small>
   </div>
- <div class="flex flex-wrap gap-2 w-full">
-  <button pButton pRipple type="submit" label="Save" class="p-3 text-xl"></button>
-  <button pButton pRipple label="Reset" click="Reset()" class="p-3 text-xl ml-2"></button>
+
+  <!-- Buttons -->
+  <div class="flex gap-3">
+    <button pButton type="submit" label="Save"></button>
+
+    <!-- ❌ FIXED click -->
+    <button pButton type="button" label="Reset" (click)="Reset()" severity="secondary"></button>
   </div>
+
 </form>

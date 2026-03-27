@@ -24,14 +24,15 @@ export class Product {
      constructor(private router:Router,private confirmationService:ConfirmationService,private messageService:MessageService,private route: ActivatedRoute,private fb: FormBuilder,private commonService:CommonService,private productService:ProductService) {}
 
   ngOnInit(): void {
-    this.mainForm = this.fb.group({
-      name: ['', Validators.required],
-      category: [null, Validators.required],
-      purchase_price: [0, [Validators.required, Validators.min(0)]],
-      sale_price: [0, [Validators.required, Validators.min(0)]],
-      stock: [0, [Validators.required, Validators.min(0)]],
-      unit: ['', Validators.required],
-    });
+ this.mainForm = this.fb.group({
+  name: ['', Validators.required],
+  size: ['', Validators.required], // ✅ NEW
+  category: [null, Validators.required],
+  purchase_price: [null, [Validators.required, Validators.min(0)]],
+  sale_price: [null, [Validators.required, Validators.min(0)]],
+  stock: [null, [Validators.required, Validators.min(0)]],
+  unit: [null, Validators.required]
+});
     this.getCategories();
     this.getUnits();
     const routeId = this.route.snapshot.paramMap.get('id');
@@ -46,15 +47,16 @@ export class Product {
       this.mainForm.markAllAsTouched();
       return;
     }
-const model={
-id:this.id(),
-name:this.mainForm.value.name,
-category_id:this.mainForm.value.category,
-purchase_price:this.mainForm.value.purchase_price,
-sale_price:this.mainForm.value.sale_price,
-stock:this.mainForm.value.stock,
-unit_id:this.mainForm.value.unit,
-}
+const model = {
+  id: this.id(),
+  name: this.mainForm.value.name,
+  size: this.mainForm.value.size, // ✅ NEW
+  category_id: this.mainForm.value.category,
+  purchase_price: this.mainForm.value.purchase_price,
+  sale_price: this.mainForm.value.sale_price,
+  stock: this.mainForm.value.stock,
+  unit_id: this.mainForm.value.unit,
+};
 if(this.id()!='0'){
  this.productService.update(model).subscribe((data: any) => {
       this.messageService.add({ key: 'tst', severity: 'success', summary: 'Success', detail: 'Product saved successfully' });
@@ -77,13 +79,14 @@ else{
         this.productService.getOne(this.id()).subscribe((data: any) => {
    if(data.length>0){
     this.mainForm.patchValue({
-      name: data[0].name,
-      category: data[0].category_id,
-      purchase_price: data[0].purchase_price,
-      sale_price: data[0].sale_price,
-      stock: data[0].stock,
-      unit: data[0].unit_id,
-    })
+  name: data[0].name,
+  size: data[0].size, // ✅ NEW
+  category: data[0].category_id,
+  purchase_price: data[0].purchase_price,
+  sale_price: data[0].sale_price,
+  stock: data[0].stock,
+  unit: data[0].unit_id,
+});
    }
     });
     }
