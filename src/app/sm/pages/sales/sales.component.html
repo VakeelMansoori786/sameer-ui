@@ -40,73 +40,91 @@
     </div>
   </div>
 
-    <p-table [value]="items.controls">
-      <ng-template #header>
-        <tr>
-<th style="width:40%">Product</th>
-<th style="width:10%">Qty</th>
-<th style="width:15%">Price</th>
-<th style="width:15%">Discount</th>
-<th style="width:10%">Total</th>
-<th style="width:10%">Action</th>
-        </tr>
-      </ng-template>
+   <p-table [value]="items.controls" styleClass="p-datatable-sm" [tableStyle]="{'table-layout':'fixed','width':'100%'}">
+  
+  <ng-template #header>
+    <tr>
+<th style="width:30%">Product</th>
+<th style="width:6%">Qty</th>
+<th style="width:10%">Unit</th>
+<th style="width:8%">Price</th>
+<th style="width:6%">Discount</th>
+<th style="width:5%">Total</th>
+<th style="width:5%">Action</th>
+    </tr>
+  </ng-template>
 
-      <ng-template #body let-row let-i="rowIndex">
-        <tr [formGroup]="row">
-          <td>
-         <p-autoComplete
-         minQueryLength="2"
-  formControlName="product"
-  [suggestions]="filteredProducts"
-  (completeMethod)="searchProduct($event)"
-  optionLabel="name"
-  placeholder="Search Product"
-  (onSelect)="onProductSelect($event, i)"
-  appendTo="body"
-  [invalid]="row.get('product')?.invalid && row.get('product')?.touched"
-  styleClass="w-full"
-  inputStyleClass="w-full">
-</p-autoComplete>
-          </td>
-
-          <td>
-            <input pInputText type="number" formControlName="qty" [invalid]="row.get('qty')?.invalid && row.get('qty')?.touched"
-              (input)="calculateRow(i)" />
-          </td>
-
-          <td>
-            <input pInputText type="number" formControlName="price"  [invalid]="row.get('price')?.invalid && row.get('price')?.touched"
-              (input)="calculateRow(i)" />
-          </td>
-
-          <td>
-            <input pInputText type="number" formControlName="discount"  [invalid]="row.get('discount')?.invalid && row.get('discount')?.touched"
-              (input)="calculateRow(i)" />
-          </td>
-
-          <td>
-            {{ row.value.total | number:'1.2-2' }}
-          </td>
- 
-          <td class="flex gap-2">
-         
-            <button pButton type="button" icon="pi pi-trash"
-              (click)="removeItem(i)">
-            </button>
+  <ng-template #body let-row let-i="rowIndex">
+    <tr [formGroup]="row">
       
-   @if (i === items.length - 1) {
-    <button 
-      pButton 
-      type="button"  
-      icon="pi pi-plus"
-      (click)="addItem()">
-    </button>
-  }
-          </td>
-        </tr>
-      </ng-template>
-    </p-table>
+      <!-- Product -->
+      <td>
+        <p-autoComplete
+          formControlName="product"
+          [suggestions]="filteredProducts"
+          (completeMethod)="searchProduct($event)"
+          optionLabel="name"
+          placeholder="Search Product"
+          (onSelect)="onProductSelect($event, i)"
+          appendTo="body"
+          [invalid]="row.get('product')?.invalid && row.get('product')?.touched"
+          styleClass="w-full"
+          inputStyleClass="w-full">
+        </p-autoComplete>
+      </td>
+
+      <!-- Qty -->
+      <td>
+        <input pInputText type="number"
+          formControlName="qty"
+          class="w-full"
+          (input)="calculateRow(i)" />
+      </td>
+
+      <!-- Unit -->
+      <td>
+        <input pInputText type="text"
+          formControlName="unit"
+          class="w-full" />
+      </td>
+
+      <!-- Price -->
+      <td>
+        <input pInputText type="number"
+          formControlName="price"
+          class="w-full"
+          (input)="calculateRow(i)" />
+      </td>
+
+      <!-- Discount -->
+      <td>
+        <input pInputText type="number"
+          formControlName="discount"
+          class="w-full"
+          (input)="calculateRow(i)" />
+      </td>
+
+      <!-- Total -->
+      <td class="text-right">
+        {{ row.value.total | number:'1.2-2' }}
+      </td>
+
+      <!-- Action -->
+      <td class="flex gap-2 justify-center">
+        <button pButton type="button" icon="pi pi-trash"
+          (click)="removeItem(i)">
+        </button>
+
+        @if (i === items.length - 1) {
+          <button pButton type="button" icon="pi pi-plus"
+            (click)="addItem()">
+          </button>
+        }
+      </td>
+
+    </tr>
+  </ng-template>
+</p-table>
 
  
   

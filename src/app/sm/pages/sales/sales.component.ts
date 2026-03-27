@@ -88,6 +88,7 @@ getSale(){
             product:item.product,
             product_id: item.product_id,
             qty: item.qty,
+            unit: item.unit,
             price: item.price,
             discount: item.discount,
             total: item.total
@@ -104,6 +105,7 @@ addItem() {
     product: [null, Validators.required],  // full product object
     product_id: [null, Validators.required],                    // store id separately
     qty: [1, Validators.required],
+    unit: ['', Validators.required],
     price: [0, Validators.required],
     discount: [0, Validators.required],
     total: [0, Validators.required]
@@ -211,6 +213,7 @@ onSubmit() {
  const cleanedItems = this.items.value.map((item: any) => ({
     product_id: item.product_id || item.product?.id,
     qty: item.qty,
+    unit: item.unit,
     price: Number(item.price),
     discount: Number(item.discount),
     total: Number(item.total)

@@ -3,7 +3,7 @@
     <p-table
         #dt1
         [value]="mainList()"      
-        [globalFilterFields]="['name','category_name','unit_name','purchase_price','sale_price','stock']"
+        [globalFilterFields]="['name','unit_name','purchase_price','sale_price','stock']"
         dataKey="id"
         [tableStyle]="{ 'min-width': '50rem' }"
         [rows]="20"
@@ -55,12 +55,6 @@
                     
                 
                 </th>
-                  <th pSortableColumn="category_name">
-<div class="flex items-center gap-2">
-                        Category
-                        <p-sortIcon field="category_name" />
-                    </div>
-                  </th>
                   
                   <th pSortableColumn="unit_name">
  <div class="flex items-center gap-2">
@@ -93,7 +87,6 @@
         <ng-template #body let-row>
             <tr>
                 <td>{{ row.name }}</td>
-                <td>{{ row.category_name }}</td>
                 <td>{{ row.unit_name }}</td>
                 <td>{{ row.purchase_price }}</td>
                 <td>{{ row.sale_price }}</td>

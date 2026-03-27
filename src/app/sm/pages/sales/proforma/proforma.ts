@@ -105,14 +105,14 @@ report(type: string) {
   yStart += 16;
 
   // ================= TABLE =================
-  const tableColumns = ['#', 'Description', 'Qty', 'Price', 'Discount', 'Total'];
+  const tableColumns = ['#', 'Description', 'Qty', 'Unit', 'Price', 'Total'];
 
   const tableRows = data.sale_detail.map((item: any, i: number) => ([
     i + 1,
     item.product,
     Number(item.qty || 0),
+    item.unit,
     parseFloat(item.price || 0).toFixed(2),
-    parseFloat(item.discount || 0).toFixed(2),
     parseFloat(item.total || 0).toFixed(2)
   ]));
 

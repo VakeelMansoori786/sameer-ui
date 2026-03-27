@@ -26,14 +26,11 @@ export class Product {
   ngOnInit(): void {
  this.mainForm = this.fb.group({
   name: ['', Validators.required],
-  size: ['', Validators.required], // ✅ NEW
-  category: [null, Validators.required],
   purchase_price: [null, [Validators.required, Validators.min(0)]],
   sale_price: [null, [Validators.required, Validators.min(0)]],
   stock: [null, [Validators.required, Validators.min(0)]],
   unit: [null, Validators.required]
 });
-    this.getCategories();
     this.getUnits();
     const routeId = this.route.snapshot.paramMap.get('id');
     if (routeId) {
@@ -50,8 +47,6 @@ export class Product {
 const model = {
   id: this.id(),
   name: this.mainForm.value.name,
-  size: this.mainForm.value.size, // ✅ NEW
-  category_id: this.mainForm.value.category,
   purchase_price: this.mainForm.value.purchase_price,
   sale_price: this.mainForm.value.sale_price,
   stock: this.mainForm.value.stock,
@@ -80,8 +75,6 @@ else{
    if(data.length>0){
     this.mainForm.patchValue({
   name: data[0].name,
-  size: data[0].size, // ✅ NEW
-  category: data[0].category_id,
   purchase_price: data[0].purchase_price,
   sale_price: data[0].sale_price,
   stock: data[0].stock,
@@ -92,14 +85,7 @@ else{
     }
   }
 
-  getCategories() {
-      const model={
-        table:'sm_category'
-      }
-    this.commonService.GetDropdrown(model).subscribe((data: any) => {
-      this.categoriesList.set(data);
-    });
-  }
+
     getUnits() {
       const model={
         table:'sm_units'

@@ -15,38 +15,9 @@
     </small>
   </div>
 
-  <!-- Size -->
-  <div class="w-full">
-    <label>Size</label>
-    <input pInputText type="text" formControlName="size"
-      placeholder="e.g. S, M, L, XL, 500ml"
-      class="w-full p-3"
-      [ngClass]="{'ng-invalid ng-dirty': f['size'].invalid && f['size'].touched}" />
+ 
 
-    <small *ngIf="f['size'].invalid && f['size'].touched" class="text-red-500">
-      Size is required
-    </small>
-  </div>
-
-  <!-- Category -->
-  <div class="w-full">
-    <label>Category</label>
-    <p-select
-      formControlName="category"
-      [options]="categoriesList()"
-      optionLabel="name"
-      optionValue="id"
-      [filter]="true"
-      placeholder="Select One"
-      class="w-full"
-      [ngClass]="{'ng-invalid ng-dirty': f['category'].invalid && f['category'].touched}">
-    </p-select>
-
-    <small *ngIf="f['category'].invalid && f['category'].touched" class="text-red-500">
-      Category is required
-    </small>
-  </div>
-
+ 
   <!-- Prices + Stock -->
   <div class="flex flex-col md:flex-row gap-6">
 
