@@ -6,7 +6,7 @@
   <!-- Product Name -->
   <div class="w-full">
     <label>Product Name</label>
-    <input pInputText type="text" formControlName="name"
+    <input pInputText type="text" formControlName="name" autocomplete="on"
       class="w-full p-3"
       [ngClass]="{'ng-invalid ng-dirty': f['name'].invalid && f['name'].touched}" />
 

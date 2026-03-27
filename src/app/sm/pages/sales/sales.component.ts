@@ -248,13 +248,13 @@ else{
       this.messageService.add({ key: 'tst', severity: 'success', summary: 'Success', detail: 'Supplier saved successfully' });
     const type=payload.status?.toLowerCase()
       if(type==='invoice'){
-          this.router.navigate(['/invoice',{ id: btoa(data[0].v_last_id) },]);
+          this.router.navigate(['/invoice',{ id: btoa(data[0].sale_id) },]);
   }
   if(type==='proforma'){
-          this.router.navigate(['/proforma',{ id: btoa(data[0].v_last_id) },]);
+          this.router.navigate(['/proforma',{ id: btoa(data[0].sale_id) },]);
   }
   if(type==='delivery-note'){
-          this.router.navigate(['/delivery-note',{ id: btoa(data[0].v_last_id) },]);
+          this.router.navigate(['/delivery-note',{ id: btoa(data[0].sale_id) },]);
   }
        //  this.router.navigate(['/invoice',{ id: btoa(data[0].v_last_id) },]);
     });
