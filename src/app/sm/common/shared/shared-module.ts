@@ -80,7 +80,7 @@ import { DatePickerModule } from 'primeng/datepicker';
     AutoCompleteModule,
     DialogModule,
     DatePickerModule,
-
+SkeletonModule
     
   ]
 })

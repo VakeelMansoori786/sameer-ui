@@ -23,6 +23,7 @@ import { PaymentReceived } from './app/sm/pages/sales/payment-received/payment-r
 import { PaymentList } from './app/sm/pages/sales/payment-list/payment-list';
 import { Statement } from './app/sm/pages/reports/statement/statement';
 import { ExpensesComponent } from './app/sm/pages/expenses/expenses.component';
+import { DashboardComponent } from './app/sm/pages/dashboard/dashboard.component';
 
 export const appRoutes: Routes = [
     {
@@ -30,6 +31,7 @@ export const appRoutes: Routes = [
         component: AppLayout,
          canActivate: [AuthGuard], // Applying AuthGuard to the main layout component
         children: [
+              
             { path: 'dropdown', component: Dropdown },
             { path: 'expenses', component: ExpensesComponent },
             { path: 'product', component: Product },
@@ -55,6 +57,7 @@ export const appRoutes: Routes = [
 
 
             { path: '', component: Dashboard },
+             { path: 'dashboard', component: DashboardComponent },
             { path: 'uikit', loadChildren: () => import('./app/pages/uikit/uikit.routes') },
             { path: 'documentation', component: Documentation },
             { path: 'pages', loadChildren: () => import('./app/pages/pages.routes') }

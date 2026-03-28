@@ -3,6 +3,7 @@ import { Component, signal } from '@angular/core';
 import { Router } from '@angular/router';
 import { ConfirmationService, MessageService } from 'primeng/api';
 import { PurchaseService } from '@/app/sm/services/purchase.service';
+import { CommonService } from '@/app/sm/services/common-service';
 
 @Component({
 selector: 'app-purchase-list',
@@ -19,18 +20,29 @@ loading = signal(false);
 constructor(
 private router: Router,
 private purchaseService: PurchaseService,
+private commonService: CommonService,
 private confirmationService: ConfirmationService,
 private messageService: MessageService
 ) {}
-
+fromDate: Date | null = null;
+toDate: Date | null = null;
 ngOnInit(): void {
+    let minDate = new Date();
+  minDate.setMonth(minDate.getMonth() - 3);
+      const today = new Date();
+      this.toDate=today;
+  this.fromDate = minDate;
 this.getAll();
 }
 
 getAll() {
 this.loading.set(true);
-
-this.purchaseService.getAll().subscribe((data: any) => {
+let model={
+    table:'PURCHASE',
+        from: this.commonService.formatDate(this.fromDate),
+      to: this.commonService.formatDate(this.toDate)
+}
+this.commonService.GetTableRange(model).subscribe((data: any) => {
 this.mainList.set(data);
 this.loading.set(false);
 });

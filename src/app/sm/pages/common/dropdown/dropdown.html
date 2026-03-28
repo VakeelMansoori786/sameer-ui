@@ -7,7 +7,8 @@
 
     <div class="flex flex-wrap items-start gap-6">
 
-        <div class="field">
+        <!-- Dropdown -->
+        <div class="field w-80">
             <p-select 
                 id="table" 
                 formControlName="table" 
@@ -21,12 +22,14 @@
             </p-select>
         </div>
 
-        <div class="field">
+        <!-- Name Input -->
+        <div class="field w-80">
             <input pInputText 
                    id="name" 
                    type="text" 
                    placeholder="name"  
-                   formControlName="name" />
+                   formControlName="name"
+                   class="w-full" />
         </div>
 
         <p-button  

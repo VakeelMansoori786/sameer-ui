@@ -20,13 +20,24 @@ export class SaleList {
   loading = signal(false);
   constructor(private router: Router,private saleService:SaleService,private fb: FormBuilder,private commonService:CommonService,private confirmationService:ConfirmationService,private messageService:MessageService) {}
 
-    ngOnInit(): void {
-   
-    this.getAll();
-  }
+fromDate: Date | null = null;
+toDate: Date | null = null;
+ngOnInit(): void {
+    let minDate = new Date();
+  minDate.setMonth(minDate.getMonth() - 3);
+      const today = new Date();
+      this.toDate=today;
+  this.fromDate = minDate;
+this.getAll();
+}
     getAll() {
         this.loading.set(true);
-    this.saleService.getAll().subscribe((data: any) => {
+  let model={
+    table:'SALE',
+        from: this.commonService.formatDate(this.fromDate),
+      to: this.commonService.formatDate(this.toDate)
+}
+this.commonService.GetTableRange(model).subscribe((data: any) => {
       this.mainList.set(data);
            this.loading.set(false);
     });

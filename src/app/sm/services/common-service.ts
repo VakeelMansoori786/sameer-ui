@@ -21,6 +21,9 @@ export class CommonService {
    return this.httpClient.post(`${baseApiUrl}/api/setting/get-dropdown`,model)
   }
 
+  GetTableRange(model:any) {
+   return this.httpClient.post(`${baseApiUrl}/api/setting/table_range`,model)
+  }
   formatDate(date:any){
   if(!date) return null;
 
