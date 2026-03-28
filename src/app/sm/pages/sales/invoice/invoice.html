@@ -92,8 +92,8 @@
         <th style="border:1pt solid  #000000;padding:2pt;">#</th>
         <th style="border:1pt solid  #000000;padding:2pt; text-align:left;">Description</th>
         <th style="border:1pt solid  #000000;padding:2pt;">Qty</th>
+        <th style="border:1pt solid  #000000;padding:2pt;">Unit</th>
         <th style="border:1pt solid  #000000;padding:2pt;">Price</th>
-        <th style="border:1pt solid  #000000;padding:2pt;">Discount</th>
         <th style="border:1pt solid  #000000;padding:2pt;">Total</th>
       </tr>
     </thead>
@@ -103,8 +103,8 @@
         <td style="border:1pt solid  #000000;padding:2pt;">{{ i + 1 }}</td>
         <td style="border:1pt solid  #000000;padding:2pt;">{{ item.product }}</td>
         <td style="border:1pt solid  #000000;padding:2pt;">{{ item.qty }}</td>
+        <td style="border:1pt solid  #000000;padding:2pt;">{{ item.unit  }}</td>
         <td style="border:1pt solid  #000000;padding:2pt;">{{ item.price | number:'1.2-2' }}</td>
-        <td style="border:1pt solid  #000000;padding:2pt;">{{ item.discount | number:'1.2-2' }}</td>
         <td style="border:1pt solid  #000000;padding:2pt;">{{ item.total | number:'1.2-2' }}</td>
       </tr>
     </tbody>

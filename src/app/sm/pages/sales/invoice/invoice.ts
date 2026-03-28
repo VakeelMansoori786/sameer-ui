@@ -92,29 +92,31 @@ report(type: string) {
   doc.setFontSize(7);
   doc.setFont('helvetica', 'normal');
 
+  const custAddress = doc.splitTextToSize(data.sale[0].address || '', 90);
+
   doc.text(`Name: ${data.sale[0].customer_name}`, 15, yStart);
   doc.text(`Phone: ${data.sale[0].phone}`, 15, yStart + 4);
-  doc.text(`Address: ${data.sale[0].address}`, 15, yStart + 8);
-  doc.text(`TRN: ${data.sale[0].trn || '-'}`, 15, yStart + 12);
+  doc.text(custAddress, 15, yStart + 8);
+  doc.text(`TRN: ${data.sale[0].trn || '-'}`, 15, yStart + 8 + (custAddress.length * 3));
 
   doc.text(`Invoice No: ${data.sale[0].invoice_no}`, pageWidth - 70, yStart);
   doc.text(`Date: ${data.sale[0].sale_date?.split('T')[0]}`, pageWidth - 70, yStart + 4);
 
-  yStart += 16;
+  yStart += 16 + (custAddress.length * 3);
 
   // ================= TABLE =================
-  const tableColumns = ['#', 'Description', 'Qty', 'Price', 'Discount', 'Total'];
+  const tableColumns = ['#', 'Description', 'Qty', 'Unit', 'Price', 'Total'];
 
   const tableRows = data.sale_detail.map((item: any, i: number) => ([
     i + 1,
     item.product,
     Number(item.qty || 0),
+    item.unit,
     parseFloat(item.price || 0).toFixed(2),
-    parseFloat(item.discount || 0).toFixed(2),
     parseFloat(item.total || 0).toFixed(2)
   ]));
 
- autoTable(doc, {
+autoTable(doc, {
   startY: yStart,
   head: [tableColumns],
   body: tableRows,
@@ -122,27 +124,38 @@ report(type: string) {
   theme: 'grid',
 
   styles: {
-    fontSize: 7,
+    fontSize: 6,              // 🔽 smaller text
+    cellPadding: 1.2,         // 🔽 reduce padding (default ~5)
     textColor: [0, 0, 0],
-    lineColor: [0, 0, 0],   // 🔥 black borders
-    lineWidth: 0.2          // 🔥 thin single line
+    lineColor: [0, 0, 0],
+    lineWidth: 0.2,
+    minCellHeight: 5          // 🔽 reduce row height
   },
 
   headStyles: {
-    fillColor: [255, 255, 255], // 🔥 white background (no grey)
-    textColor: [0, 0, 0],
-    fontStyle: 'bold',          // 🔥 bold header
-    lineColor: [0, 0, 0],
-    lineWidth: 0.2
-  },
+  fillColor: [200, 200, 200],   // 🔥 dark grey
+  fontStyle: 'bold',
+  cellPadding: 1.2,
+  minCellHeight: 5,
+  lineColor: [0, 0, 0],
+  lineWidth: 0.2
+},
 
   bodyStyles: {
+    cellPadding: 1.2,
+    minCellHeight: 5,
     lineColor: [0, 0, 0],
     lineWidth: 0.2
   },
 
   alternateRowStyles: {
-    fillColor: [255, 255, 255] // 🔥 remove zebra shading
+    fillColor: [255, 255, 255]
+  },
+
+  columnStyles: {
+    // OPTIONAL: force smaller width per column
+    // 0: { cellWidth: 20 },
+    // 1: { cellWidth: 30 },
   },
 
   margin: { left: 15, right: 15, top: 40 },
