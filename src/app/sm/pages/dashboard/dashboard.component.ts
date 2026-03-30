@@ -20,10 +20,11 @@ export class DashboardComponent {
  
 fromDate: Date | null = null;
 toDate: Date | null = null;
-sale_count:any;
-sale_amount:any;
+
 cash:any={};
 sale:any={};
+purchase:any={};
+  cards = signal<any>({});
  ngOnInit(): void {
     const today = new Date();
       this.toDate=today;
@@ -38,10 +39,8 @@ let model={
       to: this.commonService.formatDate(this.fromDate)
 }
 this.commonService.GetTableRange(model).subscribe((data: any) => {
-if(data.length>0){
-  this.sale.count=data[0].count;
-  this.sale.total=data[0].total;
-}
+  this.sale
+
 
 this.loading[0]=false;
 });
@@ -72,8 +71,12 @@ let model={
 }
 this.commonService.GetTableRange(model).subscribe((data: any) => {
 if(data.length>0){
-  this.sale.count=data[0].count;
-  this.sale.total=data[0].total;
+  this.purchase.count=data[0].count;
+  this.purchase.total=data[0].total;
+}
+else{
+  this.purchase.count=0;
+  this.purchase.total=0;
 }
 
 this.loading[0]=false;
