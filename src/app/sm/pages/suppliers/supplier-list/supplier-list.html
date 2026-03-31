@@ -2,7 +2,7 @@
     <p-table
         #dt1
         [value]="mainList()"
-        [globalFilterFields]="['name','phone','email','trn','address']"
+        [globalFilterFields]="['name','phone','telephone','trn','address']"
         dataKey="id"
         [tableStyle]="{ 'min-width': '60rem' }"
         [rows]="20"
@@ -63,10 +63,10 @@
                     </div>
                 </th>
 
-                <th pSortableColumn="email">
+                <th pSortableColumn="telephone">
                     <div class="flex items-center gap-2">
-                        Email
-                        <p-sortIcon field="email"></p-sortIcon>
+                        Telephone
+                        <p-sortIcon field="telephone"></p-sortIcon>
                     </div>
                 </th>
 
