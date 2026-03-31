@@ -1,89 +1,163 @@
+import { Component, OnInit, signal } from '@angular/core';
+import { Router, ActivatedRoute } from '@angular/router';
+import { FormBuilder } from '@angular/forms';
+import { ConfirmationService, MessageService } from 'primeng/api';
+import { forkJoin } from 'rxjs';
 
 import { SharedModule } from '@/app/sm/common/shared/shared-module';
 import { CommonService } from '@/app/sm/services/common-service';
 import { ProductService } from '@/app/sm/services/product.service';
-import { Component, signal } from '@angular/core';
-import { FormBuilder, FormGroup, Validators } from '@angular/forms';
-import { ActivatedRoute, Router } from '@angular/router';
-import { ConfirmationService, MessageService } from 'primeng/api';
+
+// ================= INTERFACES =================
+interface SaleModel {
+  count: number;
+  total: number;
+}
+
+interface CashModel {
+  card: number;
+  bank: number;
+  cheque: number;
+  total_cash_in: number;
+  total_cash_out: number;
+  available_cash: number;
+}
+
+interface PurchaseModel {
+  count: number;
+  total: number;
+}
 
 @Component({
   selector: 'app-dashboard',
-    imports: [SharedModule],
+  standalone: true,
+  imports: [SharedModule],
   templateUrl: './dashboard.component.html',
   styleUrl: './dashboard.component.scss',
-    providers: [MessageService,ConfirmationService]
+  providers: [MessageService, ConfirmationService]
 })
-export class DashboardComponent {
-  loading=[false];
- constructor(private router:Router,private confirmationService:ConfirmationService,private messageService:MessageService,private route: ActivatedRoute,private fb: FormBuilder,private commonService:CommonService,private productService:ProductService) {}
- 
-fromDate: Date | null = null;
-toDate: Date | null = null;
+export class DashboardComponent implements OnInit {
 
-cash:any={};
-sale:any={};
-purchase:any={};
-  cards = signal<any>({});
- ngOnInit(): void {
+  // ✅ SIGNAL STATE
+  loading = signal(false);
+
+  fromDate = signal<Date | null>(null);
+  toDate = signal<Date | null>(null);
+
+  sale = signal<SaleModel>({ count: 0, total: 0 });
+
+  cash = signal<CashModel>({
+    card: 0,
+    bank: 0,
+    cheque: 0,
+    total_cash_in: 0,
+    total_cash_out: 0,
+    available_cash: 0
+  });
+
+  purchase = signal<PurchaseModel>({ count: 0, total: 0 });
+
+  constructor(
+    private router: Router,
+    private confirmationService: ConfirmationService,
+    private messageService: MessageService,
+    private route: ActivatedRoute,
+    private fb: FormBuilder,
+    private commonService: CommonService,
+    private productService: ProductService
+  ) {}
+
+  // ================= INIT =================
+  ngOnInit(): void {
     const today = new Date();
-      this.toDate=today;
-  this.fromDate = today;
-  this. GetData();
+    const yesterday = new Date();
+    yesterday.setDate(today.getDate() - 1);
+
+    this.toDate.set(today);
+    this.fromDate.set(yesterday);
+
+    this.GetData();
   }
-  GetSales() {
-this.loading[0]=true;
-let model={
-    table:'SALESUMCOUNT',
-        from: this.commonService.formatDate(this.fromDate),
-      to: this.commonService.formatDate(this.fromDate)
-}
-this.commonService.GetTableRange(model).subscribe((data: any) => {
-  this.sale
 
+  // ================= MAIN API =================
+  GetData() {
+    this.loading.set(true);
 
-this.loading[0]=false;
-});
-}
+    const from = this.commonService.formatDate(this.fromDate());
+    const to = this.commonService.formatDate(this.toDate());
 
-  GetCash() {
-this.loading[0]=true;
-let model={
-    table:'CASHDALIY',
-        from: this.commonService.formatDate(this.fromDate),
-      to: this.commonService.formatDate(this.fromDate)
-}
-this.commonService.GetTableRange(model).subscribe((data: any) => {
-if(data?.length>0){
-  this.cash=data[0];
+    forkJoin({
+      sales: this.commonService.GetTableRange({
+        table: 'SALESUMCOUNT',
+        from,
+        to
+      }),
+      cash: this.commonService.GetTableRange({
+        table: 'CASHDALIY',
+        from,
+        to
+      }),
+      purchase: this.commonService.GetTableRange({
+        table: 'PURCHASESUMCOUNT',
+        from,
+        to
+      })
+    }).subscribe({
+      next: (res: any) => {
 
-}
+        // ✅ SALES
+        if (res.sales?.length > 0) {
+          this.sale.set({
+            count: res.sales[0].count || 0,
+            total: res.sales[0].total || 0
+          });
+        } else {
+          this.sale.set({ count: 0, total: 0 });
+        }
 
-this.loading[0]=false;
-});
-}
-GetPurchase() {
-this.loading[0]=true;
-let model={
-    table:'SALESUMCOUNT',
-        from: this.commonService.formatDate(this.fromDate),
-      to: this.commonService.formatDate(this.fromDate)
-}
-this.commonService.GetTableRange(model).subscribe((data: any) => {
-if(data.length>0){
-  this.purchase.count=data[0].count;
-  this.purchase.total=data[0].total;
-}
-else{
-  this.purchase.count=0;
-  this.purchase.total=0;
-}
+        // ✅ CASH
+        if (res.cash?.length > 0) {
+          const d = res.cash[0];
+          this.cash.set({
+            card: d.card || 0,
+            bank: d.bank || 0,
+            cheque: d.cheque || 0,
+            total_cash_in: d.total_cash_in || 0,
+            total_cash_out: d.total_cash_out || 0,
+            available_cash: d.availble_cash || 0
+          });
+        } else {
+          this.resetCash();
+        }
 
-this.loading[0]=false;
-});
-}
-GetData(){
-  this.GetSales();
-  this.GetCash();
-}
+        // ✅ PURCHASE
+        if (res.purchase?.length > 0) {
+          this.purchase.set({
+            count: res.purchase[0].count || 0,
+            total: res.purchase[0].total || 0
+          });
+        } else {
+          this.purchase.set({ count: 0, total: 0 });
+        }
+      },
+      error: () => {
+        this.sale.set({ count: 0, total: 0 });
+        this.purchase.set({ count: 0, total: 0 });
+        this.resetCash();
+      },
+      complete: () => this.loading.set(false)
+    });
+  }
+
+  // ================= HELPERS =================
+  private resetCash() {
+    this.cash.set({
+      card: 0,
+      bank: 0,
+      cheque: 0,
+      total_cash_in: 0,
+      total_cash_out: 0,
+      available_cash: 0
+    });
+  }
 }

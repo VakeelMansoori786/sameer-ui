@@ -1,121 +1,125 @@
-<div class="grid grid-cols-12 gap-8">
+<div class="grid grid-cols-12 gap-6">
 
   <!-- Orders -->
-  <div class="col-span-12 lg:col-span-6 xl:col-span-3">
-    <div class="card mb-0">
-      <div class="flex justify-between">
+  <div class="col-span-12 sm:col-span-6 xl:col-span-3">
+    <div class="card h-full">
+      <div class="flex justify-between items-center">
         <div>
-          <span class="block text-muted-color font-medium mb-4">Orders</span>
-          <div class="text-surface-900 dark:text-surface-0 font-medium text-xl">{{sale?.count}}</div>
+          <span class="block text-muted-color font-medium mb-2">Orders</span>
+          <div class="text-xl font-semibold">
+            {{ sale().count }}
+          </div>
         </div>
-        <div class="flex items-center justify-center bg-blue-100 dark:bg-blue-400/10 rounded-border" style="width: 2.5rem; height: 2.5rem">
-          <i class="pi pi-shopping-cart text-blue-500 text-xl"></i>
+        <div class="bg-blue-100 rounded-full w-10 h-10 flex items-center justify-center">
+          <i class="pi pi-shopping-cart text-blue-500"></i>
         </div>
       </div>
     </div>
   </div>
 
-  <!-- Sales Amount -->
-  <div class="col-span-12 lg:col-span-6 xl:col-span-3">
-    <div class="card mb-0">
-      <div class="flex justify-between">
+  <!-- Sales -->
+  <div class="col-span-12 sm:col-span-6 xl:col-span-3">
+    <div class="card h-full">
+      <div class="flex justify-between items-center">
         <div>
-          <span class="block text-muted-color font-medium mb-4">Sales Amt.</span>
-          <div class="text-surface-900 dark:text-surface-0 font-medium text-xl">{{sale?.total}}</div>
+          <span class="block text-muted-color font-medium mb-2">Sales Amount</span>
+          <div class="text-xl font-semibold">
+            {{ sale().total | currency:'AED' }}
+          </div>
         </div>
-        <div class="flex items-center justify-center bg-orange-100 dark:bg-orange-400/10 rounded-border" style="width: 2.5rem; height: 2.5rem">
-          <i class="pi pi-dollar text-orange-500 text-xl"></i>
+        <div class="bg-orange-100 rounded-full w-10 h-10 flex items-center justify-center">
+          <i class="pi pi-dollar text-orange-500"></i>
         </div>
       </div>
     </div>
   </div>
 
   <!-- Card -->
-  <div class="col-span-12 lg:col-span-6 xl:col-span-3">
-    <div class="card mb-0">
-      <div class="flex justify-between">
+  <div class="col-span-12 sm:col-span-6 xl:col-span-3">
+    <div class="card h-full">
+      <div class="flex justify-between items-center">
         <div>
-          <span class="block text-muted-color font-medium mb-4">Card</span>
-          <div class="text-surface-900 dark:text-surface-0 font-medium text-xl">{{cash?.card}}</div>
+          <span class="block mb-2">Card</span>
+          <div class="text-xl font-semibold">
+            {{ cash().card | currency:'AED' }}
+          </div>
         </div>
-        <div class="flex items-center justify-center bg-cyan-100 dark:bg-cyan-400/10 rounded-border" style="width: 2.5rem; height: 2.5rem">
-          <i class="pi pi-credit-card text-cyan-500 text-xl"></i>
-        </div>
+        <i class="pi pi-credit-card text-cyan-500"></i>
       </div>
     </div>
   </div>
 
   <!-- Bank -->
-  <div class="col-span-12 lg:col-span-6 xl:col-span-3">
-    <div class="card mb-0">
-      <div class="flex justify-between">
+  <div class="col-span-12 sm:col-span-6 xl:col-span-3">
+    <div class="card h-full">
+      <div class="flex justify-between items-center">
         <div>
-          <span class="block text-muted-color font-medium mb-4">Bank</span>
-          <div class="text-surface-900 dark:text-surface-0 font-medium text-xl">{{cash?.bank}}</div>
+          <span class="block mb-2">Bank</span>
+          <div class="text-xl font-semibold">
+            {{ cash().bank | currency:'AED' }}
+          </div>
         </div>
-        <div class="flex items-center justify-center bg-purple-100 dark:bg-purple-400/10 rounded-border" style="width: 2.5rem; height: 2.5rem">
-          <i class="pi pi-university text-purple-500 text-xl"></i>
-        </div>
+        <i class="pi pi-university text-purple-500"></i>
       </div>
     </div>
   </div>
 
   <!-- Cheque -->
-  <div class="col-span-12 lg:col-span-6 xl:col-span-3">
-    <div class="card mb-0">
-      <div class="flex justify-between">
+  <div class="col-span-12 sm:col-span-6 xl:col-span-3">
+    <div class="card h-full">
+      <div class="flex justify-between items-center">
         <div>
-          <span class="block text-muted-color font-medium mb-4">Cheque</span>
-          <div class="text-surface-900 dark:text-surface-0 font-medium text-xl">{{cash?.cheque}}</div>
+          <span class="block mb-2">Cheque</span>
+          <div class="text-xl font-semibold">
+            {{ cash().cheque | currency:'AED' }}
+          </div>
         </div>
-        <div class="flex items-center justify-center bg-purple-100 dark:bg-purple-400/10 rounded-border" style="width: 2.5rem; height: 2.5rem">
-          <i class="pi pi-file text-purple-500 text-xl"></i>
-        </div>
+        <i class="pi pi-file text-indigo-500"></i>
       </div>
     </div>
   </div>
 
   <!-- Cash In -->
-  <div class="col-span-12 lg:col-span-6 xl:col-span-3">
-    <div class="card mb-0">
-      <div class="flex justify-between">
+  <div class="col-span-12 sm:col-span-6 xl:col-span-3">
+    <div class="card h-full">
+      <div class="flex justify-between items-center">
         <div>
-          <span class="block text-muted-color font-medium mb-4">Cash In</span>
-          <div class="text-surface-900 dark:text-surface-0 font-medium text-xl">{{cash?.total_cash_in}}</div>
+          <span class="block mb-2">Cash In</span>
+          <div class="text-xl font-semibold">
+            {{ cash().total_cash_in | currency:'AED' }}
+          </div>
         </div>
-        <div class="flex items-center justify-center bg-green-100 dark:bg-green-400/10 rounded-border" style="width: 2.5rem; height: 2.5rem">
-          <i class="pi pi-wallet text-green-500 text-xl"></i>
-        </div>
+        <i class="pi pi-wallet text-green-500"></i>
       </div>
     </div>
   </div>
 
   <!-- Cash Out -->
-  <div class="col-span-12 lg:col-span-6 xl:col-span-3">
-    <div class="card mb-0">
-      <div class="flex justify-between">
+  <div class="col-span-12 sm:col-span-6 xl:col-span-3">
+    <div class="card h-full">
+      <div class="flex justify-between items-center">
         <div>
-          <span class="block text-muted-color font-medium mb-4">Cash Out</span>
-          <div class="text-surface-900 dark:text-surface-0 font-medium text-xl">{{cash?.total_cash_out}}</div>
+          <span class="block mb-2">Cash Out</span>
+          <div class="text-xl font-semibold">
+            {{ cash().total_cash_out | currency:'AED' }}
+          </div>
         </div>
-        <div class="flex items-center justify-center bg-red-100 dark:bg-red-400/10 rounded-border" style="width: 2.5rem; height: 2.5rem">
-          <i class="pi pi-sign-out text-red-500 text-xl"></i>
-        </div>
+        <i class="pi pi-sign-out text-red-500"></i>
       </div>
     </div>
   </div>
 
-  <!-- Cash Available -->
-  <div class="col-span-12 lg:col-span-6 xl:col-span-3">
-    <div class="card mb-0">
-      <div class="flex justify-between">
+  <!-- Available -->
+  <div class="col-span-12 sm:col-span-6 xl:col-span-3">
+    <div class="card h-full">
+      <div class="flex justify-between items-center">
         <div>
-          <span class="block text-muted-color font-medium mb-4">Cash Available</span>
-          <div class="text-surface-900 dark:text-surface-0 font-medium text-xl">{{cash?.availble_cash}}</div>
+          <span class="block mb-2">Cash Available</span>
+          <div class="text-xl font-semibold">
+            {{ cash().available_cash | currency:'AED' }}
+          </div>
         </div>
-        <div class="flex items-center justify-center bg-yellow-100 dark:bg-yellow-400/10 rounded-border" style="width: 2.5rem; height: 2.5rem">
-          <i class="pi pi-coins text-yellow-500 text-xl"></i>
-        </div>
+        <i class="pi pi-coins text-yellow-500"></i>
       </div>
     </div>
   </div>
