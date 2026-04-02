@@ -57,13 +57,13 @@ report(type: string) {
       doc.addImage(logoImg, 'PNG', 15, yOffset, 20, 20);
     }
 
-    doc.setFontSize(9);
+    doc.setFontSize(11);
     doc.setFont('helvetica', 'bold');
     doc.setTextColor(31, 78, 121);
     doc.text(`${this.companyDetail.owner} ${this.companyDetail.bussiness_type}`, 40, yOffset + 3);
 
     doc.setFont('helvetica', 'normal');
-    doc.setFontSize(8);
+    doc.setFontSize(10);
     doc.setTextColor(0, 0, 0);
     doc.text(this.companyDetail.address, 40, yOffset + 7);
     doc.text(`Mobile: ${this.companyDetail.tel} / ${this.companyDetail.mobile1}`, 40, yOffset + 11);
@@ -78,20 +78,20 @@ report(type: string) {
 
   // ================= FOOTER =================
   const drawFooter = (pageNum: number, totalPages: number) => {
-    doc.setFontSize(7);
+    doc.setFontSize(9);
     doc.text(`Page ${pageNum} of ${totalPages}`, pageWidth - 30, pageHeight - 10);
   };
 
   let yStart = drawHeader();
 
   // ================= TITLE =================
-  doc.setFontSize(8);
+    doc.setFontSize(11);
   doc.setFont('helvetica', 'bold');
   doc.text('PROFORMA', pageWidth / 2, yStart, { align: 'center' });
   yStart += 6;
 
   // ================= CUSTOMER =================
-  doc.setFontSize(7);
+  doc.setFontSize(9);
   doc.setFont('helvetica', 'normal');
 
   const custAddress = doc.splitTextToSize(data.sale[0].address || '', 90);
@@ -99,9 +99,9 @@ report(type: string) {
   doc.text(`Name: ${data.sale[0].customer_name}`, 15, yStart);
   doc.text(`Phone: ${data.sale[0].phone}`, 15, yStart + 4);
   doc.text(custAddress, 15, yStart + 8);
-  doc.text(`TRN: ${data.sale[0].trn || '-'}`, 15, yStart + 8 + (custAddress.length * 3));
+  doc.text(`TRN: ${data.sale[0].trn || '-'}`, 15, yStart + 8 + (custAddress.length * 5));
 
-  doc.text(`Invoice No: ${data.sale[0].invoice_no}`, pageWidth - 70, yStart);
+  doc.text(`Proforma No: ${data.sale[0].invoice_no.replace('IN','PR')}`, pageWidth - 70, yStart);
   doc.text(`Date: ${data.sale[0].sale_date?.split('T')[0]}`, pageWidth - 70, yStart + 4);
 
   yStart += 16 + (custAddress.length * 3);
@@ -126,7 +126,7 @@ autoTable(doc, {
   theme: 'grid',
 
   styles: {
-    fontSize: 6,              // 🔽 smaller text
+    fontSize: 8,              // 🔽 smaller text
     cellPadding: 1.2,         // 🔽 reduce padding (default ~5)
     textColor: [0, 0, 0],
     lineColor: [0, 0, 0],
@@ -185,7 +185,7 @@ autoTable(doc, {
   const labelX = pageWidth - 70;
   const valueX = pageWidth - 15;
 
-  doc.setFontSize(7);
+  doc.setFontSize(9);
   doc.setFont('helvetica', 'normal');
 
   // ================= TOTALS (DYNAMIC) =================
@@ -237,7 +237,7 @@ autoTable(doc, {
 
   // ================= OUTPUT =================
   if (type === 'download') {
-    doc.save(`Invoice-${data.sale[0].invoice_no}.pdf`);
+    doc.save(`proforma-${data.sale[0].invoice_no.replace('IN','PR')}.pdf`);
   } else {
     const blob = doc.output('bloburl');
     let iframe:any;

@@ -266,6 +266,11 @@ else{
 }
 GetReport(type:string){
   if(type==='invoice'){
+ this.salesForm.patchValue({
+  status:'Invoice'
+ })
+this.onSubmit();
+
           this.router.navigate(['/invoice',{ id: btoa(this.id()) },]);
   }
   if(type==='proforma'){
