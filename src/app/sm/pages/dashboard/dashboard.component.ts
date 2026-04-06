@@ -44,6 +44,9 @@ export class DashboardComponent implements OnInit {
   fromDate = signal<Date | null>(null);
   toDate = signal<Date | null>(null);
 
+  recentSale = signal<any[]>([]);
+  paymentDue = signal<any>(null);
+  paymentDueList = signal<any[]>([]);
   sale = signal<SaleModel>({ count: 0, total: 0 });
 
   cash = signal<CashModel>({
@@ -57,6 +60,7 @@ export class DashboardComponent implements OnInit {
 
   purchase = signal<PurchaseModel>({ count: 0, total: 0 });
 
+  isVisible = false;
   constructor(
     private router: Router,
     private confirmationService: ConfirmationService,
@@ -71,7 +75,7 @@ export class DashboardComponent implements OnInit {
   ngOnInit(): void {
     const today = new Date();
     const yesterday = new Date();
-    yesterday.setDate(today.getDate() - 1);
+   // yesterday.setDate(today.getDate() - 1);
 
     this.toDate.set(today);
     this.fromDate.set(yesterday);
@@ -93,12 +97,27 @@ export class DashboardComponent implements OnInit {
         to
       }),
       cash: this.commonService.GetTableRange({
-        table: 'CASHDALIY',
+        table: 'CASHDAILY',
         from,
         to
       }),
       purchase: this.commonService.GetTableRange({
         table: 'PURCHASESUMCOUNT',
+        from,
+        to
+      }),
+     recentSale: this.commonService.GetTableRange({
+        table: 'SALE',
+        from,
+        to
+      }),
+     paymentDue: this.commonService.GetTableRange({
+        table: 'TOTALDUE',
+        from,
+        to
+      }),
+     paymentDueList: this.commonService.GetTableRange({
+        table: 'PAYMENTDUE',
         from,
         to
       })
@@ -139,6 +158,28 @@ export class DashboardComponent implements OnInit {
         } else {
           this.purchase.set({ count: 0, total: 0 });
         }
+
+        // ✅ RECENT SALES
+        if (res.recentSale?.length > 0) {
+          this.recentSale.set(res.recentSale);
+        } else {
+          this.recentSale.set([]);
+        }
+
+         // ✅ PYAMENT DUE
+        if (res.paymentDue?.length > 0) {
+          this.paymentDue.set(res.paymentDue[0].total_due);
+        } else {
+          this.paymentDue.set(null);
+        }
+
+        
+        // ✅ PAYMENT DUE LIST
+        if (res.paymentDueList?.length > 0) {
+          this.paymentDueList.set(res.paymentDueList);
+        } else {
+          this.paymentDueList.set([]);
+        }
       },
       error: () => {
         this.sale.set({ count: 0, total: 0 });
@@ -159,5 +200,16 @@ export class DashboardComponent implements OnInit {
       total_cash_out: 0,
       available_cash: 0
     });
+  }
+    edit(id:any){
+      this.router.navigate(['/sale',{ id: btoa(id) },]);
+  }
+  
+   invoice(id:any){
+      this.router.navigate(['/invoice',{ id: btoa(id) },]);
+  }
+    showDue() {
+    this.isVisible = true;
+  
   }
 }

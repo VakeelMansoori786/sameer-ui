@@ -34,6 +34,23 @@
     </div>
   </div>
 
+
+    <!-- Sales -->
+  <div class="col-span-12 sm:col-span-6 xl:col-span-3" (click)="showDue()">
+    <div class="card h-full">
+      <div class="flex justify-between items-center">
+        <div>
+          <span class="block text-muted-color font-medium mb-2">Payment Due</span>
+          <div class="text-xl font-semibold">
+            {{ paymentDue() | currency:'AED' }}
+          </div>
+        </div>
+        <div class="bg-orange-100 rounded-full w-10 h-10 flex items-center justify-center">
+          <i class="pi pi-dollar text-orange-500"></i>
+        </div>
+      </div>
+    </div>
+  </div>
   <!-- Card -->
   <div class="col-span-12 sm:col-span-6 xl:col-span-3">
     <div class="card h-full">
@@ -95,7 +112,7 @@
   </div>
 
   <!-- Cash Out -->
-  <div class="col-span-12 sm:col-span-6 xl:col-span-3">
+  <!-- <div class="col-span-12 sm:col-span-6 xl:col-span-3">
     <div class="card h-full">
       <div class="flex justify-between items-center">
         <div>
@@ -107,7 +124,7 @@
         <i class="pi pi-sign-out text-red-500"></i>
       </div>
     </div>
-  </div>
+  </div> -->
 
   <!-- Available -->
   <div class="col-span-12 sm:col-span-6 xl:col-span-3">
@@ -124,4 +141,190 @@
     </div>
   </div>
 
-</div>
+
+   <div class="col-span-12 xl:col-span-6">
+<div class="card mb-8!">
+        <div class="font-semibold text-xl mb-4">Recent Sales</div>
+         <p-table
+        #dt1
+        [value]="recentSale()"      
+        [globalFilterFields]="['invoice_no','sale_date','total','discount','created_at','grand_total','customer_name','customer_phone']"
+        dataKey="id"
+        [tableStyle]="{ 'min-width': '50rem' }"
+        [rows]="5"
+        [paginator]="true"
+        [rowsPerPageOptions]="[5,10,20]"
+        [loading]="loading()"
+    >
+
+
+<ng-template #caption>
+             <div class="flex justify-between items-center w-full">
+
+   
+
+    </div>
+        </ng-template>
+        <ng-template #header>
+            <tr>
+                <th pSortableColumn="invoice_no">
+                    <div class="flex items-center gap-2">
+                        Invoice No.
+                        <p-sortIcon field="invoice_no" />
+                    </div>
+                    
+                
+                </th>
+                <th pSortableColumn="customer_name">
+                    <div class="flex items-center gap-2">
+                        Customer
+                        <p-sortIcon field="customer_name" />
+                    </div>
+                </th>
+                  
+                
+                  <th pSortableColumn="grand_total">
+                    <div class="flex items-center gap-2">
+                       Invoice Amt.
+                        <p-sortIcon field="grand_total" />
+                    </div>
+                  </th>
+                  <th pSortableColumn="balance_amount">
+                    <div class="flex items-center gap-2">
+                      Balance
+                        <p-sortIcon field="balance_amount" />
+                    </div>
+                  </th>
+                  <th pSortableColumn="status">
+                    <div class="flex items-center gap-2">
+                       Status
+                        <p-sortIcon field="status" />
+                    </div>
+                  </th>
+                <th>Action</th>
+            </tr>
+        </ng-template>
+
+        <ng-template #body let-row>
+            <tr>
+                <td>{{ row.invoice_no }}</td>
+                <td>{{ row.customer_name }}</td>
+                <td> {{ row.grand_total | currency:'AED'}}</td>
+                <td> {{ row.balance_amount |  currency:'AED' }}</td>
+                <td>{{ row.status }}</td>
+                 <td class="flex gap-2">
+                    <button pButton 
+                            type="button" 
+                            icon="pi pi-pencil"
+                            class="p-button-warning"
+                            (click)="edit(row.id)">
+                    </button>
+ <button pButton 
+                            type="button" 
+                            icon="pi pi-eye"
+                            class="p-button-warning"
+                            (click)="invoice(row.id)">
+                    </button>
+                    
+                </td>
+                    
+            </tr>
+        </ng-template>
+
+        <ng-template #emptymessage>
+            <tr>
+                <td colspan="4">No data found.</td>
+            </tr>
+        </ng-template>
+
+    </p-table>
+    </div>
+    </div>
+    </div>
+
+    <p-dialog 
+  header="Expenses" 
+  [(visible)]="isVisible"
+  [modal]="true"
+  [breakpoints]="{ '960px': '90vw', '640px': '100vw' }"
+  [style]="{ width: '70vw' }"
+  [draggable]="false"
+  [resizable]="false"
+>
+    <p-table
+        #dt1
+        [value]="paymentDueList()"      
+        [globalFilterFields]="['invoice_no','sale_date','total','discount','created_at','grand_total','customer_name','customer_phone']"
+        dataKey="id"
+        [tableStyle]="{ 'min-width': '50rem' }"
+        [rows]="20"
+        [paginator]="true"
+        [rowsPerPageOptions]="[5,10,20]"
+
+    >
+
+
+        <ng-template #header>
+            <tr>
+                   <th pSortableColumn="sale_date">
+<div class="flex items-center gap-2">
+                        Sale Date
+                        <p-sortIcon field="sale_date" />
+                    </div>
+                  </th>
+                <th pSortableColumn="invoice_no">
+                    <div class="flex items-center gap-2">
+                        Invoice No.
+                        <p-sortIcon field="invoice_no" />
+                    </div>
+                    
+                
+                </th>
+                <th pSortableColumn="customer_name">
+                    <div class="flex items-center gap-2">
+                        Customer Name
+                        <p-sortIcon field="customer_name" />
+                    </div>
+                </th>
+                  
+                
+                  <th pSortableColumn="grand_total">
+                    <div class="flex items-center gap-2">
+                       Invoice Amount
+                        <p-sortIcon field="grand_total" />
+                    </div>
+                  </th>
+                  <th pSortableColumn="balance_amount">
+                    <div class="flex items-center gap-2">
+                      Balance
+                        <p-sortIcon field="balance_amount" />
+                    </div>
+                  </th>
+                  <th pSortableColumn="status">
+                    <div class="flex items-center gap-2">
+                       Status
+                        <p-sortIcon field="status" />
+                    </div>
+                  </th>
+            </tr>
+        </ng-template>
+
+        <ng-template #body let-row>
+            <tr>
+                <td>{{ row.sale_date | date:'dd-MM-yyyy'}}</td>
+                <td>{{ row.invoice_no }}</td>
+                <td>{{ row.customer_name }}</td>
+                <td> {{ row.grand_total | currency:'AED'}}</td>
+                <td> {{ row.balance_amount |  currency:'AED' }}</td>
+     
+            </tr>
+        </ng-template>
+
+        <ng-template #emptymessage>
+            <tr>
+                <td colspan="4">No data found.</td>
+            </tr>
+        </ng-template>
+
+    </p-table>
+</p-dialog>

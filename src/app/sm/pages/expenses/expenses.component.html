@@ -208,6 +208,7 @@
         formControlName="expense_date"
         [showIcon]="true"
         dateFormat="dd-mm-yy"
+              appendTo="body"
         [ngClass]="{'ng-invalid ng-dirty': form.get('expense_date')?.invalid && form.get('expense_date')?.touched}">
       </p-datepicker>
       <small class="text-red-500" *ngIf="form.get('expense_date')?.invalid && form.get('expense_date')?.touched">
