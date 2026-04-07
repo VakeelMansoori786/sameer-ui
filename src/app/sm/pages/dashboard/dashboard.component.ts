@@ -212,4 +212,7 @@ export class DashboardComponent implements OnInit {
     this.isVisible = true;
   
   }
+  payment(customerId:any){
+ this.router.navigate(['/payment-received',{ customer: btoa(customerId) },]);
+  }
 }
