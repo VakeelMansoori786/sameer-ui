@@ -54,7 +54,7 @@ export class AppMenu {
     {
       label: 'Sales',
       items: [
-        { label: 'Sales List', icon: 'pi pi-shopping-bag', routerLink: ['/sale-list'] },
+        { label: 'Sales', icon: 'pi pi-shopping-bag', routerLink: ['/sale-list'] },
         { label: 'Payment Received', icon: 'pi pi-wallet', routerLink: ['/payment-list'] }
       ]
     },

@@ -102,13 +102,13 @@ getSale(){
 }
 addItem() {
   this.items.push(this.fb.group({
-    product: [null, Validators.required],  // full product object
-    product_id: [null, Validators.required],                    // store id separately
+     product: [null],              
+    product_id: [null],
     qty: [1, Validators.required],
     unit: ['', Validators.required],
     price: [0, Validators.required],
-    discount: [0, Validators.required],
-    total: [0, Validators.required]
+    discount: [0],
+    total: [0]
   }));
 }
 searchProduct(event: any) {
@@ -204,26 +204,52 @@ calculateGrandTotal() {
     grand_total: grand_total.toFixed(2)
   }, { emitEvent: false });
 }
-onSubmit() {
+async onSubmit() {
   
-   if (!this.salesForm.valid) {
-      this.salesForm.markAllAsTouched();
-      return;
+   debugger
+  if (!this.salesForm.valid) {
+    this.salesForm.markAllAsTouched();
+    return;
+  }
+
+  const items = this.items.value;
+
+  for (let i = 0; i < items.length; i++) {
+    let item = items[i];
+
+    // 👉 If product_id missing → create product
+    if (!item.product_id) {
+
+      const newProductPayload = {
+        name: item.product?.name || item.product, // typed value
+        sale_price: item.price,
+        purchase_price: item.price,
+        stock: 0,
+        unit_id:12
+      };
+
+      const res: any = await this.productService.create(newProductPayload).toPromise();
+
+      // assign new ID
+      item.product_id = res[0].product_id; // adjust based on API
     }
- const cleanedItems = this.items.value.map((item: any) => ({
-    product_id: item.product_id || item.product?.id,
+  }
+
+  const cleanedItems = items.map((item: any) => ({
+    product_id: item.product_id,
     qty: item.qty,
     unit: item.unit,
     price: Number(item.price),
     discount: Number(item.discount),
     total: Number(item.total)
   }));
+
   const payload = {
-    id:this.id(),
+    id: this.id(),
     customer_id: this.salesForm.value.customer_id,
     total: this.salesForm.value.total,
     discount: this.salesForm.value.discount,
-     vat: this.salesForm.value.vat_amount,
+    vat: this.salesForm.value.vat_amount,
     grand_total: this.salesForm.value.grand_total,
     sale_date: this.salesForm.value.sale_date,
     status: this.salesForm.value.status,

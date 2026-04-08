@@ -30,11 +30,31 @@ export class ProductList {
            this.loading.set(false);
     });
   }
-  delete(id:any){
+
+     delete(id: any) {
+
+  this.confirmationService.confirm({
+    message: 'Are you sure you want to delete this payment?',
+    header: 'Delete Confirmation',
+    icon: 'pi pi-exclamation-triangle',
+    acceptButtonStyleClass: 'p-button-danger',
+    accept: () => {
+
      this.productService.delete(id).subscribe((data: any) => {
 this.mainList.set(this.mainList().filter(x=>x.id!==id));
-    });
-  }
+
+        this.messageService.add({
+          severity: 'success',
+          summary: 'Deleted',
+          detail: 'Payment deleted successfully'
+        });
+
+      });
+
+    }
+  });
+
+}
   edit(id:any){
       this.router.navigate(['/product',{ id: btoa(id) },]);
   }

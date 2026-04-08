@@ -69,6 +69,7 @@
           appendTo="body"
           [invalid]="row.get('product')?.invalid && row.get('product')?.touched"
           styleClass="w-full"
+          [forceSelection]="false" 
           inputStyleClass="w-full">
         </p-autoComplete>
       </td>

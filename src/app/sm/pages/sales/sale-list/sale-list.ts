@@ -45,11 +45,32 @@ this.commonService.GetTableRange(model).subscribe((data: any) => {
    edit(id:any){
       this.router.navigate(['/sale',{ id: btoa(id) },]);
   }
-   delete(id:any){
-     this.saleService.delete(id).subscribe((data: any) => {
+ 
+
+   delete(id: any) {
+
+  this.confirmationService.confirm({
+    message: 'Are you sure you want to delete this payment?',
+    header: 'Delete Confirmation',
+    icon: 'pi pi-exclamation-triangle',
+    acceptButtonStyleClass: 'p-button-danger',
+    accept: () => {
+
+         this.saleService.delete(id).subscribe((data: any) => {
 this.mainList.set(this.mainList().filter(x=>x.id!==id));
-    });
-  }
+
+        this.messageService.add({
+          severity: 'success',
+          summary: 'Deleted',
+          detail: 'Payment deleted successfully'
+        });
+
+      });
+
+    }
+  });
+
+}
    invoice(id:any){
       this.router.navigate(['/invoice',{ id: btoa(id) },]);
   }
