@@ -36,6 +36,14 @@
 
 @if(ledgerList().length>0){
   <!-- Ledger Table -->
+   <div class="flex gap-2 mb-3">
+  <button pButton type="button" label="Export Excel" icon="pi pi-file-excel"
+          (click)="exportExcel()"></button>
+
+  <button pButton type="button" label="Export PDF" icon="pi pi-file-pdf"
+          class="p-button-danger"
+          (click)="exportPdf()"></button>
+</div>
   <p-table 
     [value]="ledgerList()" 
     [loading]="loading()" 
@@ -47,17 +55,18 @@
       <tr>
         <th>Date</th>
         <th>Type</th>
+        <th>Ref. No.</th>
         <th>Debit</th>
         <th>Credit</th>
         <th>Balance</th>
-        <th>Note</th>
       </tr>
     </ng-template>
 
     <ng-template pTemplate="body" let-row>
       <tr>
-        <td>{{row.txn_date | date:'dd-MM-yyyy'}}</td>
-        <td>{{row.txn_type}}</td>
+        <td>{{row.date | date:'dd-MM-yyyy'}}</td>
+        <td>{{row.ref_type}}</td>
+        <td>{{row.ref_no}}</td>
 
         <td class="text-red-500 font-semibold">
           {{row.debit || '-'}}
