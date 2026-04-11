@@ -111,11 +111,7 @@ export class DashboardComponent implements OnInit {
         from,
         to
       }),
-     paymentDue: this.commonService.GetTableRange({
-        table: 'TOTALDUE',
-        from,
-        to
-      }),
+  
      paymentDueList: this.commonService.GetTableRange({
         table: 'PAYMENTDUE',
         from,
@@ -166,20 +162,18 @@ export class DashboardComponent implements OnInit {
           this.recentSale.set([]);
         }
 
-         // ✅ PYAMENT DUE
-        if (res.paymentDue?.length > 0) {
-          this.paymentDue.set(res.paymentDue[0].total_due);
-        } else {
-          this.paymentDue.set(null);
-        }
-
-        
         // ✅ PAYMENT DUE LIST
         if (res.paymentDueList?.length > 0) {
           this.paymentDueList.set(res.paymentDueList);
+          const totalDue = res.paymentDueList.reduce((sum:any, item:any) => {
+    return sum + parseFloat(item.due_amount || 0);
+}, 0);
+          this.paymentDue.set(totalDue);
         } else {
           this.paymentDueList.set([]);
+          this.paymentDue.set('0');
         }
+        
       },
       error: () => {
         this.sale.set({ count: 0, total: 0 });
