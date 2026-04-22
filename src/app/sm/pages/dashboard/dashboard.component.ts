@@ -207,6 +207,7 @@ export class DashboardComponent implements OnInit {
   
   }
   payment(customerId:any){
+    debugger
  this.router.navigate(['/payment-received',{ customer: btoa(customerId) },]);
   }
 }

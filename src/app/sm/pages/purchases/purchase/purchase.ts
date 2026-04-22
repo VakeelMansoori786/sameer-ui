@@ -27,6 +27,12 @@ id = signal<string>('0');
   {name:'Purchase Order (PO)',value:'PO'},
   {name:'Purchase',value:'Purchase'}
  ]);
+ paymentTypeList = signal<any[]>([
+  {name:'cash',value:'cash'},
+  {name:'credit',value:'credit'},
+  {name:'cheque',value:'cheque'},
+  {name:'bank',value:'bank'}
+ ]);
 constructor(
   private cd: ChangeDetectorRef,
   private router: Router,
@@ -49,6 +55,7 @@ ngOnInit(): void {
     vat_enabled: [true],
     vat_amount: [0],
     status: ['', Validators.required],
+    payment_type: ['', Validators.required],
     items: this.fb.array([])
   });
 
@@ -77,6 +84,7 @@ getPurchase(){
           discount: purchase[0].discount,
           vat_amount: purchase[0].vat,
           status: purchase[0].status,
+          payment_type: purchase[0].payment_type,
           grand_total: purchase[0].grand_total
         });
 
@@ -201,16 +209,41 @@ removeItem(index:number){
   this.calculateTotals();
 }
 
-onSubmit(){
+async onSubmit(){
 
   if(!this.purchaseForm.valid){
     this.purchaseForm.markAllAsTouched();
     return;
   }
 
+  const items = this.items.value;
+
+  for (let i = 0; i < items.length; i++) {
+    let item = items[i];
+
+    // 👉 If product_id missing → create product
+    if (!item.product_id) {
+
+      const newProductPayload = {
+        name: item.product?.name || item.product, // typed value
+        sale_price: item.price,
+        purchase_price: item.price,
+        stock: 0,
+        unit_id:12
+      };
+
+      const res: any = await this.productService.create(newProductPayload).toPromise();
+
+      // assign new ID
+      item.product_id = res[0].product_id; // adjust based on API
+    }
+  }
+
+  
   const cleanedItems = this.items.value.map((item:any)=>({
     product_id: item.product_id || item.product?.id,
     qty: item.qty,
+    unit: item.unit,
     price: Number(item.price),
     total: Number(item.total)
   }));
@@ -224,6 +257,7 @@ onSubmit(){
     grand_total: this.purchaseForm.value.grand_total,
     purchase_date: this.purchaseForm.value.purchase_date,
     status: this.purchaseForm.value.status,
+    payment_type: this.purchaseForm.value.payment_type,
     items: cleanedItems
   };
 
@@ -236,7 +270,7 @@ onSubmit(){
   else{
     this.purchaseService.create(payload).subscribe((data: any)=>{
       this.messageService.add({severity:'success',summary:'Saved'});
-       this.router.navigate(['/purchase-order',{ id: btoa(data[0].v_last_id) },]);
+       this.router.navigate(['/purchase-order',{ id: btoa(data[0].purchase_id) },]);
     });
   }
 

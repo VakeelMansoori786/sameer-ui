@@ -27,6 +27,19 @@ formControlName="purchase_date"
 class="w-full"/>
 </div>
 
+    <div class="w-full">
+      <label>Payment Type</label>
+      <p-select
+        formControlName="payment_type"
+        [options]="paymentTypeList()"
+        optionLabel="name"
+        optionValue="value"
+        placeholder="Select Payment Type"
+      [filter]="true"
+      [invalid]="purchaseForm.get('payment_type')?.invalid && purchaseForm.get('payment_type')?.touched"
+        class="w-full">
+      </p-select>
+    </div>
 <div class="w-full">
       <label>Status</label>
       <p-select
