@@ -7,6 +7,7 @@ import { forkJoin } from 'rxjs';
 import { SharedModule } from '@/app/sm/common/shared/shared-module';
 import { CommonService } from '@/app/sm/services/common-service';
 import { ProductService } from '@/app/sm/services/product.service';
+import { ChartModule } from 'primeng/chart';
 
 // ================= INTERFACES =================
 interface SaleModel {
@@ -31,7 +32,7 @@ interface PurchaseModel {
 @Component({
   selector: 'app-dashboard',
   standalone: true,
-  imports: [SharedModule],
+  imports: [SharedModule,ChartModule],
   templateUrl: './dashboard.component.html',
   styleUrl: './dashboard.component.scss',
   providers: [MessageService, ConfirmationService]
@@ -47,6 +48,7 @@ export class DashboardComponent implements OnInit {
   recentSale = signal<any[]>([]);
   paymentDue = signal<any>(null);
   paymentDueList = signal<any[]>([]);
+  monthSaleList = signal<any[]>([]);
   sale = signal<SaleModel>({ count: 0, total: 0 });
 
   cash = signal<CashModel>({
@@ -61,6 +63,8 @@ export class DashboardComponent implements OnInit {
   purchase = signal<PurchaseModel>({ count: 0, total: 0 });
 
   isVisible = false;
+  chartData: any;
+chartOptions: any;
   constructor(
     private router: Router,
     private confirmationService: ConfirmationService,
@@ -116,6 +120,11 @@ export class DashboardComponent implements OnInit {
         table: 'PAYMENTDUE',
         from,
         to
+      }),
+     monthSaleList: this.commonService.GetTableRange({
+        table: 'MONTHSALE',
+        from,
+        to
       })
     }).subscribe({
       next: (res: any) => {
@@ -161,6 +170,74 @@ export class DashboardComponent implements OnInit {
         } else {
           this.recentSale.set([]);
         }
+        if (res.monthSaleList?.length > 0) {
+          this.monthSaleList.set(res.monthSaleList);
+       const documentStyle = getComputedStyle(document.documentElement);
+        const textColor = documentStyle.getPropertyValue('--text-color');
+        const borderColor = documentStyle.getPropertyValue('--surface-border');
+        const textMutedColor = documentStyle.getPropertyValue('--text-color-secondary');
+this.chartData = {
+    labels:this.monthSaleList().map(d => d.sale_day),
+    datasets: [
+      {
+        label: 'Total Sales',
+        data: this.monthSaleList().map(d => Number(d.total_sales)),
+        borderWidth: 2,
+        tension: 0.4,
+        backgroundColor: documentStyle.getPropertyValue('--p-primary-400'),
+        fill: false
+      },
+      {
+        label: 'Sale Count',
+        backgroundColor: documentStyle.getPropertyValue('--p-primary-300'),
+        data: this.monthSaleList().map(d => d.sale_count),
+        type: 'bar', // mixed chart
+        yAxisID: 'y1'
+      }
+    ]
+  };
+
+  this.chartOptions = {
+    responsive: true,
+    maintainAspectRatio: false,
+    plugins: {
+      legend: {
+        position: 'top',
+                    labels: {
+                        color: textColor
+                    }
+      }
+    },
+    scales: {
+      y: {
+        title: {
+          display: true,
+          text: 'Sales Amount'
+        }
+      },
+      y1: {
+        position: 'right',
+        ticks: {
+                        color: textMutedColor
+                    },
+        grid: {
+          drawOnChartArea: false,
+                        color: borderColor,
+                        borderColor: 'transparent',
+                        drawTicks: false
+        },
+        title: {
+          display: true,
+          text: 'Sale Count'
+        }
+      }
+    }
+  };
+
+        } else {
+          this.monthSaleList.set([]);
+        }
+
 
         // ✅ PAYMENT DUE LIST
         if (res.paymentDueList?.length > 0) {
