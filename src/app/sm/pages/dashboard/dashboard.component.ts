@@ -143,12 +143,12 @@ chartOptions: any;
         if (res.cash?.length > 0) {
           const d = res.cash[0];
           this.cash.set({
-            card: d.card || 0,
-            bank: d.bank || 0,
-            cheque: d.cheque || 0,
-            total_cash_in: d.total_cash_in || 0,
+            card: d.card_flow || 0,
+            bank: d.bank_flow || 0,
+            cheque: d.cheque_flow || 0,
+            total_cash_in: d.cash_flow || 0,
             total_cash_out: d.total_cash_out || 0,
-            available_cash: d.availble_cash || 0
+            available_cash: d.cash_balance || 0
           });
         } else {
           this.resetCash();
