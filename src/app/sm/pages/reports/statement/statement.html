@@ -26,7 +26,19 @@
       <label>To</label>
        <p-datepicker [showIcon]="true" [showButtonBar]="true" formControlName="to" class="w-full" dateFormat="dd/mm/yy"></p-datepicker>
     </div>
-
+ <div>
+      <label>Type</label>
+     <p-select
+        formControlName="report_type"
+        [options]="typeList"
+        optionLabel="name"
+        optionValue="name"
+        placeholder="Select Type"
+        [filter]="true"
+          [invalid]="filters.get('report_type')?.invalid && filters.get('report_type')?.touched"
+        class="w-full">
+      </p-select>
+    </div>
     <div class="flex items-end">
       <button pButton label="Load" type="submit"  class="p-2 text-xl"></button>
     </div>
@@ -34,56 +46,122 @@
  
   </form>
 
-@if(ledgerList().length>0){
-  <!-- Ledger Table -->
-   <div class="flex gap-2 mb-3">
-  <button pButton type="button" label="Export Excel" icon="pi pi-file-excel"
-          (click)="exportExcel()"></button>
+@if(ledgerList().length > 0){
 
-  <button pButton type="button" label="Export PDF" icon="pi pi-file-pdf"
+<div class="flex gap-2 mb-3">
+  <button pButton type="button" label="Export Excel"
+          icon="pi pi-file-excel"
+          (click)="exportExcel()">
+  </button>
+
+  <button pButton type="button"
+          label="Export PDF"
+          icon="pi pi-file-pdf"
           class="p-button-danger"
-          (click)="exportPdf()"></button>
+          (click)="exportPdf()">
+  </button>
 </div>
-  <p-table 
-    [value]="ledgerList()" 
-    [loading]="loading()" 
-    responsiveLayout="scroll"
-    class="p-datatable-sm"
-  >
 
-    <ng-template pTemplate="header">
-      <tr>
-        <th>Date</th>
-        <th>Type</th>
-        <th>Ref. No.</th>
-        <th>Debit</th>
-        <th>Credit</th>
-        <th>Balance</th>
-      </tr>
-    </ng-template>
+<!-- ========================= -->
+<!-- STATEMENT REPORT -->
+<!-- ========================= -->
+@if(filters.value.report_type == 'STATEMENT'){
 
-    <ng-template pTemplate="body" let-row>
-      <tr>
-        <td>{{row.date | date:'dd-MM-yyyy'}}</td>
-        <td>{{row.ref_type}}</td>
-        <td>{{row.ref_no}}</td>
+<p-table
+  [value]="ledgerList()"
+  [loading]="loading()"
+  responsiveLayout="scroll"
+  class="p-datatable-sm">
 
-        <td class="text-red-500 font-semibold">
-          {{row.debit || '-'}}
-        </td>
+  <ng-template pTemplate="header">
+    <tr>
+      <th>Date</th>
+      <th>Type</th>
+      <th>Ref No</th>
+      <th>Debit</th>
+      <th>Credit</th>
+      <th>Balance</th>
+    </tr>
+  </ng-template>
 
-        <td class="text-green-600 font-semibold">
-          {{row.credit || '-'}}
-        </td>
+  <ng-template pTemplate="body" let-row>
+    <tr>
+      <td>{{ row.date | date:'dd-MM-yyyy' }}</td>
 
-        <td class="font-bold">
-          {{row.running_balance}}
-        </td>
+      <td>{{ row.ref_type }}</td>
 
-        <td>{{row.note}}</td>
-      </tr>
-    </ng-template>
+      <td>{{ row.ref_no }}</td>
 
-  </p-table>
+      <td class="text-red-500 font-semibold">
+        {{ row.debit || '-' }}
+      </td>
+
+      <td class="text-green-600 font-semibold">
+        {{ row.credit || '-' }}
+      </td>
+
+      <td class="font-bold">
+        {{ row.running_balance }}
+      </td>
+    </tr>
+  </ng-template>
+
+</p-table>
+
 }
+
+<!-- ========================= -->
+<!-- OUTSTANDING REPORT -->
+<!-- ========================= -->
+@else if(filters.value.report_type == 'OUTSTANDING'){
+
+<p-table
+  [value]="ledgerList()"
+  [loading]="loading()"
+  responsiveLayout="scroll"
+  class="p-datatable-sm">
+
+  <ng-template pTemplate="header">
+    <tr>
+      <th>Invoice No</th>
+      <th>Date</th>
+      <th>Total</th>
+      <th>Paid</th>
+      <th>Outstanding</th>
+    </tr>
+  </ng-template>
+
+  <ng-template pTemplate="body" let-row>
+    <tr>
+
+      <td>
+        {{ row.invoice_no }}
+      </td>
+
+      <td>
+        {{ row.sale_date | date:'dd-MM-yyyy' }}
+      </td>
+
+      <td class="font-semibold">
+        {{ row.grand_total }}
+      </td>
+
+      <td class="text-green-600 font-semibold">
+        {{ row.paid_amount }}
+      </td>
+
+      <td class="text-red-500 font-bold">
+        {{ row.outstanding_amount }}
+      </td>
+
+    </tr>
+  </ng-template>
+
+</p-table>
+
+}
+
+}
+
+
 </div>
