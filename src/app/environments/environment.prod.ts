@@ -12,7 +12,7 @@ export const companyDetail={
   mobile2:'+971568172512',
   email:'sameermohammedbuildingmaterial@gmail.com',
   website:"",
-  trn:"",
+  trn:"105434166200003",
   owner:"SAMEER MOHAMMED",
   bussiness_type:"BUILDING MATERIALS TRADING L.L.C",
   address:"Shop 2. Hor Al Anz – Dubai – U.A.E",

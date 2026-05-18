@@ -65,7 +65,7 @@ report(type: string) {
     doc.setTextColor(0, 0, 0);
     doc.text(this.companyDetail.address, 40, yOffset + 7);
     doc.text(`Mobile: ${this.companyDetail.tel} / ${this.companyDetail.mobile1}`, 40, yOffset + 11);
-    doc.text(`Email: ${this.companyDetail.email}`, 40, yOffset + 15);
+    doc.text(`TRN:  ${this.companyDetail.trn}  Email: ${this.companyDetail.email}`, 40, yOffset + 15);
 
     doc.setDrawColor(0, 0, 0);
     doc.setLineWidth(0.3);

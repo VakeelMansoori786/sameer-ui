@@ -60,7 +60,11 @@
 
         <p style="margin:2px 0; font-size:10pt;">{{companyDetail.address}}</p>
         <p style="margin:2px 0; font-size:10pt;">Mobile {{companyDetail.tel}} / {{companyDetail.mobile1}} </p>
-        <p style="margin:2px 0; font-size:10pt;">Email: {{companyDetail.email}} </p>
+         <p style="margin:2px 0;font-size:10pt;">
+    @if(companyDetail.trn!=''){
+      TRN: {{companyDetail.trn}}
+    }  Email: {{companyDetail.email}}
+    </p>
     </div>
 
 </div>
