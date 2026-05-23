@@ -85,7 +85,7 @@ report(type: string) {
   // ================= TITLE =================
   doc.setFontSize(11);
   doc.setFont('helvetica', 'bold');
-  doc.text('INVOICE', pageWidth / 2, yStart, { align: 'center' });
+  doc.text('TAX INVOICE', pageWidth / 2, yStart, { align: 'center' });
   yStart += 6;
 
   // ================= CUSTOMER =================
