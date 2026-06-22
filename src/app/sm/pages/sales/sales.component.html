@@ -13,19 +13,20 @@
         optionLabel="name"
         optionValue="id"
         placeholder="Select Customer"
-      [filter]="true"
-      [invalid]="salesForm.get('customer_id')?.invalid && salesForm.get('customer_id')?.touched"
+        [filter]="true"
+        [invalid]="salesForm.get('customer_id')?.invalid && salesForm.get('customer_id')?.touched"
         class="w-full">
       </p-select>
     </div>
 
     <div class="w-full">
       <label>Sale Date</label>
-      <input pInputText type="date" formControlName="sale_date" class="w-full p-3"  dateFormat="dd.mm.yy"
+      <input pInputText type="date" formControlName="sale_date" class="w-full p-3" dateFormat="dd.mm.yy"
         [invalid]="salesForm.get('sale_date')?.invalid && salesForm.get('sale_date')?.touched"
       />
     </div>
-<div class="w-full">
+
+    <div class="w-full">
       <label>Status</label>
       <p-select
         formControlName="status"
@@ -33,102 +34,98 @@
         optionLabel="name"
         optionValue="name"
         placeholder="Select status"
-      [filter]="true"
-      [invalid]="salesForm.get('status')?.invalid && salesForm.get('status')?.touched"
+        [filter]="true"
+        [invalid]="salesForm.get('status')?.invalid && salesForm.get('status')?.touched"
         class="w-full">
       </p-select>
     </div>
   </div>
 
-   <p-table [value]="items.controls" styleClass="p-datatable-sm" [tableStyle]="{'table-layout':'fixed','width':'100%'}">
-  
-  <ng-template #header>
-    <tr>
-<th style="width:30%">Product</th>
-<th style="width:6%">Qty</th>
-<th style="width:10%">Unit</th>
-<th style="width:8%">Price</th>
-<th style="width:6%">Discount</th>
-<th style="width:5%">Total</th>
-<th style="width:5%">Action</th>
-    </tr>
-  </ng-template>
+  <p-table [value]="items.controls" styleClass="p-datatable-sm" [tableStyle]="{'table-layout':'fixed','width':'100%'}">
+    <ng-template #header>
+      <tr>
+        <th style="width:30%">Product</th>
+        <th style="width:6%">Qty</th>
+        <th style="width:10%">Unit</th>
+        <th style="width:8%">Price</th>
+        <th style="width:6%">Discount</th>
+        <th style="width:5%">Total</th>
+        <th style="width:5%">Action</th>
+      </tr>
+    </ng-template>
 
-  <ng-template #body let-row let-i="rowIndex">
-    <tr [formGroup]="row">
-      
-      <!-- Product -->
-      <td>
-        <p-autoComplete
-          formControlName="product"
-          [suggestions]="filteredProducts"
-          (completeMethod)="searchProduct($event)"
-          optionLabel="name"
-          placeholder="Search Product"
-          (onSelect)="onProductSelect($event, i)"
-          appendTo="body"
-          [invalid]="row.get('product')?.invalid && row.get('product')?.touched"
-          styleClass="w-full"
-          [forceSelection]="false" 
-          inputStyleClass="w-full">
-        </p-autoComplete>
-      </td>
+    <ng-template #body let-row let-i="rowIndex">
+      <tr [formGroup]="row">
 
-      <!-- Qty -->
-      <td>
-        <input pInputText type="number"
-          formControlName="qty"
-          class="w-full"
-          (input)="calculateRow(i)" />
-      </td>
+        <!-- Product -->
+        <td>
+          <p-autoComplete
+            formControlName="product"
+            [suggestions]="filteredProducts"
+            (completeMethod)="searchProduct($event)"
+            optionLabel="name"
+            placeholder="Search Product"
+            (onSelect)="onProductSelect($event, i)"
+            appendTo="body"
+            [invalid]="row.get('product')?.invalid && row.get('product')?.touched"
+            styleClass="w-full"
+            [forceSelection]="false"
+            inputStyleClass="w-full">
+          </p-autoComplete>
+        </td>
 
-      <!-- Unit -->
-      <td>
-        <input pInputText type="text"
-          formControlName="unit"
-          class="w-full" />
-      </td>
+        <!-- Qty -->
+        <td>
+          <input pInputText type="number"
+            formControlName="qty"
+            class="w-full"
+            (input)="calculateRow(i)" />
+        </td>
 
-      <!-- Price -->
-      <td>
-        <input pInputText type="number"
-          formControlName="price"
-          class="w-full"
-          (input)="calculateRow(i)" />
-      </td>
+        <!-- Unit -->
+        <td>
+          <input pInputText type="text"
+            formControlName="unit"
+            class="w-full" />
+        </td>
 
-      <!-- Discount -->
-      <td>
-        <input pInputText type="number"
-          formControlName="discount"
-          class="w-full"
-          (input)="calculateRow(i)" />
-      </td>
+        <!-- Price -->
+        <td>
+          <input pInputText type="number"
+            formControlName="price"
+            class="w-full"
+            (input)="calculateRow(i)" />
+        </td>
 
-      <!-- Total -->
-      <td class="text-right">
-        {{ row.value.total | number:'1.2-2' }}
-      </td>
+        <!-- Discount -->
+        <td>
+          <input pInputText type="number"
+            formControlName="discount"
+            class="w-full"
+            (input)="calculateRow(i)" />
+        </td>
 
-      <!-- Action -->
-      <td class="flex gap-2 justify-center">
-        <button pButton type="button" icon="pi pi-trash"
-          (click)="removeItem(i)">
-        </button>
+        <!-- Total -->
+        <td class="text-right">
+          {{ row.value.total | number:'1.2-2' }}
+        </td>
 
-        @if (i === items.length - 1) {
-          <button pButton type="button" icon="pi pi-plus"
-            (click)="addItem()">
+        <!-- Action -->
+        <td class="flex gap-2 justify-center">
+          <button pButton type="button" icon="pi pi-trash"
+            (click)="removeItem(i)">
           </button>
-        }
-      </td>
 
-    </tr>
-  </ng-template>
-</p-table>
+          @if (i === items.length - 1) {
+            <button pButton type="button" icon="pi pi-plus"
+              (click)="addItem()">
+            </button>
+          }
+        </td>
 
- 
-  
+      </tr>
+    </ng-template>
+  </p-table>
 
   <!-- Summary -->
   <div class="flex flex-col md:flex-row gap-6 justify-end">
@@ -143,41 +140,55 @@
       <input pInputText type="number" formControlName="discount"
         (input)="calculateGrandTotal()" />
     </div>
-<!-- VAT Toggle -->
-<div class="flex items-center gap-2">
-  <p-checkbox 
-    formControlName="vat_enabled" 
-    binary="true"
-    inputId="vat_enabled"
-    (onChange)="calculateGrandTotal()">
-  </p-checkbox>
-  <label for="vat_enabled">Add VAT (5%)</label>
-</div>
 
-<!-- VAT Amount -->
-<div>
-  <label>VAT (5%)</label>
-  <input pInputText readonly formControlName="vat_amount" />
-</div>
+    <!-- VAT Toggle -->
+    <div class="flex items-center gap-2">
+      <p-checkbox
+        formControlName="vat_enabled"
+        binary="true"
+        inputId="vat_enabled"
+        (onChange)="calculateGrandTotal()">
+      </p-checkbox>
+      <label for="vat_enabled">Add VAT (5%)</label>
+    </div>
+
+    <!-- VAT Inclusive Toggle -->
+    <div class="flex items-center gap-2">
+      <p-checkbox
+        formControlName="vat_inclusive"
+        binary="true"
+        inputId="vat_inclusive"
+        (onChange)="calculateGrandTotal()">
+      </p-checkbox>
+      <label for="vat_inclusive">VAT from paid amount</label>
+    </div>
+
+    <!-- VAT Amount -->
+    <div>
+      <label>VAT (5%)</label>
+      <input pInputText readonly formControlName="vat_amount" />
+    </div>
+
     <div>
       <label>Grand Total</label>
       <input pInputText readonly formControlName="grand_total" />
     </div>
 
   </div>
-  
- <div class="flex flex-wrap gap-2 w-full">
-  <button pButton type="submit" label="Save"
-    class="p-3 text-xl">
-  </button>
-</div>
+
+  <div class="flex flex-wrap gap-2 w-full">
+    <button pButton type="submit" label="Save"
+      class="p-3 text-xl">
+    </button>
+  </div>
 </form>
+
 @if(this.id()!='0'){
 <div class="flex flex-wrap gap-2 w-full">
   <button pButton type="button" label="Proforma" (click)="GetReport('proforma')"
     class="p-3 text-xl">
   </button>
-  
+
   <button pButton type="button" label="Invoice" (click)="GetReport('invoice')"
     class="p-3 text-xl">
   </button>
