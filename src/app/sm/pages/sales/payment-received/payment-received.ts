@@ -110,37 +110,43 @@ export class PaymentReceived {
   }
 
   calculateDistribution() {
-    let received = Number(this.paymentForm.value.amount_received || 0);
-    let remaining = received;
 
+    // Convert to cents
+    let remaining = Math.round(
+      Number(this.paymentForm.get('amount_received')?.value || 0) * 100
+    );
+  
     this.invoices.controls.forEach((row: any) => {
-      const balance = Number(row.value.balance_amount || 0);
-      const pay = remaining > 0 ? Math.min(balance, remaining) : 0;
-
-      row.patchValue({ pay_amount: pay }, { emitEvent: false });
-
+  
+      const balance = Math.round(
+        Number(row.get('balance_amount')?.value || 0) * 100
+      );
+  
+      const pay = Math.min(balance, remaining);
+  
+      row.get('pay_amount')?.setValue(pay / 100, { emitEvent: false });
+  
       remaining -= pay;
     });
-
+  
     this.updateTotals();
-
-    // ✅ Fix NG0100
-    this.cdr.detectChanges();
   }
 
   updateTotals() {
-    const used = this.invoices.controls.reduce(
-      (sum, row: any) => sum + Number(row.value.pay_amount || 0),
-      0
+
+    const received = Math.round(
+      Number(this.paymentForm.get('amount_received')?.value || 0) * 100
     );
-
-    const received = Number(this.paymentForm.value.amount_received || 0);
-
+  
+    const used = this.invoices.controls.reduce((sum: number, row: any) => {
+      return sum + Math.round(Number(row.get('pay_amount')?.value || 0) * 100);
+    }, 0);
+  
     this.summary = {
-      received,
-      used,
+      received: received / 100,
+      used: used / 100,
       refund: 0,
-      excess: received - used
+      excess: (received - used) / 100
     };
   }
 
