@@ -27,5 +27,8 @@ export class ProductService {
   getSearch(query:any) {
    return this.httpClient.get(`${baseApiUrl}/api/products/search/${query}`)
   }
+   getSaleProduct(customer_id:any,product_id:any) {
+   return this.httpClient.get(`${baseApiUrl}/api/sales/items/${customer_id}/${product_id}`)
+  }
 
 }

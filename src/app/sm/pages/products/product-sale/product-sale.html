@@ -1,0 +1,116 @@
+<p-toast key="tst"></p-toast>
+<p-confirmDialog></p-confirmDialog>
+
+<div class="card">
+    <p-table
+        #dt1
+        [value]="mainList()"
+        dataKey="id"
+        [globalFilterFields]="['product','customer','unit','qty','price','discount','total']"
+        [tableStyle]="{ 'min-width': '70rem' }"
+        [rows]="20"
+        [paginator]="true"
+        [rowsPerPageOptions]="[5,10,20]"
+        [loading]="loading()">
+
+        <!-- Caption -->
+        <ng-template #caption>
+            <div class="flex justify-between items-center w-full">
+                <h2 class="text-xl font-semibold">Sale Items</h2>
+
+                <p-iconfield iconPosition="left">
+                    <p-inputicon>
+                        <i class="pi pi-search"></i>
+                    </p-inputicon>
+                    <input
+                        pInputText
+                        type="text"
+                        (input)="dt1.filterGlobal($any($event.target).value, 'contains')"
+                        placeholder="Search..." />
+                </p-iconfield>
+            </div>
+        </ng-template>
+
+        <!-- Header -->
+        <ng-template #header>
+            <tr>
+               
+ <th pSortableColumn="created_at">
+     <div class="flex items-center gap-2">
+                        Date
+                        <p-sortIcon field="invoice_no"></p-sortIcon>
+                    </div>
+ </th>
+ <th pSortableColumn="invoice_no">                    <div class="flex items-center gap-2">
+                        Invoice No
+                        <p-sortIcon field="invoice_no"></p-sortIcon>
+                    </div>
+                    </th>
+ <th pSortableColumn="product">
+                    <div class="flex items-center gap-2">
+                        Product
+                        <p-sortIcon field="product"></p-sortIcon>
+                    </div>
+                </th>
+                <th pSortableColumn="customer">
+                    <div class="flex items-center gap-2">
+                        Customer
+                        <p-sortIcon field="customer"></p-sortIcon>
+                    </div>
+                </th>
+                <th pSortableColumn="qty">
+                    <div class="flex items-center gap-2">
+                        Qty
+                        <p-sortIcon field="qty"></p-sortIcon>
+                    </div>
+                </th>
+
+                <th pSortableColumn="unit">
+                    <div class="flex items-center gap-2">
+                        Unit
+                        <p-sortIcon field="unit"></p-sortIcon>
+                    </div>
+                </th>
+
+                <th pSortableColumn="price">
+                    <div class="flex items-center gap-2">
+                        Price
+                        <p-sortIcon field="price"></p-sortIcon>
+                    </div>
+                </th>
+
+               
+                <th pSortableColumn="total">
+                    <div class="flex items-center gap-2">
+                        Total
+                        <p-sortIcon field="total"></p-sortIcon>
+                    </div>
+                </th>
+            </tr>
+        </ng-template>
+
+        <!-- Body -->
+        <ng-template #body let-row>
+            <tr>
+                <td>{{ row.created_at  | date:'dd/MM/yyyy' }}</td>
+                <td>{{ row.invoice_no }}</td>
+                <td>{{ row.product }}</td>
+                <td>{{ row.customer }}</td>
+                <td>{{ row.qty }}</td>
+                <td>{{ row.unit }}</td>
+                <td>{{ row.price }}</td>
+                <td>{{ row.total }}</td>
+            </tr>
+        </ng-template>
+
+        <!-- Empty -->
+        <ng-template #emptymessage>
+            <tr>
+                <td colspan="7" class="text-center">
+                    No data found.
+                </td>
+            </tr>
+        </ng-template>
+
+    </p-table>
+</div>

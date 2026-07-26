@@ -7,10 +7,11 @@ import { SupplierService } from '@/app/sm/services/supplier.service';
 import { ChangeDetectorRef, Component, signal } from '@angular/core';
 import { ProductService } from '../../services/product.service';
 import { SaleService } from '../../services/sale.service';
+import { ProductSaleComponent } from '../products/product-sale/product-sale';
 
 @Component({
   selector: 'app-sales',
-  imports: [SharedModule],
+  imports: [SharedModule,ProductSaleComponent],
   templateUrl: './sales.component.html',
   styleUrl: './sales.component.scss',
   providers: [MessageService, ConfirmationService]
@@ -29,6 +30,8 @@ export class SalesComponent {
   ]);
   filteredProducts: any[] = [];
   id = signal<string>('0');
+  customerId = signal<number>(0);
+  productId = signal<number>(0);
 
   constructor(
     private cd: ChangeDetectorRef,
@@ -358,4 +361,18 @@ export class SalesComponent {
       this.router.navigate(['/delivery-note', { id: btoa(this.id()) },]);
     }
   }
+  dialogVisible = signal(false);
+
+showProductHistory(index: number) {
+  const row = this.items.at(index).value;
+
+  if (!row.product_id) {
+    return;
+  }
+
+  this.customerId.set(this.salesForm.value.customer_id||0);
+  this.productId.set(row.product_id);
+
+  this.dialogVisible.set(true);
+}
 }

@@ -121,6 +121,14 @@
               (click)="addItem()">
             </button>
           }
+            @if (row.value.product_id) {
+    <button
+      pButton
+      type="button"
+      icon="pi pi-history"
+      (click)="showProductHistory(i)">
+    </button>
+  }
         </td>
 
       </tr>
@@ -197,3 +205,16 @@
   </button>
 </div>
 }
+<p-dialog
+    header="Product Sale History"
+    [visible]="dialogVisible()"
+    (visibleChange)="dialogVisible.set($event)"
+    [modal]="true"
+    [style]="{ width: '90rem' }">
+@if(dialogVisible()){
+    <app-product-sale
+        [customer_id]="customerId()"
+        [product_id]="productId()">
+    </app-product-sale>
+  }
+</p-dialog>
