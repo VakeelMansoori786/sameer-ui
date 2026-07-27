@@ -316,9 +316,9 @@ export class SalesComponent {
     if (this.id() != '0') {
       this.saleService.update(payload).subscribe((data: any) => {
         this.messageService.add({ key: 'tst', severity: 'success', summary: 'Success', detail: 'Supplier saved successfully' });
-
+        
         const type = payload.status?.toLowerCase();
-        if (type === 'invoice') {
+        if (type === 'invoice' || type === 'paid') {
           this.router.navigate(['/invoice', { id: btoa(this.id()) },]);
         }
         if (type === 'proforma') {

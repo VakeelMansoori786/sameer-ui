@@ -47,6 +47,9 @@ report(type: string) {
 
   const logoImg = this.companyDetail.logo;
 
+  // Check payment status once, reuse everywhere
+  const isPaid = (data.sale[0].status || '').toString().toLowerCase() === 'paid';
+
   // ================= HEADER =================
   const drawHeader = () => {
     let yOffset = 15;
@@ -78,6 +81,68 @@ report(type: string) {
   const drawFooter = (pageNum: number, totalPages: number) => {
     doc.setFontSize(9);
     doc.text(`Page ${pageNum} of ${totalPages}`, pageWidth - 30, pageHeight - 10);
+  };
+
+  // ================= STAMP (rendered via canvas so Arabic shapes correctly) =================
+  const buildStampImage = (): string => {
+    const scale = 4; // higher = sharper in PDF
+    const w = 400 * scale;
+    const h = 220 * scale;
+
+    const canvas = document.createElement('canvas');
+    canvas.width = w;
+    canvas.height = h;
+    const ctx = canvas.getContext('2d')!;
+
+    ctx.clearRect(0, 0, w, h);
+    ctx.save();
+
+    // rotate around center, like a stamp
+    ctx.translate(w / 2, h / 2);
+    ctx.rotate((-1 * Math.PI) / 180);
+    ctx.translate(-w / 2, -h / 2);
+
+    // outer border
+    ctx.strokeStyle = '#0057b8';
+    ctx.lineWidth = 4 * scale;
+    ctx.strokeRect(10 * scale, 10 * scale, w - 20 * scale, h - 20 * scale);
+
+    ctx.fillStyle = '#0057b8';
+    ctx.textAlign = 'center';
+
+    // PAID
+    ctx.font = `bold ${34 * scale}px Arial`;
+    ctx.fillText('PAID', w / 2, 55 * scale);
+
+    // Arabic lines (canvas handles RTL shaping natively)
+    ctx.font = `bold ${16 * scale}px Arial`;
+    ctx.direction = 'rtl';
+    ctx.fillText('مدفوع', w / 2, 90 * scale);
+    ctx.fillText('سمير محمد لتجارة مواد البناء ذ.م.م', w / 2, 112 * scale);
+
+    // English company name
+    ctx.direction = 'ltr';
+    ctx.font = `bold ${13 * scale}px Arial`;
+    ctx.fillText('SAMEER MOHAMMED', w / 2, 138 * scale);
+    ctx.fillText('BUILDING MATERIALS TRADING L.L.C', w / 2, 156 * scale);
+
+    // Date, red
+    ctx.fillStyle = 'red';
+    ctx.font = `bold ${13 * scale}px Arial`;
+    ctx.fillText(`DATE: ${data.sale[0].sale_date?.split('T')[0] || ''}`, w / 2, 182 * scale);
+
+    ctx.restore();
+
+    return canvas.toDataURL('image/png');
+  };
+
+  const drawStamp = (centerX: number, centerY: number) => {
+    const stampDataUrl = buildStampImage();
+    const boxW = 48;
+    const boxH = 26;
+    const x = centerX - boxW / 2;
+    const y = centerY - boxH / 2;
+    doc.addImage(stampDataUrl, 'PNG', x, y, boxW, boxH);
   };
 
   let yStart = drawHeader();
@@ -116,58 +181,58 @@ report(type: string) {
     parseFloat(item.total || 0).toFixed(2)
   ]));
 
-autoTable(doc, {
-  startY: yStart,
-  head: [tableColumns],
-  body: tableRows,
+  autoTable(doc, {
+    startY: yStart,
+    head: [tableColumns],
+    body: tableRows,
 
-  theme: 'grid',
+    theme: 'grid',
 
-  styles: {
-    fontSize: 8,              // 🔽 smaller text
-    cellPadding: 1.2,         // 🔽 reduce padding (default ~5)
-    textColor: [0, 0, 0],
-    lineColor: [0, 0, 0],
-    lineWidth: 0.2,
-    minCellHeight: 5          // 🔽 reduce row height
-  },
+    styles: {
+      fontSize: 8,
+      cellPadding: 1.2,
+      textColor: [0, 0, 0],
+      lineColor: [0, 0, 0],
+      lineWidth: 0.2,
+      minCellHeight: 5
+    },
 
-  headStyles: {
-  fillColor: [200, 200, 200],   // 🔥 dark grey
-  fontStyle: 'bold',
-  cellPadding: 1.2,
-  minCellHeight: 5,
-  lineColor: [0, 0, 0],
-  lineWidth: 0.2
-},
+    headStyles: {
+      fillColor: [200, 200, 200],
+      fontStyle: 'bold',
+      cellPadding: 1.2,
+      minCellHeight: 5,
+      lineColor: [0, 0, 0],
+      lineWidth: 0.2
+    },
 
-  bodyStyles: {
-    cellPadding: 1.2,
-    minCellHeight: 5,
-    lineColor: [0, 0, 0],
-    lineWidth: 0.2
-  },
+    bodyStyles: {
+      cellPadding: 1.2,
+      minCellHeight: 5,
+      lineColor: [0, 0, 0],
+      lineWidth: 0.2
+    },
 
-  alternateRowStyles: {
-    fillColor: [255, 255, 255]
-  },
+    alternateRowStyles: {
+      fillColor: [255, 255, 255]
+    },
 
-  columnStyles: {
-    // OPTIONAL: force smaller width per column
-    // 0: { cellWidth: 20 },
-    // 1: { cellWidth: 30 },
-  },
+    columnStyles: {
+      // OPTIONAL: force smaller width per column
+      // 0: { cellWidth: 20 },
+      // 1: { cellWidth: 30 },
+    },
 
-  margin: { left: 15, right: 15, top: 40 },
-  showHead: 'everyPage',
+    margin: { left: 15, right: 15, top: 40 },
+    showHead: 'everyPage',
 
-  didDrawPage: (dataArg: any) => {
-    drawHeader();
-    const pageNum = doc.getCurrentPageInfo().pageNumber;
-    drawFooter(pageNum, doc.getNumberOfPages());
-    dataArg.settings.margin.top = 35;
-  }
-});
+    didDrawPage: (dataArg: any) => {
+      drawHeader();
+      const pageNum = doc.getCurrentPageInfo().pageNumber;
+      drawFooter(pageNum, doc.getNumberOfPages());
+      dataArg.settings.margin.top = 35;
+    }
+  });
 
   // ================= SAFE POSITION =================
   let finalY = (doc as any).lastAutoTable?.finalY || yStart + 10;
@@ -224,11 +289,17 @@ autoTable(doc, {
     doc.text(`Notes: ${data.sale[0].note}`, 15, y + 15);
   }
 
-  // ================= SIGNATURE =================
-  const sigY = y + 30;
+  // ================= SIGNATURE + STAMP =================
+  const sigY = y + 40;
 
+  doc.setFont('helvetica', 'normal');
   doc.text('Prepared By', 15, sigY);
   doc.line(15, sigY + 2, 60, sigY + 2);
+
+  // stamp only if the invoice is marked as paid
+  if (isPaid) {
+    drawStamp(pageWidth / 2 + 5, sigY - 5);
+  }
 
   doc.text('Received By', pageWidth - 70, sigY);
   doc.line(pageWidth - 70, sigY + 2, pageWidth - 20, sigY + 2);
@@ -238,8 +309,8 @@ autoTable(doc, {
     doc.save(`Invoice-${data.sale[0].invoice_no}.pdf`);
   } else {
     const blob = doc.output('bloburl');
-    let iframe:any;
-     iframe = document.createElement('iframe');
+    let iframe: any;
+    iframe = document.createElement('iframe');
     iframe.style.display = 'none';
     iframe.src = blob;
     document.body.appendChild(iframe);

@@ -111,7 +111,35 @@
   font-size:12px;
   color:#666;
 }
+.paid-stamp{
+  width:140px;
+  border:2px solid #0057b8;
+  padding:8px;
+  text-align:center;
+  color:#0057b8;
+  transform:rotate(-8deg);
+}
 
+.paid-text{
+  font-size:22px;
+  font-weight:bold;
+  border:2px solid #0057b8;
+  padding:2px 10px;
+  display:inline-block;
+}
+
+.paid-arabic,
+.paid-english{
+  font-size:8px;
+  font-weight:bold;
+}
+
+.paid-date{
+  color:red;
+  font-size:8px;
+  font-weight:bold;
+  margin-top:5px;
+}
 /* PRINT */
 
 @media print{
