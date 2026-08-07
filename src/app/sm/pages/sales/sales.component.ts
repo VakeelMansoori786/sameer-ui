@@ -242,26 +242,41 @@ export class SalesComponent {
     return this.items.controls.reduce((sum, row) => sum + (+row.value.gross_total || 0), 0);
   }
 
-  private allocateItemTotals(taxableAmount: number) {
-    const grossTotal = this.getGrossTotal();
+private allocateItemTotals(taxableAmount: number) {
+  const grossTotal = this.getGrossTotal();
 
-    if (!grossTotal) {
-      return;
-    }
-
-    let allocatedTotal = 0;
-
-    this.items.controls.forEach((row, index) => {
-      const rowGrossTotal = +row.value.gross_total || 0;
-      const isLastRow = index === this.items.length - 1;
-      const allocated = isLastRow
-        ? taxableAmount - allocatedTotal
-        : Number((taxableAmount * rowGrossTotal / grossTotal).toFixed(2));
-
-      allocatedTotal += allocated;
-      row.patchValue({ total: allocated }, { emitEvent: false });
-    });
+  if (!grossTotal) {
+    return;
   }
+
+  let allocatedTotal = 0;
+
+  this.items.controls.forEach((row, index) => {
+
+    const rowGrossTotal = +row.value.gross_total || 0;
+    const qty = +row.value.qty || 0;
+    const discount = +row.value.discount || 0;
+
+    const isLastRow = index === this.items.length - 1;
+
+    const allocated = isLastRow
+      ? Number((taxableAmount - allocatedTotal).toFixed(2))
+      : Number((taxableAmount * rowGrossTotal / grossTotal).toFixed(2));
+
+    allocatedTotal += allocated;
+
+    // Recalculate price
+    const price = qty > 0
+      ? Number(((allocated + discount) / qty).toFixed(2))
+      : 0;
+
+    row.patchValue({
+      total: allocated,
+      price: price
+    }, { emitEvent: false });
+
+  });
+}
 
   async onSubmit() {
     if (!this.salesForm.valid) {
@@ -332,8 +347,8 @@ export class SalesComponent {
       this.saleService.create(payload).subscribe((data: any) => {
         this.messageService.add({ key: 'tst', severity: 'success', summary: 'Success', detail: 'Supplier saved successfully' });
         const type = payload.status?.toLowerCase();
-        if (type === 'invoice') {
-          this.router.navigate(['/invoice', { id: btoa(data[0].sale_id) },]);
+        if (type === 'invoice' || type === 'paid') {
+          this.router.navigate(['/invoice', { id: btoa(this.id()) },]);
         }
         if (type === 'proforma') {
           this.router.navigate(['/proforma', { id: btoa(data[0].sale_id) },]);

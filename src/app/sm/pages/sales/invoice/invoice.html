@@ -91,27 +91,33 @@
   <!-- ITEMS TABLE -->
 <table style="width:100%;border-collapse:collapse;margin-top:10px;font-size:9pt;">
 
-    <thead>
-      <tr style="background:#f2f2f2;">
-        <th style="border:1pt solid  #000000;padding:2pt;">#</th>
-        <th style="border:1pt solid  #000000;padding:2pt; text-align:left;">Description</th>
-        <th style="border:1pt solid  #000000;padding:2pt;">Qty</th>
-        <th style="border:1pt solid  #000000;padding:2pt;">Unit</th>
-        <th style="border:1pt solid  #000000;padding:2pt;">Price</th>
-        <th style="border:1pt solid  #000000;padding:2pt;">Total</th>
-      </tr>
-    </thead>
+  <thead>
+<tr style="background:#f2f2f2;">
+    <th style="border:1pt solid #000;padding:2pt;">#</th>
+    <th style="border:1pt solid #000;padding:2pt;text-align:left;">Description</th>
+    <th style="border:1pt solid #000;padding:2pt;">Unit</th>
+    <th style="border:1pt solid #000;padding:2pt;">Qty</th>
+    <th style="border:1pt solid #000;padding:2pt;">Rate</th>
+    <th style="border:1pt solid #000;padding:2pt;">Sub Total</th>
+    <th style="border:1pt solid #000;padding:2pt;">VAT 5%</th>
+    <th style="border:1pt solid #000;padding:2pt;">VAT Amt</th>
+    <th style="border:1pt solid #000;padding:2pt;">Total Amt</th>
+</tr>
+</thead>
 
     <tbody>
-      <tr *ngFor="let item of data.sale_detail; let i=index">
-        <td style="border:1pt solid  #000000;padding:2pt;">{{ i + 1 }}</td>
-        <td style="border:1pt solid  #000000;padding:2pt;">{{ item.product }}</td>
-        <td style="border:1pt solid  #000000;padding:2pt;">{{ item.qty }}</td>
-        <td style="border:1pt solid  #000000;padding:2pt;">{{ item.unit  }}</td>
-        <td style="border:1pt solid  #000000;padding:2pt;">{{ item.price | number:'1.2-2' }}</td>
-        <td style="border:1pt solid  #000000;padding:2pt;">{{ item.total | number:'1.2-2' }}</td>
-      </tr>
-    </tbody>
+<tr *ngFor="let item of data.sale_detail; let i=index">
+    <td style="border:1pt solid #000;padding:2pt;">{{i+1}}</td>
+    <td style="border:1pt solid #000;padding:2pt;">{{item.product}}</td>
+    <td style="border:1pt solid #000;padding:2pt;text-align:center;">{{item.unit}}</td>
+    <td style="border:1pt solid #000;padding:2pt;text-align:center;">{{item.qty}}</td>
+    <td style="border:1pt solid #000;padding:2pt;text-align:right;">{{item.price | number:'1.2-2'}}</td>
+    <td style="border:1pt solid #000;padding:2pt;text-align:right;">   {{item.total | number:'1.2-2'}}</td>
+    <td style="border:1pt solid #000;padding:2pt;text-align:center;"> {{item.vat_percent || 5}}%</td>
+    <td style="border:1pt solid #000;padding:2pt;text-align:right;"> {{item.price*1.05 | number:'1.2-2'}} </td>
+    <td style="border:1pt solid #000;padding:2pt;text-align:right;">   {{item.total*1.05  | number:'1.2-2'}}</td>
+</tr>
+</tbody>
 
   </table>
 
@@ -139,9 +145,9 @@
   </div>
 
  <!-- NOTES -->
-<div style="margin-top:25px;">
-<h4 style="margin-bottom:5px;">Notes</h4>
-<p style="margin:0;">Please supply the above materials as per terms and conditions.</p>
+<div>
+<h6>Amount in Words</h6>
+<p >{{ amountToWords( data.sale[0].grand_total) }}</p>
 </div>
 
 <!-- SIGNATURE -->

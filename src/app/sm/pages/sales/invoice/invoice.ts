@@ -6,6 +6,7 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { ButtonModule } from 'primeng/button';
 import jsPDF from 'jspdf';
 import autoTable from 'jspdf-autotable';
+import { CommonService } from '@/app/sm/services/common-service';
 @Component({
     selector: 'app-invoice',
      imports: [CommonModule,ButtonModule], 
@@ -13,7 +14,7 @@ import autoTable from 'jspdf-autotable';
     styleUrl: './invoice.scss'
 })
 export class Invoice {
-     constructor(private location: Location,private route: ActivatedRoute,private saleService:SaleService,private router:Router){}
+     constructor(private location: Location,private route: ActivatedRoute,private saleService:SaleService,private router:Router,private commonService: CommonService){}
       companyDetail=companyDetail
  id=signal<string>('0');
  mainList = signal<any>({});
@@ -170,15 +171,18 @@ report(type: string) {
   yStart += 16 + (custAddress.length * 3);
 
   // ================= TABLE =================
-  const tableColumns = ['#', 'Description', 'Qty', 'Unit', 'Price', 'Total'];
+  const tableColumns = ['#', 'Description', 'Unit', 'Qty', 'Rate', 'Sub Total', 'VAT 5%', 'VAT Amt', 'Total Amt'];
 
   const tableRows = data.sale_detail.map((item: any, i: number) => ([
     i + 1,
     item.product,
-    Number(item.qty || 0),
     item.unit,
+    Number(item.qty || 0),
     parseFloat(item.price || 0).toFixed(2),
-    parseFloat(item.total || 0).toFixed(2)
+    parseFloat(item.total || 0).toFixed(2),
+   '5%',
+    (parseFloat(item.price)*1.05).toFixed(2),
+    (parseFloat(item.total)*1.05).toFixed(2),
   ]));
 
   autoTable(doc, {
@@ -284,10 +288,10 @@ report(type: string) {
   doc.text(grandTotal.toFixed(2) + ' AED', valueX, y, { align: 'right' });
 
   // ================= NOTES =================
-  if (data.sale[0].note) {
+ 
     doc.setFont('helvetica', 'normal');
-    doc.text(`Notes: ${data.sale[0].note}`, 15, y + 15);
-  }
+    doc.text(`Amount in Words: ${this.amountToWords(grandTotal)}`, 15, y + 15);
+  
 
   // ================= SIGNATURE + STAMP =================
   const sigY = y + 40;
@@ -317,5 +321,8 @@ report(type: string) {
     iframe.contentWindow?.focus();
     iframe.contentWindow?.print();
   }
+}
+amountToWords(amount: number): string {
+   return this.commonService.amountToWords(amount);
 }
 }

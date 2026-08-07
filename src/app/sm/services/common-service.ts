@@ -43,4 +43,76 @@ export class CommonService {
 
   return `${day}-${month}-${year}`;
 }
+  amountToWords(amount: number): string {
+  const ones = [
+    '', 'One', 'Two', 'Three', 'Four', 'Five', 'Six', 'Seven',
+    'Eight', 'Nine', 'Ten', 'Eleven', 'Twelve', 'Thirteen',
+    'Fourteen', 'Fifteen', 'Sixteen', 'Seventeen', 'Eighteen', 'Nineteen'
+  ];
+
+  const tens = [
+    '', '', 'Twenty', 'Thirty', 'Forty', 'Fifty',
+    'Sixty', 'Seventy', 'Eighty', 'Ninety'
+  ];
+
+  function convertLessThan1000(num: number): string {
+    let word = '';
+
+    if (num >= 100) {
+      word += ones[Math.floor(num / 100)] + ' Hundred ';
+      num %= 100;
+    }
+
+    if (num >= 20) {
+      word += tens[Math.floor(num / 10)] + ' ';
+      num %= 10;
+    }
+
+    if (num > 0) {
+      word += ones[num] + ' ';
+    }
+
+    return word.trim();
+  }
+
+  function convert(num: number): string {
+    if (num === 0) return 'Zero';
+
+    const parts = [
+      { value: 1000000000, name: 'Billion' },
+      { value: 1000000, name: 'Million' },
+      { value: 1000, name: 'Thousand' }
+    ];
+
+    let words = '';
+
+    for (const part of parts) {
+      if (num >= part.value) {
+        words +=
+          convertLessThan1000(Math.floor(num / part.value)) +
+          ' ' +
+          part.name +
+          ' ';
+        num %= part.value;
+      }
+    }
+
+    if (num > 0) {
+      words += convertLessThan1000(num);
+    }
+
+    return words.trim();
+  }
+
+  const dirhams = Math.floor(amount);
+  const fils = Math.round((amount - dirhams) * 100);
+
+  let result = `AED ${convert(dirhams)}`;
+
+  if (fils > 0) {
+    result += ` and ${convert(fils)} Fils`;
+  }
+
+  return result + ' Only';
+}
 }
