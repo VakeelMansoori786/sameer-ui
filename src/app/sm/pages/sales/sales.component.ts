@@ -179,7 +179,7 @@ export class SalesComponent {
     }
   }
 
-  calculateRow(index: number) {
+  calculateRow(index: number, isPriceChange: boolean = false) {
     const row = this.items.at(index);
     const qty = +row.value.qty || 0;
     const price = +row.value.price || 0;
@@ -193,10 +193,10 @@ export class SalesComponent {
       total
     }, { emitEvent: false });
 
-    this.calculateTotals();
+    this.calculateTotals(isPriceChange);
   }
 
-  calculateTotals() {
+  calculateTotals(isPriceChange: boolean = false) {
     let grossTotal = 0;
     let discount = 0;
 
@@ -207,10 +207,10 @@ export class SalesComponent {
 
     this.salesForm.patchValue({ discount }, { emitEvent: false });
 
-    this.calculateGrandTotal();
+    this.calculateGrandTotal(isPriceChange);
   }
 
-  calculateGrandTotal() {
+  calculateGrandTotal(isPriceChange: boolean = false) {
     const grossTotal = this.getGrossTotal();
     const discount = +this.salesForm.value.discount || 0;
     const vatEnabled = this.salesForm.value.vat_enabled;
@@ -229,7 +229,7 @@ export class SalesComponent {
       grandTotal = subtotal + vatAmount;
     }
 
-    this.allocateItemTotals(subtotal);
+    this.allocateItemTotals(subtotal,isPriceChange);
 
     this.salesForm.patchValue({
       total: subtotal.toFixed(2),
@@ -242,7 +242,7 @@ export class SalesComponent {
     return this.items.controls.reduce((sum, row) => sum + (+row.value.gross_total || 0), 0);
   }
 
-private allocateItemTotals(taxableAmount: number) {
+private allocateItemTotals(taxableAmount: number, isPriceChange: boolean = false) {
   const grossTotal = this.getGrossTotal();
 
   if (!grossTotal) {
@@ -269,11 +269,19 @@ private allocateItemTotals(taxableAmount: number) {
     const price = qty > 0
       ? Number(((allocated + discount) / qty).toFixed(2))
       : 0;
-
+if(isPriceChange){
     row.patchValue({
+    total: allocated
+  }, { emitEvent: false });
+
+}
+else{
+row.patchValue({
       total: allocated,
       price: price
     }, { emitEvent: false });
+}
+    
 
   });
 }
