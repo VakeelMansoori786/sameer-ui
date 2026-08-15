@@ -24,6 +24,7 @@ import { PaymentList } from './app/sm/pages/sales/payment-list/payment-list';
 import { Statement } from './app/sm/pages/reports/statement/statement';
 import { ExpensesComponent } from './app/sm/pages/expenses/expenses.component';
 import { DashboardComponent } from './app/sm/pages/dashboard/dashboard.component';
+import { ImageOcr } from './app/sm/common/shared/image-ocr/image-ocr';
 
 export const appRoutes: Routes = [
     {
@@ -54,6 +55,7 @@ export const appRoutes: Routes = [
 
 
             { path: 'statements', component: Statement },
+            { path: 'image-ocr', component: ImageOcr },
 
 
             { path: 'dashboard', component: Dashboard },

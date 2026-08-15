@@ -356,7 +356,7 @@ row.patchValue({
         this.messageService.add({ key: 'tst', severity: 'success', summary: 'Success', detail: 'Supplier saved successfully' });
         const type = payload.status?.toLowerCase();
         if (type === 'invoice' || type === 'paid') {
-          this.router.navigate(['/invoice', { id: btoa(this.id()) },]);
+          this.router.navigate(['/invoice', { id: btoa(data[0].sale_id) },]);
         }
         if (type === 'proforma') {
           this.router.navigate(['/proforma', { id: btoa(data[0].sale_id) },]);

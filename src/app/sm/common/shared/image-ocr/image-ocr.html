@@ -1,0 +1,457 @@
+<div class="p-4">
+
+    <!-- ===================================================== -->
+    <!-- HEADER -->
+    <!-- ===================================================== -->
+
+    <div class="flex justify-between items-center mb-6">
+
+        <div>
+
+            <h2 class="text-xl font-semibold">
+                Invoice OCR
+            </h2>
+
+            <p class="text-sm text-gray-500 mt-1">
+                Upload an invoice image to extract text automatically.
+            </p>
+
+        </div>
+
+    </div>
+
+
+    <!-- ===================================================== -->
+    <!-- UPLOAD -->
+    <!-- ===================================================== -->
+
+    <div
+        class="border-2 border-dashed rounded-lg p-6 text-center mb-6"
+    >
+
+        <input
+            #fileInput
+            type="file"
+            accept="image/png,image/jpeg,image/jpg,image/webp"
+            (change)="onFileSelected($event)"
+            class="hidden"
+        />
+
+        <button
+            type="button"
+            (click)="fileInput.click()"
+            [disabled]="isProcessing"
+            class="px-4 py-2 bg-primary text-white rounded"
+        >
+            Select Invoice Image
+        </button>
+
+
+        @if (selectedFile) {
+
+            <p class="text-sm mt-3 text-gray-600">
+                {{ selectedFile.name }}
+            </p>
+
+            <p class="text-xs text-gray-400 mt-1">
+                {{ (selectedFile.size / 1024 / 1024).toFixed(2) }} MB
+            </p>
+
+        }
+
+    </div>
+
+
+    <!-- ===================================================== -->
+    <!-- IMAGE PREVIEW -->
+    <!-- ===================================================== -->
+
+    @if (previewUrl) {
+
+        <div class="mb-6">
+
+            <h3 class="text-lg font-semibold mb-3">
+                Image Preview
+            </h3>
+
+            <div
+                class="border rounded-lg p-3 bg-gray-50"
+            >
+
+                <img
+                    [src]="previewUrl"
+                    class="max-w-full max-h-[600px] mx-auto object-contain rounded"
+                    alt="Invoice preview"
+                />
+
+            </div>
+
+        </div>
+
+    }
+
+
+    <!-- ===================================================== -->
+    <!-- ACTIONS -->
+    <!-- ===================================================== -->
+
+    @if (selectedFile) {
+
+        <div class="flex gap-2 mb-6">
+
+            <button
+                type="button"
+                (click)="extractText()"
+                [disabled]="isProcessing"
+                class="px-4 py-2 bg-primary text-white rounded disabled:opacity-50"
+            >
+
+                @if (isProcessing) {
+                    Processing...
+                }
+                @else {
+                    Extract Invoice
+                }
+
+            </button>
+
+
+            <button
+                type="button"
+                (click)="clear()"
+                [disabled]="isProcessing"
+                class="px-4 py-2 border rounded"
+            >
+                Clear
+            </button>
+
+        </div>
+
+    }
+
+
+    <!-- ===================================================== -->
+    <!-- PROCESSING -->
+    <!-- ===================================================== -->
+
+    @if (isProcessing) {
+
+        <div
+            class="border rounded-lg p-4 mb-6"
+        >
+
+            <div class="flex justify-between mb-2">
+
+                <span class="font-medium">
+                    {{ status }}
+                </span>
+
+                <span>
+                    {{ progress }}%
+                </span>
+
+            </div>
+
+
+            <div
+                class="w-full bg-gray-200 rounded-full h-2"
+            >
+
+                <div
+                    class="bg-primary h-2 rounded-full transition-all duration-300"
+                    [style.width.%]="progress"
+                ></div>
+
+            </div>
+
+        </div>
+
+    }
+
+
+    <!-- ===================================================== -->
+    <!-- STATUS -->
+    <!-- ===================================================== -->
+
+    @if (!isProcessing && status) {
+
+        <div
+            class="border rounded-lg p-3 mb-6 text-sm"
+        >
+            {{ status }}
+        </div>
+
+    }
+
+
+    <!-- ===================================================== -->
+    <!-- EXTRACTED FIELDS -->
+    <!-- ===================================================== -->
+
+    @if (invoiceData.fields.length > 0) {
+
+        <div class="mt-6">
+
+            <div class="flex justify-between items-center mb-3">
+
+                <h3 class="text-lg font-semibold">
+                    Extracted Fields
+                </h3>
+
+                <span class="text-sm text-gray-500">
+                    {{ invoiceData.fields.length }} fields
+                </span>
+
+            </div>
+
+
+            <div
+                class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4"
+            >
+
+                @for (
+                    field of invoiceData.fields;
+                    track $index
+                ) {
+
+                    <div>
+
+                        <label
+                            class="block font-medium mb-1"
+                        >
+                            {{ field.key }}
+                        </label>
+
+                        <input
+                            type="text"
+                            [(ngModel)]="field.value"
+                            class="w-full border rounded p-2"
+                        />
+
+                    </div>
+
+                }
+
+            </div>
+
+        </div>
+
+    }
+
+
+    <!-- ===================================================== -->
+    <!-- TABLES -->
+    <!-- ===================================================== -->
+
+    @if (invoiceData.tables.length > 0) {
+
+        <div class="mt-8">
+
+            <h3 class="text-lg font-semibold mb-4">
+                Detected Tables
+            </h3>
+
+
+            @for (
+                table of invoiceData.tables;
+                track $index
+            ) {
+
+                <div class="mb-6">
+
+                    <div class="flex justify-between items-center mb-2">
+
+                        <h4 class="font-medium">
+                            Table {{ $index + 1 }}
+                        </h4>
+
+                        <span class="text-sm text-gray-500">
+                            {{ table.rows.length }} rows
+                        </span>
+
+                    </div>
+
+
+                    <div
+                        class="overflow-x-auto border rounded-lg"
+                    >
+
+                        <table
+                            class="w-full border-collapse"
+                        >
+
+                            <thead>
+
+                                <tr>
+
+                                    @for (
+                                        column of table.columns;
+                                        track column
+                                    ) {
+
+                                        <th
+                                            class="border-b p-3 text-left bg-gray-100 whitespace-nowrap"
+                                        >
+                                            {{ column }}
+                                        </th>
+
+                                    }
+
+                                </tr>
+
+                            </thead>
+
+
+                            <tbody>
+
+                                @for (
+                                    row of table.rows;
+                                    track $index
+                                ) {
+
+                                    <tr>
+
+                                        @for (
+                                            column of table.columns;
+                                            track column
+                                        ) {
+
+                                            <td
+                                                class="border-b p-2"
+                                            >
+
+                                                <input
+                                                    type="text"
+                                                    [(ngModel)]="row[column]"
+                                                    class="w-full p-2 border rounded"
+                                                />
+
+                                            </td>
+
+                                        }
+
+                                    </tr>
+
+                                }
+
+                            </tbody>
+
+                        </table>
+
+                    </div>
+
+                </div>
+
+            }
+
+        </div>
+
+    }
+
+
+    <!-- ===================================================== -->
+    <!-- RAW OCR TEXT -->
+    <!-- ===================================================== -->
+
+    @if (extractedText) {
+
+        <div class="mt-8">
+
+            <div class="flex justify-between items-center mb-2">
+
+                <h3 class="text-lg font-semibold">
+                    Raw OCR Text
+                </h3>
+
+
+                <button
+                    type="button"
+                    (click)="copyText()"
+                    class="px-3 py-2 border rounded"
+                >
+                    Copy Text
+                </button>
+
+            </div>
+
+
+            <textarea
+                [(ngModel)]="extractedText"
+                rows="18"
+                class="w-full border rounded-lg p-3 font-mono text-sm"
+            ></textarea>
+
+        </div>
+
+    }
+
+
+    <!-- ===================================================== -->
+    <!-- JSON -->
+    <!-- ===================================================== -->
+
+    @if (extractedText) {
+
+        <div class="mt-8">
+
+            <div class="flex justify-between items-center mb-3">
+
+                <h3 class="text-lg font-semibold">
+                    Extracted JSON
+                </h3>
+
+
+                <div class="flex gap-2">
+
+                    <button
+                        type="button"
+                        (click)="copyJson()"
+                        class="px-3 py-2 border rounded"
+                    >
+                        Copy JSON
+                    </button>
+
+
+                    <button
+                        type="button"
+                        (click)="downloadJson()"
+                        class="px-3 py-2 bg-primary text-white rounded"
+                    >
+                        Download JSON
+                    </button>
+
+                </div>
+
+            </div>
+
+
+            <pre
+                class="p-4 bg-gray-100 rounded-lg overflow-auto max-h-[500px] text-sm"
+            >{{ getJson() }}</pre>
+
+        </div>
+
+    }
+
+
+    <!-- ===================================================== -->
+    <!-- CLEAR -->
+    <!-- ===================================================== -->
+
+    @if (selectedFile && !isProcessing) {
+
+        <div class="mt-6">
+
+            <button
+                type="button"
+                (click)="clear()"
+                class="px-4 py-2 border rounded"
+            >
+                Clear
+            </button>
+
+        </div>
+
+    }
+
+</div>
