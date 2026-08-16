@@ -165,8 +165,23 @@ report(type: string) {
   doc.text(custAddress, 15, yStart + 8);
   doc.text(`TRN: ${data.sale[0].trn || '-'}`, 15, yStart + 8 + (custAddress.length * 5));
 
-  doc.text(`Invoice No: ${data.sale[0].invoice_no}`, pageWidth - 70, yStart);
-  doc.text(`Date: ${data.sale[0].sale_date?.split('T')[0]}`, pageWidth - 70, yStart + 4);
+const invoiceNo = data.sale[0].invoice_no;
+const lpoNo = data.sale[0].lpo_no;
+
+doc.text(`Invoice No: ${invoiceNo}`, pageWidth - 70, yStart);
+
+let invoiceInfoY = yStart + 4;
+
+if (lpoNo !== null && lpoNo !== undefined && lpoNo.toString().trim() !== '') {
+  doc.text(`LPO No: ${lpoNo}`, pageWidth - 70, invoiceInfoY);
+  invoiceInfoY += 4;
+}
+
+doc.text(
+  `Date: ${data.sale[0].sale_date?.split('T')[0]}`,
+  pageWidth - 70,
+  invoiceInfoY
+);;
 
   yStart += 16 + (custAddress.length * 3);
 

@@ -48,6 +48,7 @@ export class SalesComponent {
   ngOnInit(): void {
     this.salesForm = this.fb.group({
       customer_id: ['', Validators.required],
+      lpo_no: [''],
       sale_date: [new Date().toISOString().substring(0, 10), Validators.required],
       total: [0],
       discount: [0],
@@ -88,6 +89,7 @@ export class SalesComponent {
 
           this.salesForm.patchValue({
             customer_id: sale[0].customer_id,
+            lpo_no: sale[0].lpo_no,
             sale_date: new Date(sale[0].sale_date).toISOString().substring(0, 10),
             total: sale[0].total,
             discount: sale[0].discount,
@@ -326,6 +328,7 @@ row.patchValue({
     const payload = {
       id: this.id(),
       customer_id: this.salesForm.value.customer_id,
+      lpo_no: this.salesForm.value.lpo_no,
       total: this.salesForm.value.total,
       discount: this.salesForm.value.discount,
       vat: this.salesForm.value.vat_amount,

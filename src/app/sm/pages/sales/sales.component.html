@@ -20,6 +20,12 @@
     </div>
 
     <div class="w-full">
+      <label>LPO No</label>
+      <input pInputText type="text" formControlName="lpo_no" class="w-full p-3" 
+        [invalid]="salesForm.get('lpo_no')?.invalid && salesForm.get('lpo_no')?.touched"
+      />
+    </div>
+    <div class="w-full">
       <label>Sale Date</label>
       <input pInputText type="date" formControlName="sale_date" class="w-full p-3" dateFormat="dd.mm.yy"
         [invalid]="salesForm.get('sale_date')?.invalid && salesForm.get('sale_date')?.touched"
