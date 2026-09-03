@@ -32,7 +32,11 @@
       [loading]="loading()"    
       label="Search">
     </p-button>
-
+ <p-button  
+      (click)="getAllInvoices()" 
+      [loading]="loading1()"    
+      label="Download Invoices">
+    </p-button>
   </div>
 </div>
 <div class="card">

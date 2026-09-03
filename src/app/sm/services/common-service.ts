@@ -24,6 +24,9 @@ export class CommonService {
   GetTableRange(model:any) {
    return this.httpClient.post(`${baseApiUrl}/api/setting/table_range`,model)
   }
+  GetBulkInvoice(model:any) {
+   return this.httpClient.post(`${baseApiUrl}/api/setting/bulk_invoice`,model)
+  }
   formatDate(date:any){
   if(!date) return null;
 
