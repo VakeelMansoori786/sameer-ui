@@ -12,4 +12,7 @@ export class ReportService {
    customerLedger(model:any) {
    return this.httpClient.post(`${baseApiUrl}/api/reports/customer-ledger`,model)
   }
+  vatReturn(model:any) {
+   return this.httpClient.post(`${baseApiUrl}/api/reports/vat-return`,model)
+  }
 }

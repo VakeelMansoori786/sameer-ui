@@ -62,7 +62,8 @@ export class AppMenu {
     {
       label: 'Reports',
       items: [
-        { label: 'Statements', icon: 'pi pi-chart-line', routerLink: ['/statements'] }
+        { label: 'Statements', icon: 'pi pi-chart-line', routerLink: ['/statements'] },
+        { label: 'VAT Return', icon: 'pi pi-chart-bar', routerLink: ['/vat-return'] }
       ]
     },
 

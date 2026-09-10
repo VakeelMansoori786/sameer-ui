@@ -25,6 +25,7 @@ import { Statement } from './app/sm/pages/reports/statement/statement';
 import { ExpensesComponent } from './app/sm/pages/expenses/expenses.component';
 import { DashboardComponent } from './app/sm/pages/dashboard/dashboard.component';
 import { ImageOcr } from './app/sm/common/shared/image-ocr/image-ocr';
+import { SalePurchase } from './app/sm/pages/reports/sale-purchase/sale-purchase';
 
 export const appRoutes: Routes = [
     {
@@ -55,6 +56,7 @@ export const appRoutes: Routes = [
 
 
             { path: 'statements', component: Statement },
+            { path: 'vat-return', component: SalePurchase },
             { path: 'image-ocr', component: ImageOcr },
 
 

@@ -1,0 +1,167 @@
+<p-toast></p-toast>
+<p-confirmDialog></p-confirmDialog>
+
+<!-- ================= FILTER + TOTAL ================= -->
+<div class="card mb-4 p-4">
+
+  <div class="grid grid-cols-1 md:grid-cols-7 gap-4 items-end">
+
+    <!-- From -->
+    <div class="flex flex-col gap-1">
+      <label>From</label>
+      <p-datepicker [(ngModel)]="fromDate" dateFormat="dd-mm-yy"></p-datepicker>
+    </div>
+
+    <!-- To -->
+    <div class="flex flex-col gap-1">
+      <label>To</label>
+      <p-datepicker [(ngModel)]="toDate" dateFormat="dd-mm-yy"></p-datepicker>
+    </div>
+
+    <!-- Buttons -->
+    <div class="flex gap-2">
+      <button pButton label="Search" icon="pi pi-filter" (click)="loadData()"></button>
+    
+    </div>
+
+  
+
+  </div>
+
+</div>
+<div class="grid grid-cols-12 gap-4">
+
+    <!-- Total Sales -->
+    <div class="col-span-12 sm:col-span-6 lg:col-span-3">
+        <div class="card h-full" style="padding: 0.75rem;">
+            <div class="flex justify-between items-center">
+                <div>
+                    <div class="text-muted-color text-sm mb-1 font-bold">
+                        Total Sales
+                    </div>
+                    <div class="text-xl font-semibold">
+                        AED {{ list()[0].total_sales_including_vat | number:'1.2-2' }}
+                    </div>
+                </div>
+
+                <div class="flex items-center justify-center rounded-full bg-blue-100"
+                     style="width: 2.5rem; height: 2.5rem">
+                    <i class="pi pi-shopping-cart text-blue-600"></i>
+                </div>
+            </div>
+
+            <div class="text-xs text-gray-400 mt-2">
+                Sales including VAT
+            </div>
+        </div>
+    </div>
+
+
+    <!-- Total Purchases -->
+    <div class="col-span-12 sm:col-span-6 lg:col-span-3">
+        <div class="card h-full" style="padding: 0.75rem;">
+            <div class="flex justify-between items-center">
+                <div>
+                    <div class="text-muted-color text-sm mb-1 font-bold">
+                        Total Purchases
+                    </div>
+                    <div class="text-xl font-semibold">
+                        AED {{ list()[0].total_purchases_including_vat | number:'1.2-2' }}
+                    </div>
+                </div>
+
+                <div class="flex items-center justify-center rounded-full bg-orange-100"
+                     style="width: 2.5rem; height: 2.5rem">
+                    <i class="pi pi-shopping-bag text-orange-600"></i>
+                </div>
+            </div>
+
+            <div class="text-xs text-gray-400 mt-2">
+                Purchases including VAT
+            </div>
+        </div>
+    </div>
+
+
+    <!-- Gross Profit -->
+    <div class="col-span-12 sm:col-span-6 lg:col-span-3">
+        <div class="card h-full" style="padding: 0.75rem;">
+            <div class="flex justify-between items-center">
+                <div>
+                    <div class="text-muted-color text-sm mb-1 font-bold">
+                        Gross Profit
+                    </div>
+
+                    <div class="text-xl font-semibold"
+                         [ngClass]="{
+                            'text-green-600': list()[0].gross_profit >= 0,
+                            'text-red-600': list()[0].gross_profit < 0
+                         }">
+                        AED {{ list()[0].gross_profit | number:'1.2-2' }}
+                    </div>
+                </div>
+
+                <div class="flex items-center justify-center rounded-full"
+                     [ngClass]="{
+                        'bg-green-100': list()[0].gross_profit >= 0,
+                        'bg-red-100': list()[0].gross_profit < 0
+                     }"
+                     style="width: 2.5rem; height: 2.5rem">
+
+                    <i class="pi pi-chart-line"
+                       [ngClass]="{
+                          'text-green-600': list()[0].gross_profit >= 0,
+                          'text-red-600': list()[0].gross_profit < 0
+                       }">
+                    </i>
+                </div>
+            </div>
+
+            <div class="text-xs text-gray-400 mt-2">
+                Sales minus purchases
+            </div>
+        </div>
+    </div>
+
+
+    <!-- VAT Payable -->
+    <div class="col-span-12 sm:col-span-6 lg:col-span-3">
+        <div class="card h-full" style="padding: 0.75rem;">
+            <div class="flex justify-between items-center">
+                <div>
+                    <div class="text-muted-color text-sm mb-1 font-bold">
+                        VAT Payable
+                    </div>
+
+                    <div class="text-2xl font-bold"
+                         [ngClass]="{
+                            'text-red-600': list()[0].vat_payable > 0,
+                            'text-green-600': list()[0].vat_payable <= 0
+                         }">
+                        AED {{ list()[0].vat_payable | number:'1.2-2' }}
+                    </div>
+                </div>
+
+                <div class="flex items-center justify-center rounded-full"
+                     [ngClass]="{
+                        'bg-red-100': list()[0].vat_payable > 0,
+                        'bg-green-100': list()[0].vat_payable <= 0
+                     }"
+                     style="width: 2.5rem; height: 2.5rem">
+
+                    <i class="pi pi-money-bill"
+                       [ngClass]="{
+                          'text-red-600': list()[0].vat_payable > 0,
+                          'text-green-600': list()[0].vat_payable <= 0
+                       }">
+                    </i>
+                </div>
+            </div>
+
+            <div class="text-xs text-gray-400 mt-2">
+                VAT payable / refundable
+            </div>
+        </div>
+    </div>
+
+</div>
