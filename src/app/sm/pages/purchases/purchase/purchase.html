@@ -18,7 +18,12 @@ class="w-full">
 </p-select>
 
 </div>
-
+<div class="w-full">
+      <label>Supplier Invoice No</label>
+      <input pInputText type="text" formControlName="supplier_invoice_no" class="w-full p-3" 
+        [invalid]="purchaseForm.get('supplier_invoice_no')?.invalid && purchaseForm.get('supplier_invoice_no')?.touched"
+      />
+    </div>
 <div class="w-full">
 <label>Purchase Date</label>
 

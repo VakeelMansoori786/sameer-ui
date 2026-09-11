@@ -4,7 +4,7 @@ import { CommonService } from '@/app/sm/services/common-service';
 import { SaleService } from '@/app/sm/services/sale.service';
 import { Component, signal } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
-import { Router } from '@angular/router';
+import { ActivatedRoute,Router } from '@angular/router';
 import { ConfirmationService, MessageService } from 'primeng/api';
 import JSZip from 'jszip';
 import jsPDF from 'jspdf';
@@ -22,17 +22,33 @@ export class SaleList {
      mainList = signal<any[]>([]);
   loading = signal(false);
   loading1 = signal(false);
-  constructor(private router: Router,private saleService:SaleService,private fb: FormBuilder,private commonService:CommonService,private confirmationService:ConfirmationService,private messageService:MessageService) {}
+  total_sales = signal(0);
+  constructor(private route: ActivatedRoute,private router: Router,private saleService:SaleService,private fb: FormBuilder,private commonService:CommonService,private confirmationService:ConfirmationService,private messageService:MessageService) {}
 
 fromDate: Date | null = null;
 toDate: Date | null = null;
 ngOnInit(): void {
-    let minDate = new Date();
-  minDate.setMonth(minDate.getMonth() - 3);
+
+  this.route.queryParams.subscribe(params => {
+
+    if (params['from'] && params['to']) {
+
+      this.fromDate = new Date(params['from']);
+      this.toDate = new Date(params['to']);
+
+    } else {
+
+      let minDate = new Date();
+      minDate.setMonth(minDate.getMonth() - 3);
+
       const today = new Date();
-      this.toDate=today;
-  this.fromDate = minDate;
-this.getAll();
+
+      this.toDate = today;
+      this.fromDate = minDate;
+    }
+
+    this.getAll();
+  });
 }
     getAll() {
         this.loading.set(true);
@@ -43,6 +59,11 @@ this.getAll();
 }
 this.commonService.GetTableRange(model).subscribe((data: any) => {
       this.mainList.set(data);
+      const totalSale = this.mainList().filter(x=>x.status!=='Proforma').reduce(
+  (sum, item) => sum + Number(item.grand_total || 0),
+  0
+);
+      this.total_sales.set(totalSale);
            this.loading.set(false);
     });
   }

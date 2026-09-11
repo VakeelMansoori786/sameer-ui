@@ -37,6 +37,12 @@
       [loading]="loading1()"    
       label="Download Invoices">
     </p-button>
+        <div class="text-right">
+      <div class="text-sm text-gray-500">Total Sales</div>
+      <div class="text-2xl font-bold">
+        {{ total_sales() | number:'1.2-2' }}
+      </div>
+    </div>
   </div>
 </div>
 <div class="card">

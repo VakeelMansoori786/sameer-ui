@@ -29,7 +29,12 @@
       [loading]="loading()"    
       label="Search">
     </p-button>
-
+   <div class="text-right">
+      <div class="text-sm text-gray-500">Total Purchases</div>
+      <div class="text-2xl font-bold">
+        {{ total_purchases() | number:'1.2-2' }}
+      </div>
+    </div>
   </div>
 </div>
 <div class="card">
@@ -96,10 +101,10 @@ Supplier Name
 </div>
 </th>
 
-<th pSortableColumn="supplier_phone">
+<th pSortableColumn="supplier_invoice_no">
 <div class="flex items-center gap-2">
-Supplier Phone
-<p-sortIcon field="supplier_phone" />
+Supplier Invoice No
+<p-sortIcon field="supplier_invoice_no" />
 </div>
 </th>
 
@@ -141,7 +146,7 @@ Status
 
 <td>{{ row.invoice_no }}</td>
 <td>{{ row.supplier_name }}</td>
-<td>{{ row.supplier_phone }}</td>
+<td>{{ row.supplier_invoice_no }}</td>
 <td>{{ row.purchase_date | date:'dd-MM-yyyy' }}</td>
 <td>{{ row.created_at | date:'dd-MM-yyyy' }}</td>
 <td>{{ row.grand_total }}</td>

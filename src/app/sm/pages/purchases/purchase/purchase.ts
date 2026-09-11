@@ -48,6 +48,7 @@ ngOnInit(): void {
 
   this.purchaseForm = this.fb.group({
     supplier_id: ['', Validators.required],
+    supplier_invoice_no: ['', Validators.required],
     purchase_date: [new Date().toISOString().substring(0,10), Validators.required],
     total: [0],
     discount: [0],
@@ -79,6 +80,7 @@ getPurchase(){
 
         this.purchaseForm.patchValue({
           supplier_id: purchase[0].supplier_id,
+          supplier_invoice_no: purchase[0].supplier_invoice_no,
           purchase_date: new Date(purchase[0].purchase_date).toISOString().substring(0,10),
           total: purchase[0].total,
           discount: purchase[0].discount,
@@ -251,6 +253,7 @@ async onSubmit(){
   const payload = {
     id:this.id(),
     supplier_id: this.purchaseForm.value.supplier_id,
+    supplier_invoice_no: this.purchaseForm.value.supplier_invoice_no,
     total: this.purchaseForm.value.total,
     discount: this.purchaseForm.value.discount,
     vat: this.purchaseForm.value.vat_amount,
