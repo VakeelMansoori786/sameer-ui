@@ -197,7 +197,7 @@
             <td>{{ row.balance_amount | currency:'AED' }}</td>
             <td>{{ row.status }}</td>
             <td>
-              <button pButton icon="pi pi-eye"></button>
+              <button pButton icon="pi pi-eye"  (click)="invoice(row.id)"></button>
             </td>
           </tr>
         </ng-template>
