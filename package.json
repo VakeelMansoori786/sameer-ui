@@ -27,6 +27,7 @@
         "html2pdf.js": "^0.14.0",
         "jspdf": "^4.2.0",
         "jspdf-autotable": "^5.0.7",
+        "jszip": "^3.10.2",
         "primeclt": "^0.1.5",
         "primeicons": "^7.0.0",
         "primeng": "^21.0.2",
