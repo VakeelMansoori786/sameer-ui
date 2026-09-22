@@ -55,7 +55,8 @@ ngOnInit(): void {
   let model={
     table:'SALE',
         from: this.commonService.formatDate(this.fromDate),
-      to: this.commonService.formatDate(this.toDate)
+      to: this.commonService.formatDate(this.toDate),
+      purpose:''
 }
 this.commonService.GetTableRange(model).subscribe((data: any) => {
       this.mainList.set(data);

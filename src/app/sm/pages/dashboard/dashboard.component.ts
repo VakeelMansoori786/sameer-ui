@@ -93,38 +93,44 @@ chartOptions: any;
 
     const from = this.commonService.formatDate(this.fromDate());
     const to = this.commonService.formatDate(this.toDate());
-
+let purpose = '';
     forkJoin({
       sales: this.commonService.GetTableRange({
         table: 'SALESUMCOUNT',
         from,
-        to
+        to,
+        purpose
       }),
       cash: this.commonService.GetTableRange({
         table: 'CASHDAILY',
         from,
-        to
+        to,
+        purpose
       }),
       purchase: this.commonService.GetTableRange({
         table: 'PURCHASESUMCOUNT',
         from,
-        to
+        to,
+        purpose
       }),
      recentSale: this.commonService.GetTableRange({
         table: 'SALE',
         from,
-        to
+        to,
+        purpose
       }),
   
      paymentDueList: this.commonService.GetTableRange({
         table: 'PAYMENTDUE',
         from,
-        to
+        to,
+        purpose 
       }),
      monthSaleList: this.commonService.GetTableRange({
         table: 'MONTHSALE',
         from,
-        to
+        to,
+        purpose
       })
     }).subscribe({
       next: (res: any) => {
