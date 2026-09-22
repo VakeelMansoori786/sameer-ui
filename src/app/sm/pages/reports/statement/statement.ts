@@ -30,10 +30,15 @@ loading = signal(false);
 
     ngOnInit(): void {
    
+const today = new Date();
+
+const oneYearAgo = new Date(today);
+oneYearAgo.setFullYear(today.getFullYear() - 1);
+
 this.filters = this.fb.group({
   customer_id: [null],
-  from: [null],
-  to: [null],
+  from: [oneYearAgo],
+  to: [today],
   report_type: [null],
 });
 this.getCustomers();
@@ -73,126 +78,289 @@ exportPdf() {
 
   const logoImg = this.companyDetail.logo;
 
-  // ================= HELPERS =================
+  // ============================================================
+  // COMPANY INFORMATION
+  // ============================================================
 
-  const formatAmount = (val: any) => {
-    return Number(val || 0).toFixed(2);
+  const companyName =
+    this.companyDetail.name ||
+    `${this.companyDetail.owner || ''} ${this.companyDetail.bussiness_type || ''}`.trim();
+
+  const companyAddress =
+    this.companyDetail.address || '';
+
+  const companyPhone =
+    [this.companyDetail.tel, this.companyDetail.mobile1]
+      .filter(x => x)
+      .join(' / ');
+
+  const companyEmail =
+    this.companyDetail.email || '';
+
+  // ============================================================
+  // CUSTOMER INFORMATION
+  // ============================================================
+
+  const customerName =
+    ledger[0]?.customer_name ||
+    'All Customers';
+
+  // ============================================================
+  // HELPERS
+  // ============================================================
+
+  const formatAmount = (value: any): string => {
+    return Number(value || 0).toLocaleString('en-US', {
+      minimumFractionDigits: 2,
+      maximumFractionDigits: 2
+    });
   };
 
-  // ================= HEADER =================
+  const formatDate = (value: any): string => {
+    if (!value) return '-';
+
+    return this.commonService.formatDateDDMMYYY(value)?.toString() || '-';
+  };
+
+  // ============================================================
+  // HEADER
+  // ============================================================
 
   const drawHeader = () => {
 
-    let yOffset = 12;
+    const headerTop = 10;
 
+    // Logo
     if (logoImg) {
-      doc.addImage(logoImg, 'PNG', 15, yOffset, 18, 18);
+      doc.addImage(
+        logoImg,
+        'PNG',
+        15,
+        headerTop,
+        22,
+        22
+      );
     }
 
-    doc.setFontSize(12);
+    const companyX = logoImg ? 42 : 15;
+
+    // Company Name
     doc.setFont('helvetica', 'bold');
+    doc.setFontSize(13);
 
     doc.text(
-      `${this.companyDetail.owner} ${this.companyDetail.bussiness_type}`,
-      40,
-      yOffset + 3
+      companyName,
+      companyX,
+      headerTop + 5
     );
 
-    doc.setFontSize(9);
+    // Address
     doc.setFont('helvetica', 'normal');
+    doc.setFontSize(8.5);
 
-    doc.text(this.companyDetail.address, 40, yOffset + 7);
+    if (companyAddress) {
+      doc.text(
+        companyAddress,
+        companyX,
+        headerTop + 10
+      );
+    }
 
-    doc.text(
-      `Mobile: ${this.companyDetail.tel} / ${this.companyDetail.mobile1}`,
-      40,
-      yOffset + 11
-    );
+    // Phone
+    if (companyPhone) {
+      doc.text(
+        `Tel: ${companyPhone}`,
+        companyX,
+        headerTop + 14
+      );
+    }
 
-    doc.text(
-      `Email: ${this.companyDetail.email}`,
-      40,
-      yOffset + 15
-    );
+    // Email
+    if (companyEmail) {
+      doc.text(
+        `Email: ${companyEmail}`,
+        companyX,
+        headerTop + 18
+      );
+    }
 
-    doc.setDrawColor(150);
+    // Header line
+    doc.setDrawColor(180);
+    doc.setLineWidth(0.3);
 
     doc.line(
       15,
-      yOffset + 20,
+      headerTop + 25,
       pageWidth - 15,
-      yOffset + 20
+      headerTop + 25
     );
 
-    return yOffset + 25;
+    return headerTop + 31;
   };
 
-  // ================= FOOTER =================
+  // ============================================================
+  // FOOTER
+  // ============================================================
 
-  const drawFooter = (pageNum: number, totalPages: number) => {
+  const drawFooter = () => {
 
-    doc.setFontSize(8);
+    const pageNumber =
+      doc.getCurrentPageInfo().pageNumber;
+
+    doc.setDrawColor(200);
+    doc.setLineWidth(0.2);
+
+    doc.line(
+      15,
+      pageHeight - 14,
+      pageWidth - 15,
+      pageHeight - 14
+    );
+
+    doc.setFont('helvetica', 'normal');
+    doc.setFontSize(7.5);
 
     doc.text(
-      `Page ${pageNum} of ${totalPages}`,
-      pageWidth - 35,
+      companyName,
+      15,
       pageHeight - 8
     );
+
+    doc.text(
+      `Page ${pageNumber}`,
+      pageWidth - 15,
+      pageHeight - 8,
+      { align: 'right' }
+    );
   };
+
+  // ============================================================
+  // FIRST PAGE HEADER
+  // ============================================================
 
   let yStart = drawHeader();
 
-  // ================= TITLE =================
+  // ============================================================
+  // REPORT TITLE
+  // ============================================================
 
-  doc.setFontSize(14);
-  doc.setFont('helvetica', 'bold');
-
-  doc.text(
+  const reportTitle =
     reportType === 'OUTSTANDING'
       ? 'OUTSTANDING REPORT'
-      : 'ACCOUNT STATEMENT',
+      : 'ACCOUNT STATEMENT';
+
+  doc.setFont('helvetica', 'bold');
+  doc.setFontSize(16);
+
+  doc.text(
+    reportTitle,
     pageWidth / 2,
     yStart,
     { align: 'center' }
   );
 
-  yStart += 10;
+  yStart += 9;
 
-  // ================= CUSTOMER INFO =================
+  // ============================================================
+  // CUSTOMER INFORMATION BOX
+  // ============================================================
 
-  doc.setFontSize(9);
-  doc.setFont('helvetica', 'normal');
+  doc.setFillColor(245, 245, 245);
+  doc.setDrawColor(210);
+  doc.setLineWidth(0.3);
 
-  doc.text(
-    `Statement Period: ${this.commonService.formatDateDDMMYYY(this.filters.value.from)} to ${this.commonService.formatDateDDMMYYY(this.filters.value.to)}`,
+  doc.roundedRect(
     15,
-    yStart
+    yStart,
+    pageWidth - 30,
+    20,
+    2,
+    2,
+    'FD'
   );
 
-  yStart += 10;
+  doc.setFont('helvetica', 'bold');
+  doc.setFontSize(9);
 
-  // ==================================================
+  doc.text(
+    'CUSTOMER',
+    20,
+    yStart + 7
+  );
+
+  doc.setFont('helvetica', 'normal');
+  doc.setFontSize(10);
+
+  doc.text(
+    customerName,
+    20,
+    yStart + 14
+  );
+
+  doc.setFont('helvetica', 'bold');
+  doc.setFontSize(8.5);
+
+  doc.text(
+    'REPORT PERIOD',
+    pageWidth - 85,
+    yStart + 7
+  );
+
+  doc.setFont('helvetica', 'normal');
+
+  const fromDate =
+    this.commonService.formatDateDDMMYYY(
+      this.filters.value.from
+    );
+
+  const toDate =
+    this.commonService.formatDateDDMMYYY(
+      this.filters.value.to
+    );
+
+  doc.text(
+    `${fromDate} - ${toDate}`,
+    pageWidth - 85,
+    yStart + 14
+  );
+
+  yStart += 28;
+
+  // ============================================================
   // STATEMENT REPORT
-  // ==================================================
+  // ============================================================
 
   if (reportType === 'STATEMENT') {
 
-    const openingRow = ledger.find((x: any) => x.ref_type === 'OPENING');
+    const openingRow =
+      ledger.find(
+        (x: any) => x.ref_type === 'OPENING'
+      );
 
     const openingBalance =
       Number(openingRow?.running_balance || 0);
 
+    doc.setFont('helvetica', 'bold');
+    doc.setFontSize(9);
+
     doc.text(
-      `Opening Balance: ${openingBalance.toFixed(2)}`,
+      `Opening Balance: ${formatAmount(openingBalance)}`,
       15,
       yStart
     );
 
-    yStart += 10;
+    yStart += 6;
 
     autoTable(doc, {
 
       startY: yStart,
+
+      margin: {
+        left: 15,
+        right: 15,
+        top: 40,
+        bottom: 20
+      },
 
       head: [[
         'Date',
@@ -204,47 +372,73 @@ exportPdf() {
       ]],
 
       body: ledger.map((item: any) => ([
-        this.commonService.formatDate(item.date),
-        item.ref_type,
-        item.ref_no,
+        formatDate(item.date),
+        item.ref_type || '-',
+        item.ref_no || '-',
         formatAmount(item.debit),
         formatAmount(item.credit),
-        formatAmount(item.running_balance),
+        formatAmount(item.running_balance)
       ])),
 
       theme: 'grid',
 
       styles: {
-        fontSize: 9,
+        font: 'helvetica',
+        fontSize: 8.5,
+        cellPadding: 3,
+        valign: 'middle'
+      },
+
+      headStyles: {
+        fontStyle: 'bold',
+        fontSize: 8.5,
+        halign: 'center'
       },
 
       columnStyles: {
-        3: { halign: 'right' },
-        4: { halign: 'right' },
-        5: { halign: 'right' },
+        0: {
+          cellWidth: 25
+        },
+        1: {
+          cellWidth: 30
+        },
+        2: {
+          cellWidth: 35
+        },
+        3: {
+          halign: 'right'
+        },
+        4: {
+          halign: 'right'
+        },
+        5: {
+          halign: 'right'
+        }
       },
 
       didDrawPage: () => {
         drawHeader();
-
-        const pageNum =
-          doc.getCurrentPageInfo().pageNumber;
-
-        drawFooter(pageNum, doc.getNumberOfPages());
+        drawFooter();
       }
     });
 
-    const totalDebit = ledger.reduce(
-      (sum: number, x: any) =>
-        sum + Number(x.debit || 0),
-      0
-    );
+    // ========================================================
+    // STATEMENT TOTALS
+    // ========================================================
 
-    const totalCredit = ledger.reduce(
-      (sum: number, x: any) =>
-        sum + Number(x.credit || 0),
-      0
-    );
+    const totalDebit =
+      ledger.reduce(
+        (sum: number, x: any) =>
+          sum + Number(x.debit || 0),
+        0
+      );
+
+    const totalCredit =
+      ledger.reduce(
+        (sum: number, x: any) =>
+          sum + Number(x.credit || 0),
+        0
+      );
 
     const closingBalance =
       Number(
@@ -252,38 +446,74 @@ exportPdf() {
       );
 
     let finalY =
-      (doc as any).lastAutoTable.finalY + 12;
+      (doc as any).lastAutoTable.finalY + 10;
+
+    // Prevent totals from being pushed outside page
+    if (finalY > pageHeight - 45) {
+      doc.addPage();
+      drawHeader();
+      finalY = 45;
+    }
 
     doc.setFont('helvetica', 'bold');
+    doc.setFontSize(9);
 
     doc.text(
-      `Total Debit : ${formatAmount(totalDebit)}`,
-      130,
+      'Total Debit:',
+      125,
       finalY
     );
 
     doc.text(
-      `Total Credit : ${formatAmount(totalCredit)}`,
-      130,
+      formatAmount(totalDebit),
+      pageWidth - 15,
+      finalY,
+      { align: 'right' }
+    );
+
+    doc.text(
+      'Total Credit:',
+      125,
       finalY + 7
     );
 
     doc.text(
-      `Closing Balance : ${formatAmount(closingBalance)}`,
-      130,
+      formatAmount(totalCredit),
+      pageWidth - 15,
+      finalY + 7,
+      { align: 'right' }
+    );
+
+    doc.text(
+      'Closing Balance:',
+      125,
       finalY + 14
+    );
+
+    doc.text(
+      formatAmount(closingBalance),
+      pageWidth - 15,
+      finalY + 14,
+      { align: 'right' }
     );
   }
 
-  // ==================================================
+  // ============================================================
   // OUTSTANDING REPORT
-  // ==================================================
+  // ============================================================
 
   else if (reportType === 'OUTSTANDING') {
 
     autoTable(doc, {
 
       startY: yStart,
+
+      margin: {
+        left: 15,
+        right: 15,
+        top: 40,
+        bottom: 20
+      },
 
       head: [[
         'Invoice No',
@@ -294,85 +524,173 @@ exportPdf() {
       ]],
 
       body: ledger.map((item: any) => ([
-        item.invoice_no,
-        this.commonService.formatDate(item.sale_date),
+        item.invoice_no || '-',
+        formatDate(item.sale_date),
         formatAmount(item.grand_total),
         formatAmount(item.paid_amount),
-        formatAmount(item.outstanding_amount),
+        formatAmount(item.outstanding_amount)
       ])),
 
       theme: 'grid',
 
       styles: {
-        fontSize: 9,
+        font: 'helvetica',
+        fontSize: 8.5,
+        cellPadding: 3,
+        valign: 'middle'
+      },
+
+      headStyles: {
+        fontStyle: 'bold',
+        fontSize: 8.5,
+        halign: 'center'
       },
 
       columnStyles: {
-        2: { halign: 'right' },
-        3: { halign: 'right' },
-        4: { halign: 'right' },
+
+        0: {
+          cellWidth: 38
+        },
+
+        1: {
+          cellWidth: 28
+        },
+
+        2: {
+          halign: 'right'
+        },
+
+        3: {
+          halign: 'right'
+        },
+
+        4: {
+          halign: 'right'
+        }
       },
 
       didDrawPage: () => {
-
         drawHeader();
-
-        const pageNum =
-          doc.getCurrentPageInfo().pageNumber;
-
-        drawFooter(pageNum, doc.getNumberOfPages());
+        drawFooter();
       }
     });
 
-    const totalInvoice = ledger.reduce(
-      (sum: number, x: any) =>
-        sum + Number(x.grand_total || 0),
-      0
-    );
+    // ========================================================
+    // OUTSTANDING TOTALS
+    // ========================================================
 
-    const totalPaid = ledger.reduce(
-      (sum: number, x: any) =>
-        sum + Number(x.paid_amount || 0),
-      0
-    );
+    const totalInvoice =
+      ledger.reduce(
+        (sum: number, x: any) =>
+          sum + Number(x.grand_total || 0),
+        0
+      );
 
-    const totalOutstanding = ledger.reduce(
-      (sum: number, x: any) =>
-        sum + Number(x.outstanding_amount || 0),
-      0
-    );
+    const totalPaid =
+      ledger.reduce(
+        (sum: number, x: any) =>
+          sum + Number(x.paid_amount || 0),
+        0
+      );
+
+    const totalOutstanding =
+      ledger.reduce(
+        (sum: number, x: any) =>
+          sum + Number(x.outstanding_amount || 0),
+        0
+      );
 
     let finalY =
-      (doc as any).lastAutoTable.finalY + 12;
+      (doc as any).lastAutoTable.finalY + 10;
 
+    // Prevent totals from going outside page
+    if (finalY > pageHeight - 50) {
+      doc.addPage();
+      drawHeader();
+      finalY = 45;
+    }
+
+    // ========================================================
+    // TOTAL SUMMARY BOX
+    // ========================================================
+
+    const boxX = 105;
+    const boxWidth = pageWidth - boxX - 15;
+    const boxHeight = 35;
+
+    doc.setFillColor(248, 248, 248);
+    doc.setDrawColor(200);
+
+    doc.roundedRect(
+      boxX,
+      finalY,
+      boxWidth,
+      boxHeight,
+      2,
+      2,
+      'FD'
+    );
+
+    doc.setFontSize(9);
     doc.setFont('helvetica', 'bold');
 
     doc.text(
-      `Invoice Total : ${formatAmount(totalInvoice)}`,
-      120,
-      finalY
+      'Invoice Total',
+      boxX + 5,
+      finalY + 8
     );
 
     doc.text(
-      `Paid Total : ${formatAmount(totalPaid)}`,
-      120,
-      finalY + 7
+      formatAmount(totalInvoice),
+      pageWidth - 20,
+      finalY + 8,
+      { align: 'right' }
     );
 
     doc.text(
-      `Outstanding Total : ${formatAmount(totalOutstanding)}`,
-      120,
-      finalY + 14
+      'Paid Total',
+      boxX + 5,
+      finalY + 16
+    );
+
+    doc.text(
+      formatAmount(totalPaid),
+      pageWidth - 20,
+      finalY + 16,
+      { align: 'right' }
+    );
+
+    doc.text(
+      'Outstanding Total',
+      boxX + 5,
+      finalY + 26
+    );
+
+    doc.setFontSize(10);
+
+    doc.text(
+      formatAmount(totalOutstanding),
+      pageWidth - 20,
+      finalY + 26,
+      { align: 'right' }
     );
   }
 
-  // ================= SAVE =================
+  // ============================================================
+  // SAVE PDF
+  // ============================================================
 
-  doc.save(
+  const customerFileName =
+    customerName
+      .replace(/[^a-zA-Z0-9]/g, '_')
+      .substring(0, 50);
+
+  const fileName =
     reportType === 'OUTSTANDING'
-      ? 'Outstanding_Report.pdf'
-      : 'Account_Statement.pdf'
-  );
+      ? `Outstanding_Report_${customerFileName}.pdf`
+      : `Account_Statement_${customerFileName}.pdf`;
+
+  doc.save(fileName);
 }
 
 
@@ -465,6 +783,11 @@ saveAsExcelFile(buffer: any, fileName: string) {
     `${fileName}_${new Date().getTime()}.xlsx`
   );
 }
-
+getTotalOutstanding(): number {
+  return this.ledgerList().reduce(
+    (total, row) => total + Number(row.outstanding_amount || 0),
+    0
+  );
+}
 
 }

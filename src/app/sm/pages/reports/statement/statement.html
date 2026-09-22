@@ -1,50 +1,32 @@
 <div class="card p-4">
 
   <!-- Filters -->
-  <form [formGroup]="filters" class="grid grid-cols-1 md:grid-cols-4 gap-4 mb-4" (ngSubmit)="loadLedger()">
+<form [formGroup]="filters" (ngSubmit)="loadLedger()" class="grid grid-cols-1 md:grid-cols-5 gap-4 mb-4 items-end" >
+   <!-- Customer --> 
+    <div class="w-full">
+       <label class="block mb-1 font-medium"> Customer </label>
+        <p-select formControlName="customer_id" [options]="customersList()" optionLabel="name" optionValue="id" placeholder="Select Customer" [filter]="true" [invalid]=" filters.get('customer_id')?.invalid && filters.get('customer_id')?.touched " class="w-full" > 
 
-    <div>
-      <label>Customer</label>
-     <p-select
-        formControlName="customer_id"
-        [options]="customersList()"
-        optionLabel="name"
-        optionValue="id"
-        placeholder="Select Customer"
-        [filter]="true"
-          [invalid]="filters.get('customer_id')?.invalid && filters.get('customer_id')?.touched"
-        class="w-full">
-      </p-select>
-    </div>
-
-    <div>
-      <label>From</label>
-        <p-datepicker [showIcon]="true" [showButtonBar]="true" formControlName="from" class="w-full" dateFormat="dd/mm/yy"></p-datepicker>
-    </div>
-
-    <div>
-      <label>To</label>
-       <p-datepicker [showIcon]="true" [showButtonBar]="true" formControlName="to" class="w-full" dateFormat="dd/mm/yy"></p-datepicker>
-    </div>
- <div>
-      <label>Type</label>
-     <p-select
-        formControlName="report_type"
-        [options]="typeList"
-        optionLabel="name"
-        optionValue="name"
-        placeholder="Select Type"
-        [filter]="true"
-          [invalid]="filters.get('report_type')?.invalid && filters.get('report_type')?.touched"
-        class="w-full">
-      </p-select>
-    </div>
-    <div class="flex items-end">
-      <button pButton label="Load" type="submit"  class="p-2 text-xl"></button>
-    </div>
-
- 
-  </form>
+        </p-select> 
+      </div> <!-- From --> 
+      <div class="w-full"> 
+        <label class="block mb-1 font-medium"> From </label> 
+        <p-datepicker formControlName="from" [showIcon]="true" [showButtonBar]="true" dateFormat="dd/mm/yy" class="w-full" > </p-datepicker>
+       </div> 
+       <!-- To -->
+        <div class="w-full"> 
+          <label class="block mb-1 font-medium"> To </label>
+           <p-datepicker formControlName="to" [showIcon]="true" [showButtonBar]="true" dateFormat="dd/mm/yy" class="w-full" > </p-datepicker> </div>
+            <!-- Type --> 
+             <div class="w-full"> 
+              <label class="block mb-1 font-medium"> Type </label> 
+              <p-select formControlName="report_type" [options]="typeList" optionLabel="name" optionValue="name" placeholder="Select Type" [filter]="true" [invalid]=" filters.get('report_type')?.invalid && filters.get('report_type')?.touched " class="w-full" > </p-select> 
+            </div>
+             <!-- Load Button --> 
+            <div class="w-full"> 
+              <button pButton type="submit" label="Load" icon="pi pi-search" class="w-full" > </button>
+             </div> 
+            </form>
 
 @if(ledgerList().length > 0){
 
@@ -154,6 +136,19 @@
         {{ row.outstanding_amount }}
       </td>
 
+    </tr>
+  </ng-template>
+
+  <!-- TOTAL ROW -->
+  <ng-template pTemplate="footer">
+    <tr class="font-bold">
+      <td colspan="4" class="text-right">
+        Total Outstanding:
+      </td>
+
+      <td class="text-red-500 text-lg">
+        {{ getTotalOutstanding() | number:'1.2-2' }}
+      </td>
     </tr>
   </ng-template>
 

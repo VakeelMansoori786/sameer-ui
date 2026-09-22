@@ -32,7 +32,7 @@ export class SalesComponent {
   id = signal<string>('0');
   customerId = signal<number>(0);
   productId = signal<number>(0);
-
+isSubmitting= signal<boolean>(false);
   constructor(
     private cd: ChangeDetectorRef,
     private router: Router,
@@ -293,7 +293,7 @@ row.patchValue({
       this.salesForm.markAllAsTouched();
       return;
     }
-
+this.isSubmitting.set(true);
     const items = this.items.value;
 
     for (let i = 0; i < items.length; i++) {
@@ -342,7 +342,8 @@ row.patchValue({
     if (this.id() != '0') {
       this.saleService.update(payload).subscribe((data: any) => {
         this.messageService.add({ key: 'tst', severity: 'success', summary: 'Success', detail: 'Supplier saved successfully' });
-        
+        this.isSubmitting.set(false);
+
         const type = payload.status?.toLowerCase();
         if (type === 'invoice' || type === 'paid') {
           this.router.navigate(['/invoice', { id: btoa(this.id()) },]);
@@ -358,6 +359,7 @@ row.patchValue({
       this.saleService.create(payload).subscribe((data: any) => {
         this.messageService.add({ key: 'tst', severity: 'success', summary: 'Success', detail: 'Supplier saved successfully' });
         const type = payload.status?.toLowerCase();
+        this.isSubmitting.set(false);
         if (type === 'invoice' || type === 'paid') {
           this.router.navigate(['/invoice', { id: btoa(data[0].sale_id) },]);
         }

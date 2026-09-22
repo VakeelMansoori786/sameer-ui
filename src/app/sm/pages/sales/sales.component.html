@@ -191,7 +191,7 @@
   </div>
 
   <div class="flex flex-wrap gap-2 w-full">
-    <button pButton type="submit" label="Save"
+    <button pButton type="submit" label="Save"  [disabled]="isSubmitting()"  [loading]="isSubmitting()"
       class="p-3 text-xl">
     </button>
   </div>
