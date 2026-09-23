@@ -88,184 +88,682 @@ chartOptions: any;
   }
 
   // ================= MAIN API =================
-  GetData() {
-    this.loading.set(true);
+ GetData() {
+  this.loading.set(true);
 
-    const from = this.commonService.formatDate(this.fromDate());
-    const to = this.commonService.formatDate(this.toDate());
-let purpose = '';
-    forkJoin({
-      sales: this.commonService.GetTableRange({
-        table: 'SALESUMCOUNT',
-        from,
-        to,
-        purpose
-      }),
-      cash: this.commonService.GetTableRange({
-        table: 'CASHDAILY',
-        from,
-        to,
-        purpose
-      }),
-      purchase: this.commonService.GetTableRange({
-        table: 'PURCHASESUMCOUNT',
-        from,
-        to,
-        purpose
-      }),
-     recentSale: this.commonService.GetTableRange({
-        table: 'SALE',
-        from,
-        to,
-        purpose
-      }),
-  
-     paymentDueList: this.commonService.GetTableRange({
-        table: 'PAYMENTDUE',
-        from,
-        to,
-        purpose 
-      }),
-     monthSaleList: this.commonService.GetTableRange({
-        table: 'MONTHSALE',
-        from,
-        to,
-        purpose
-      })
-    }).subscribe({
-      next: (res: any) => {
+  const from = this.commonService.formatDate(this.fromDate());
+  const to = this.commonService.formatDate(this.toDate());
+  let purpose = '';
 
-        // ✅ SALES
-        if (res.sales?.length > 0) {
-          this.sale.set({
-            count: res.sales[0].count || 0,
-            total: res.sales[0].total || 0
-          });
-        } else {
-          this.sale.set({ count: 0, total: 0 });
-        }
+  forkJoin({
+    sales: this.commonService.GetTableRange({
+      table: 'SALESUMCOUNT',
+      from,
+      to,
+      purpose
+    }),
 
-        // ✅ CASH
-        if (res.cash?.length > 0) {
-          const d = res.cash[0];
-          this.cash.set({
-            card: d.card_flow || 0,
-            bank: d.bank_flow || 0,
-            cheque: d.cheque_flow || 0,
-            total_cash_in: d.cash_flow || 0,
-            total_cash_out: d.total_cash_out || 0,
-            available_cash: d.cash_balance || 0
-          });
-        } else {
-          this.resetCash();
-        }
+    cash: this.commonService.GetTableRange({
+      table: 'CASHDAILY',
+      from,
+      to,
+      purpose
+    }),
 
-        // ✅ PURCHASE
-        if (res.purchase?.length > 0) {
-          this.purchase.set({
-            count: res.purchase[0].count || 0,
-            total: res.purchase[0].total || 0
-          });
-        } else {
-          this.purchase.set({ count: 0, total: 0 });
-        }
+    purchase: this.commonService.GetTableRange({
+      table: 'PURCHASESUMCOUNT',
+      from,
+      to,
+      purpose
+    }),
 
-        // ✅ RECENT SALES
-        if (res.recentSale?.length > 0) {
-          this.recentSale.set(res.recentSale);
-        } else {
-          this.recentSale.set([]);
-        }
-        if (res.monthSaleList?.length > 0) {
-          this.monthSaleList.set(res.monthSaleList);
-       const documentStyle = getComputedStyle(document.documentElement);
-        const textColor = documentStyle.getPropertyValue('--text-color');
-        const borderColor = documentStyle.getPropertyValue('--surface-border');
-        const textMutedColor = documentStyle.getPropertyValue('--text-color-secondary');
-this.chartData = {
-    labels:this.monthSaleList().map(d => d.sale_day),
-    datasets: [
-      {
-        label: 'Total Sales',
-        data: this.monthSaleList().map(d => Number(d.total_sales)),
-        borderWidth: 2,
-        tension: 0.4,
-        backgroundColor: documentStyle.getPropertyValue('--p-primary-400'),
-        fill: false
-      },
-      {
-        label: 'Sale Count',
-        backgroundColor: documentStyle.getPropertyValue('--p-primary-300'),
-        data: this.monthSaleList().map(d => d.sale_count),
-        type: 'bar', // mixed chart
-        yAxisID: 'y1'
+    recentSale: this.commonService.GetTableRange({
+      table: 'SALE',
+      from,
+      to,
+      purpose
+    }),
+
+    paymentDueList: this.commonService.GetTableRange({
+      table: 'PAYMENTDUE',
+      from,
+      to,
+      purpose
+    }),
+
+    monthSaleList: this.commonService.GetTableRange({
+      table: 'MONTHSALE',
+      from,
+      to,
+      purpose
+    })
+
+  }).subscribe({
+
+    next: (res: any) => {
+
+      // =========================================================
+      // SALES
+      // =========================================================
+      if (res.sales?.length > 0) {
+
+        this.sale.set({
+          count: Number(res.sales[0].count || 0),
+          total: Number(res.sales[0].total || 0)
+        });
+
+      } else {
+
+        this.sale.set({
+          count: 0,
+          total: 0
+        });
+
       }
-    ]
-  };
-
-  this.chartOptions = {
-    responsive: true,
-    maintainAspectRatio: false,
-    plugins: {
-      legend: {
-        position: 'top',
-                    labels: {
-                        color: textColor
-                    }
-      }
-    },
-    scales: {
-      y: {
-        title: {
-          display: true,
-          text: 'Sales Amount'
-        }
-      },
-      y1: {
-        position: 'right',
-        ticks: {
-                        color: textMutedColor
-                    },
-        grid: {
-          drawOnChartArea: false,
-                        color: borderColor,
-                        borderColor: 'transparent',
-                        drawTicks: false
-        },
-        title: {
-          display: true,
-          text: 'Sale Count'
-        }
-      }
-    }
-  };
-
-        } else {
-          this.monthSaleList.set([]);
-        }
 
 
-        // ✅ PAYMENT DUE LIST
-        if (res.paymentDueList?.length > 0) {
-          this.paymentDueList.set(res.paymentDueList);
-          const totalDue = res.paymentDueList.reduce((sum:any, item:any) => {
-    return sum + parseFloat(item.due_amount || 0);
-}, 0);
-          this.paymentDue.set(totalDue);
-        } else {
-          this.paymentDueList.set([]);
-          this.paymentDue.set('0');
-        }
-        
-      },
-      error: () => {
-        this.sale.set({ count: 0, total: 0 });
-        this.purchase.set({ count: 0, total: 0 });
+      // =========================================================
+      // CASH
+      // =========================================================
+      if (res.cash?.length > 0) {
+
+        const d = res.cash[0];
+
+        this.cash.set({
+
+          card: Number(d.card_flow || 0),
+
+          bank: Number(d.bank_flow || 0),
+
+          cheque: Number(d.cheque_flow || 0),
+
+          total_cash_in: Number(d.cash_flow || 0),
+
+          total_cash_out: Number(d.total_cash_out || 0),
+
+          available_cash: Number(d.cash_balance || 0)
+
+        });
+
+      } else {
+
         this.resetCash();
-      },
-      complete: () => this.loading.set(false)
-    });
-  }
+
+      }
+
+
+      // =========================================================
+      // PURCHASE
+      // =========================================================
+      if (res.purchase?.length > 0) {
+
+        this.purchase.set({
+
+          count: Number(res.purchase[0].count || 0),
+
+          total: Number(res.purchase[0].total || 0)
+
+        });
+
+      } else {
+
+        this.purchase.set({
+
+          count: 0,
+
+          total: 0
+
+        });
+
+      }
+
+
+      // =========================================================
+      // RECENT SALES
+      // =========================================================
+      if (res.recentSale?.length > 0) {
+
+        this.recentSale.set(res.recentSale);
+
+      } else {
+
+        this.recentSale.set([]);
+
+      }
+
+
+      // =========================================================
+      // SALES ANALYSIS
+      // =========================================================
+      if (res.monthSaleList?.length > 0) {
+
+        this.monthSaleList.set(res.monthSaleList);
+
+        const documentStyle =
+          getComputedStyle(document.documentElement);
+
+        const textColor =
+          documentStyle.getPropertyValue('--text-color');
+
+        const textMutedColor =
+          documentStyle.getPropertyValue('--text-color-secondary');
+
+        const borderColor =
+          documentStyle.getPropertyValue('--surface-border');
+
+        const primaryColor =
+          documentStyle.getPropertyValue('--p-primary-500');
+
+        const primaryLightColor =
+          documentStyle.getPropertyValue('--p-primary-200');
+
+
+        // ---------------------------------------------------------
+        // CHART DATA
+        // Sales Amount = BAR
+        // Sale Count   = LINE
+        // ---------------------------------------------------------
+        this.chartData = {
+
+          labels: this.monthSaleList().map(
+            (d: any) => d.sale_day
+          ),
+
+          datasets: [
+
+            // SALES AMOUNT
+            {
+              type: 'bar',
+
+              label: 'Sales Amount',
+
+              data: this.monthSaleList().map(
+                (d: any) => Number(d.total_sales || 0)
+              ),
+
+              backgroundColor: primaryColor,
+
+              borderColor: primaryColor,
+
+              borderWidth: 0,
+
+              borderRadius: 3,
+
+              barThickness: 22,
+
+              maxBarThickness: 28,
+
+              yAxisID: 'y'
+            },
+
+
+            // SALE COUNT
+            {
+              type: 'line',
+
+              label: 'Sale Count',
+
+              data: this.monthSaleList().map(
+                (d: any) => Number(d.sale_count || 0)
+              ),
+
+              borderColor: textMutedColor,
+
+              backgroundColor: textMutedColor,
+
+              borderWidth: 2,
+
+              pointRadius: 3,
+
+              pointHoverRadius: 5,
+
+              pointBackgroundColor: textMutedColor,
+
+              pointBorderColor: textMutedColor,
+
+              tension: 0.3,
+
+              fill: false,
+
+              yAxisID: 'y1'
+            }
+
+          ]
+
+        };
+
+
+        // =========================================================
+        // CHART OPTIONS
+        // =========================================================
+        this.chartOptions = {
+
+          responsive: true,
+
+          maintainAspectRatio: false,
+
+          interaction: {
+
+            mode: 'index',
+
+            intersect: false
+
+          },
+
+
+          plugins: {
+
+            legend: {
+
+              position: 'top',
+
+              align: 'start',
+
+              labels: {
+
+                color: textColor,
+
+                usePointStyle: true,
+
+                pointStyle: 'rectRounded',
+
+                boxWidth: 8,
+
+                boxHeight: 8,
+
+                padding: 18,
+
+                font: {
+
+                  family: 'Segoe UI',
+
+                  size: 12
+
+                }
+
+              }
+
+            },
+
+
+            tooltip: {
+
+              mode: 'index',
+
+              intersect: false,
+
+              padding: 10,
+
+              backgroundColor: '#ffffff',
+
+              titleColor: textColor,
+
+              bodyColor: textColor,
+
+              borderColor: borderColor,
+
+              borderWidth: 1,
+
+              displayColors: true,
+
+              callbacks: {
+
+                label: (context: any) => {
+
+                  const label =
+                    context.dataset.label || '';
+
+                  const value =
+                    context.parsed.y ?? 0;
+
+
+                  if (label === 'Sales Amount') {
+
+                    return ` Sales Amount: AED ${Number(value)
+                      .toLocaleString('en-AE', {
+                        minimumFractionDigits: 2,
+                        maximumFractionDigits: 2
+                      })}`;
+
+                  }
+
+
+                  if (label === 'Sale Count') {
+
+                    return ` Sale Count: ${Number(value)
+                      .toLocaleString('en-AE', {
+                        maximumFractionDigits: 0
+                      })}`;
+
+                  }
+
+
+                  return ` ${label}: ${value}`;
+
+                }
+
+              }
+
+            }
+
+          },
+
+
+          scales: {
+
+            // =====================================================
+            // X AXIS
+            // =====================================================
+            x: {
+
+              grid: {
+
+                display: false
+
+              },
+
+              ticks: {
+
+                color: textMutedColor,
+
+                font: {
+
+                  family: 'Segoe UI',
+
+                  size: 11
+
+                },
+
+                maxRotation: 0,
+
+                autoSkip: true,
+
+                maxTicksLimit: 15
+
+              },
+
+              border: {
+
+                color: borderColor
+
+              }
+
+            },
+
+
+            // =====================================================
+            // LEFT Y AXIS - SALES AMOUNT
+            // =====================================================
+            y: {
+
+              position: 'left',
+
+              beginAtZero: true,
+
+              grid: {
+
+                color: borderColor,
+
+                drawBorder: false
+
+              },
+
+              border: {
+
+                display: false
+
+              },
+
+              ticks: {
+
+                color: textMutedColor,
+
+                padding: 8,
+
+                font: {
+
+                  family: 'Segoe UI',
+
+                  size: 11
+
+                },
+
+                callback: (value: any) => {
+
+                  const numberValue =
+                    Number(value);
+
+                  if (numberValue >= 1000000) {
+
+                    return `AED ${(numberValue / 1000000)
+                      .toFixed(1)}M`;
+
+                  }
+
+                  if (numberValue >= 1000) {
+
+                    return `AED ${(numberValue / 1000)
+                      .toFixed(0)}K`;
+
+                  }
+
+                  return `AED ${numberValue}`;
+
+                }
+
+              },
+
+              title: {
+
+                display: true,
+
+                text: 'Sales Amount (AED)',
+
+                color: textMutedColor,
+
+                font: {
+
+                  family: 'Segoe UI',
+
+                  size: 11,
+
+                  weight: 'normal'
+
+                }
+
+              }
+
+            },
+
+
+            // =====================================================
+            // RIGHT Y AXIS - SALE COUNT
+            // =====================================================
+            y1: {
+
+              position: 'right',
+
+              beginAtZero: true,
+
+              grid: {
+
+                drawOnChartArea: false
+
+              },
+
+              border: {
+
+                display: false
+
+              },
+
+              ticks: {
+
+                color: textMutedColor,
+
+                padding: 8,
+
+                stepSize: 1,
+
+                font: {
+
+                  family: 'Segoe UI',
+
+                  size: 11
+
+                },
+
+                callback: (value: any) => {
+
+                  return Number(value).toLocaleString('en-AE');
+
+                }
+
+              },
+
+              title: {
+
+                display: true,
+
+                text: 'Sale Count',
+
+                color: textMutedColor,
+
+                font: {
+
+                  family: 'Segoe UI',
+
+                  size: 11,
+
+                  weight: 'normal'
+
+                }
+
+              }
+
+            }
+
+          }
+
+        };
+
+      } else {
+
+        this.monthSaleList.set([]);
+
+        this.chartData = {
+
+          labels: [],
+
+          datasets: []
+
+        };
+
+        this.chartOptions = {};
+
+      }
+
+
+      // =========================================================
+      // PAYMENT DUE LIST
+      // =========================================================
+      if (res.paymentDueList?.length > 0) {
+
+        this.paymentDueList.set(
+          res.paymentDueList
+        );
+
+
+        const totalDue =
+          res.paymentDueList.reduce(
+            (sum: number, item: any) => {
+
+              return sum +
+                Number(
+                  item.due_amount || 0
+                );
+
+            },
+            0
+          );
+
+
+        this.paymentDue.set(totalDue);
+
+      } else {
+
+        this.paymentDueList.set([]);
+
+        this.paymentDue.set(0);
+
+      }
+
+    },
+
+
+    // ===========================================================
+    // ERROR
+    // ===========================================================
+    error: (error: any) => {
+
+      console.error(
+        'Dashboard GetData Error:',
+        error
+      );
+
+
+      this.sale.set({
+
+        count: 0,
+
+        total: 0
+
+      });
+
+
+      this.purchase.set({
+
+        count: 0,
+
+        total: 0
+
+      });
+
+
+      this.recentSale.set([]);
+
+      this.monthSaleList.set([]);
+
+      this.paymentDueList.set([]);
+
+      this.paymentDue.set(0);
+
+      this.resetCash();
+
+      this.chartData = {
+
+        labels: [],
+
+        datasets: []
+
+      };
+
+      this.chartOptions = {};
+
+    },
+
+
+    // ===========================================================
+    // COMPLETE
+    // ===========================================================
+    complete: () => {
+
+      this.loading.set(false);
+
+    }
+
+  });
+}
 
   // ================= HELPERS =================
   private resetCash() {
@@ -290,7 +788,16 @@ this.chartData = {
   
   }
   payment(customerId:any){
-    debugger
+      
  this.router.navigate(['/payment-received',{ customer: btoa(customerId) },]);
+  }
+  GetDataByCustomer(customerId: any) {
+  
+    this.router.navigate(['/sale-list'], {
+  queryParams: {
+    purpose: customerId
+   
+  }
+});
   }
 }

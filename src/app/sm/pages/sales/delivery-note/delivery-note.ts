@@ -39,258 +39,948 @@ goBack() {
     this.location.back();
   }
 report(type: string) {
-    const data: any = this.mainList();
-  if (!data) return;
+  const data: any = this.mainList();
+
+  if (!data?.sale?.length) {
+    return;
+  }
+
+  const sale = data.sale[0];
 
   const doc = new jsPDF('p', 'mm', 'a4');
+
   const pageWidth = doc.internal.pageSize.getWidth();
   const pageHeight = doc.internal.pageSize.getHeight();
 
-  const logoImg = this.companyDetail.logo;
+  const marginLeft = 15;
+  const marginRight = 15;
 
-  // ================= HEADER =================
-  const drawHeader = () => {
-    const yOffset = 15;
+  const contentWidth =
+    pageWidth - marginLeft - marginRight;
 
-    if (logoImg) {
-      doc.addImage(logoImg, 'PNG', 15, yOffset, 20, 20);
+  const logoImg =
+    this.companyDetail?.logo;
+
+
+  // ============================================================
+  // HELPERS
+  // ============================================================
+
+  const formatDate = (value: any): string => {
+
+    if (!value) {
+      return '';
     }
 
-    doc.setFontSize(9);
-    doc.setFont('helvetica', 'bold');
-    doc.setTextColor(31, 78, 121);
-    doc.text(
-      `${this.companyDetail.owner} ${this.companyDetail.bussiness_type}`,
-      40,
-      yOffset + 3
-    );
+    return value
+      .toString()
+      .split('T')[0];
 
-    doc.setFont('helvetica', 'normal');
-    doc.setFontSize(8);
-    doc.setTextColor(0, 0, 0);
-
-    doc.text(this.companyDetail.address, 40, yOffset + 7);
-    doc.text(
-      `Mobile: ${this.companyDetail.tel} / ${this.companyDetail.mobile1}`,
-      40,
-      yOffset + 11
-    );
-    doc.text(
-      `TRN: ${this.companyDetail.trn}  Email: ${this.companyDetail.email}`,
-      40,
-      yOffset + 15
-    );
-
-    doc.setDrawColor(0, 0, 0);
-    doc.setLineWidth(0.3);
-    doc.line(15, yOffset + 20, pageWidth - 15, yOffset + 20);
-
-    return yOffset + 25;
   };
 
-  // ================= FOOTER =================
-  const drawFooter = (pageNum: number, totalPages: number) => {
-    doc.setFontSize(7);
-    doc.text(
-      `Page ${pageNum} of ${totalPages}`,
-      pageWidth - 30,
-      pageHeight - 10
+
+  // ============================================================
+  // DELIVERY NOTE NUMBER
+  // ============================================================
+
+  const originalInvoiceNo =
+    sale.invoice_no?.toString() || '';
+
+  const deliveryNoteNo =
+    originalInvoiceNo.replace('IN','DN');
+
+
+  // ============================================================
+  // HEADER
+  // ============================================================
+
+  const drawHeader = () => {
+
+    const top = 12;
+
+
+    // ----------------------------------------------------------
+    // LOGO
+    // ----------------------------------------------------------
+
+    if (logoImg) {
+
+      try {
+
+        doc.addImage(
+          logoImg,
+          'PNG',
+          marginLeft,
+          top,
+          22,
+          22
+        );
+
+      } catch (error) {
+
+        console.warn(
+          'Unable to add company logo',
+          error
+        );
+
+      }
+
+    }
+
+
+    const companyX =
+      logoImg
+        ? 42
+        : marginLeft;
+
+
+    // ----------------------------------------------------------
+    // COMPANY NAME
+    // ----------------------------------------------------------
+
+    doc.setFont(
+      'helvetica',
+      'bold'
     );
+
+    doc.setFontSize(12);
+
+    doc.setTextColor(
+      31,
+      78,
+      121
+    );
+
+    doc.text(
+      `${this.companyDetail?.owner || ''} ${this.companyDetail?.bussiness_type || ''}`,
+      companyX,
+      top + 4
+    );
+
+
+    // ----------------------------------------------------------
+    // ADDRESS
+    // ----------------------------------------------------------
+
+    doc.setFont(
+      'helvetica',
+      'normal'
+    );
+
+    doc.setFontSize(8.5);
+
+    doc.setTextColor(
+      60,
+      60,
+      60
+    );
+
+    doc.text(
+      this.companyDetail?.address || '',
+      companyX,
+      top + 9
+    );
+
+
+    // ----------------------------------------------------------
+    // TELEPHONE
+    // ----------------------------------------------------------
+
+    doc.text(
+      `Tel: ${this.companyDetail?.tel || '-'} / ${this.companyDetail?.mobile1 || '-'}`,
+      companyX,
+      top + 14
+    );
+
+
+    // ----------------------------------------------------------
+    // TRN + EMAIL
+    // ----------------------------------------------------------
+
+    doc.text(
+      `TRN: ${this.companyDetail?.trn || '-'}   Email: ${this.companyDetail?.email || '-'}`,
+      companyX,
+      top + 19
+    );
+
+
+    // ----------------------------------------------------------
+    // HEADER LINE
+    // ----------------------------------------------------------
+
+    doc.setDrawColor(
+      80,
+      80,
+      80
+    );
+
+    doc.setLineWidth(
+      0.35
+    );
+
+    doc.line(
+      marginLeft,
+      top + 26,
+      pageWidth - marginRight,
+      top + 26
+    );
+
+
+    return top + 31;
+
   };
 
-  let yStart = drawHeader();
 
-  // ================= TITLE =================
-  doc.setFontSize(8);
-  doc.setFont('helvetica', 'bold');
-  doc.text('DELIVERY NOTE', pageWidth / 2, yStart, {
-    align: 'center'
-  });
+  // ============================================================
+  // FOOTER
+  // ============================================================
 
-  yStart += 6;
+  const drawFooter = (
+    pageNumber: number,
+    totalPages: number
+  ) => {
 
-  // ================= CUSTOMER =================
-  doc.setFontSize(7);
-  doc.setFont('helvetica', 'normal');
+    const footerY =
+      pageHeight - 9;
 
-  const custAddress = doc.splitTextToSize(
-    data.sale[0].address || '',
-    90
+
+    doc.setDrawColor(
+      180,
+      180,
+      180
+    );
+
+    doc.setLineWidth(
+      0.2
+    );
+
+
+    doc.line(
+      marginLeft,
+      footerY - 4,
+      pageWidth - marginRight,
+      footerY - 4
+    );
+
+
+    doc.setFont(
+      'helvetica',
+      'normal'
+    );
+
+    doc.setFontSize(
+      7.5
+    );
+
+    doc.setTextColor(
+      100,
+      100,
+      100
+    );
+
+
+    doc.text(
+      'This is a computer generated delivery note.',
+      marginLeft,
+      footerY
+    );
+
+
+    doc.text(
+      `Page ${pageNumber} of ${totalPages}`,
+      pageWidth - marginRight,
+      footerY,
+      {
+        align: 'right'
+      }
+    );
+
+  };
+
+
+  // ============================================================
+  // START
+  // ============================================================
+
+  let yStart =
+    drawHeader();
+
+
+  // ============================================================
+  // TITLE
+  // ============================================================
+
+  doc.setFont(
+    'helvetica',
+    'bold'
   );
 
-  doc.text(`Name: ${data.sale[0].customer_name}`, 15, yStart);
-  doc.text(`Phone: ${data.sale[0].phone}`, 15, yStart + 4);
-  doc.text(custAddress, 15, yStart + 8);
-
-  doc.text(
-    `TRN: ${data.sale[0].trn || '-'}`,
-    15,
-    yStart + 8 + custAddress.length * 3
+  doc.setFontSize(
+    13
   );
 
+  doc.setTextColor(
+    0,
+    0,
+    0
+  );
+
+
   doc.text(
-    `Delivery Note No: ${data.sale[0].invoice_no.replace('IN', 'DN')}`,
-    pageWidth - 70,
+    'DELIVERY NOTE',
+    pageWidth / 2,
+    yStart,
+    {
+      align: 'center'
+    }
+  );
+
+
+  yStart += 8;
+
+
+  // ============================================================
+  // CUSTOMER / DELIVERY DETAILS
+  // ============================================================
+
+  const customerX =
+    marginLeft;
+
+  const deliveryX =
+    pageWidth - 75;
+
+
+  // Section headings
+  doc.setFont(
+    'helvetica',
+    'bold'
+  );
+
+  doc.setFontSize(
+    8.5
+  );
+
+  doc.setTextColor(
+    50,
+    50,
+    50
+  );
+
+
+  doc.text(
+    'CUSTOMER DETAILS',
+    customerX,
     yStart
   );
 
+
   doc.text(
-    `Date: ${data.sale[0].sale_date?.split('T')[0]}`,
-    pageWidth - 70,
+    'DELIVERY DETAILS',
+    deliveryX,
+    yStart
+  );
+
+
+  yStart += 5;
+
+
+  // ============================================================
+  // CUSTOMER
+  // ============================================================
+
+  doc.setFont(
+    'helvetica',
+    'normal'
+  );
+
+  doc.setFontSize(
+    8.5
+  );
+
+  doc.setTextColor(
+    0,
+    0,
+    0
+  );
+
+
+  doc.text(
+    `Name: ${sale.customer_name || '-'}`,
+    customerX,
+    yStart
+  );
+
+
+  doc.text(
+    `Phone: ${sale.phone || '-'}`,
+    customerX,
     yStart + 4
   );
 
-  yStart += 16 + custAddress.length * 3;
 
-  // ================= TABLE =================
-  // Price and Total columns removed
-  const tableColumns = ['#', 'Description', 'Qty', 'Unit'];
-
-  const tableRows = data.sale_detail.map(
-    (item: any, i: number) => [
-      i + 1,
-      item.product,
-      Number(item.qty || 0),
-      item.unit || ''
-    ]
-  );
-
-  autoTable(doc, {
-    startY: yStart,
-    head: [tableColumns],
-    body: tableRows,
-
-    theme: 'grid',
-
-    styles: {
-      fontSize: 7,
-      cellPadding: 1.5,
-      textColor: [0, 0, 0],
-      lineColor: [0, 0, 0],
-      lineWidth: 0.2,
-      minCellHeight: 6
-    },
-
-    headStyles: {
-      fillColor: [200, 200, 200],
-      fontStyle: 'bold',
-      cellPadding: 1.5,
-      minCellHeight: 6,
-      lineColor: [0, 0, 0],
-      lineWidth: 0.2
-    },
-
-    bodyStyles: {
-      cellPadding: 1.5,
-      minCellHeight: 6,
-      lineColor: [0, 0, 0],
-      lineWidth: 0.2
-    },
-
-    // Better widths after removing financial columns
-    columnStyles: {
-      0: {
-        cellWidth: 12,
-        halign: 'center'
-      },
-      1: {
-        cellWidth: 120
-      },
-      2: {
-        cellWidth: 20,
-        halign: 'center'
-      },
-      3: {
-        cellWidth: 28,
-        halign: 'center'
-      }
-    },
-
-    margin: {
-      left: 15,
-      right: 15,
-      top: 40
-    },
-
-    showHead: 'everyPage',
-
-    didDrawPage: (dataArg: any) => {
-      drawHeader();
-
-      const pageNum = doc.getCurrentPageInfo().pageNumber;
-
-      drawFooter(
-        pageNum,
-        doc.getNumberOfPages()
-      );
-
-      dataArg.settings.margin.top = 35;
-    }
-  });
-
-  // ================= FINAL POSITION =================
-  const finalY =
-    (doc as any).lastAutoTable?.finalY || yStart + 10;
-
-  let safeY = finalY + 10;
-
-  // ================= NOTES =================
-  if (data.sale[0].note) {
-
-    if (safeY + 20 > pageHeight) {
-      doc.addPage();
-      drawHeader();
-      safeY = 45;
-    }
-
-    doc.setFontSize(7);
-    doc.setFont('helvetica', 'normal');
-
-    const notes = doc.splitTextToSize(
-      `Notes: ${data.sale[0].note}`,
-      pageWidth - 30
+  const customerAddress =
+    doc.splitTextToSize(
+      sale.address || '-',
+      90
     );
 
-    doc.text(notes, 15, safeY);
 
-    safeY += notes.length * 4 + 10;
-  }
-
-  // ================= SIGNATURE =================
-  let sigY = safeY + 20;
-
-  if (sigY + 20 > pageHeight) {
-    doc.addPage();
-    drawHeader();
-    sigY = 60;
-  }
-
-  doc.setFontSize(7);
-  doc.setFont('helvetica', 'normal');
-
-  doc.text('Prepared By', 15, sigY);
-  doc.line(15, sigY + 3, 60, sigY + 3);
-
-  doc.text('Received By', pageWidth - 70, sigY);
-  doc.line(
-    pageWidth - 70,
-    sigY + 3,
-    pageWidth - 20,
-    sigY + 3
+  doc.text(
+    customerAddress,
+    customerX,
+    yStart + 8
   );
 
-  // ================= OUTPUT =================
-  if (type === 'download') {
-    doc.save(`Invoice-${data.sale[0].invoice_no}.pdf`);
+
+  const addressHeight =
+    customerAddress.length * 4;
+
+
+  doc.text(
+    `TRN: ${sale.trn || '-'}`,
+    customerX,
+    yStart + 8 + addressHeight
+  );
+
+
+  // ============================================================
+  // DELIVERY DETAILS
+  // ============================================================
+
+  doc.text(
+    `Delivery Note No: ${deliveryNoteNo || '-'}`,
+    deliveryX,
+    yStart
+  );
+
+
+  doc.text(
+    `Date: ${formatDate(sale.sale_date)}`,
+    deliveryX,
+    yStart + 4
+  );
+
+
+  // Optional LPO
+  if (
+    sale.lpo_no !== null &&
+    sale.lpo_no !== undefined &&
+    sale.lpo_no.toString().trim() !== ''
+  ) {
+
+    doc.text(
+      `LPO No: ${sale.lpo_no}`,
+      deliveryX,
+      yStart + 8
+    );
+
+  }
+
+
+  // ============================================================
+  // MOVE BELOW CUSTOMER SECTION
+  // ============================================================
+
+  yStart +=
+    Math.max(
+      20 + addressHeight,
+      14
+    );
+
+
+  // ============================================================
+  // DELIVERY ITEMS TABLE
+  // ============================================================
+
+  const tableColumns = [
+    '#',
+    'Description',
+    'Qty',
+    'Unit'
+  ];
+
+
+  const tableRows =
+    (data.sale_detail || []).map(
+      (item: any, i: number) => {
+
+        const qty =
+          parseFloat(item.qty || 0);
+
+
+        return [
+
+          i + 1,
+
+          item.product || '-',
+
+          qty.toLocaleString(
+            'en-AE',
+            {
+              maximumFractionDigits: 3
+            }
+          ),
+
+          item.unit || '-'
+
+        ];
+
+      }
+    );
+
+
+  // ============================================================
+  // AUTO TABLE
+  // ============================================================
+
+  autoTable(doc, {
+
+    startY:
+      yStart + 3,
+
+
+    head: [
+      tableColumns
+    ],
+
+
+    body:
+      tableRows,
+
+
+    theme:
+      'grid',
+
+
+    margin: {
+
+      left:
+        marginLeft,
+
+      right:
+        marginRight,
+
+      top:
+        42,
+
+      bottom:
+        18
+
+    },
+
+
+    showHead:
+      'everyPage',
+
+
+    styles: {
+
+      font:
+        'helvetica',
+
+      fontSize:
+        8,
+
+      textColor:
+        [30, 30, 30],
+
+      lineColor:
+        [150, 150, 150],
+
+      lineWidth:
+        0.15,
+
+      cellPadding:
+        1.8,
+
+      minCellHeight:
+        7,
+
+      valign:
+        'middle'
+
+    },
+
+
+    // ==========================================================
+    // TABLE HEADER
+    // ==========================================================
+
+    headStyles: {
+
+      fillColor:
+        [235, 238, 242],
+
+      textColor:
+        [30, 30, 30],
+
+      fontStyle:
+        'bold',
+
+      fontSize:
+        8,
+
+      lineColor:
+        [120, 120, 120],
+
+      lineWidth:
+        0.2,
+
+      cellPadding:
+        1.8,
+
+      halign:
+        'center'
+
+    },
+
+
+    bodyStyles: {
+
+      fillColor:
+        [255, 255, 255],
+
+      lineColor:
+        [150, 150, 150],
+
+      lineWidth:
+        0.15
+
+    },
+
+
+    alternateRowStyles: {
+
+      fillColor:
+        [250, 250, 250]
+
+    },
+
+
+    // ==========================================================
+    // COLUMN WIDTHS
+    // ==========================================================
+
+    columnStyles: {
+
+      0: {
+
+        cellWidth:
+          12,
+
+        halign:
+          'center'
+
+      },
+
+      1: {
+
+        cellWidth:
+          125,
+
+        halign:
+          'left'
+
+      },
+
+      2: {
+
+        cellWidth:
+          20,
+
+        halign:
+          'right'
+
+      },
+
+      3: {
+
+        cellWidth:
+          28,
+
+        halign:
+          'center'
+
+      }
+
+    },
+
+
+    // ==========================================================
+    // PAGE HEADER / FOOTER
+    // ==========================================================
+
+    didDrawPage:
+      (pageData: any) => {
+
+        drawHeader();
+
+
+        const currentPage =
+          doc
+            .getCurrentPageInfo()
+            .pageNumber;
+
+
+        drawFooter(
+          currentPage,
+          doc.getNumberOfPages()
+        );
+
+
+        pageData.settings.margin.top =
+          42;
+
+      }
+
+  });
+
+
+  // ============================================================
+  // FINAL TABLE POSITION
+  // ============================================================
+
+  const finalY =
+    (doc as any).lastAutoTable?.finalY ||
+    yStart + 10;
+
+
+  let safeY =
+    finalY + 10;
+
+
+  // ============================================================
+  // NOTES
+  // ============================================================
+
+  if (
+    sale.note &&
+    sale.note.toString().trim() !== ''
+  ) {
+
+    if (
+      safeY + 30 >
+      pageHeight - 15
+    ) {
+
+      doc.addPage();
+
+      drawHeader();
+
+      safeY = 45;
+
+    }
+
+
+    doc.setFont(
+      'helvetica',
+      'bold'
+    );
+
+    doc.setFontSize(
+      8
+    );
+
+    doc.setTextColor(
+      50,
+      50,
+      50
+    );
+
+
+    doc.text(
+      'NOTES',
+      marginLeft,
+      safeY
+    );
+
+
+    safeY += 5;
+
+
+    doc.setFont(
+      'helvetica',
+      'normal'
+    );
+
+    doc.setFontSize(
+      8
+    );
+
+    doc.setTextColor(
+      0,
+      0,
+      0
+    );
+
+
+    const notes =
+      doc.splitTextToSize(
+        sale.note.toString(),
+        contentWidth
+      );
+
+
+    doc.text(
+      notes,
+      marginLeft,
+      safeY
+    );
+
+
+    safeY +=
+      notes.length * 4 + 8;
+
+  }
+
+
+  // ============================================================
+  // SIGNATURE SECTION
+  // ============================================================
+
+  let signatureY =
+    safeY + 15;
+
+
+  if (
+    signatureY + 25 >
+    pageHeight - 15
+  ) {
+
+    doc.addPage();
+
+    drawHeader();
+
+    signatureY = 50;
+
+  }
+
+
+  doc.setFont(
+    'helvetica',
+    'normal'
+  );
+
+  doc.setFontSize(
+    8.5
+  );
+
+  doc.setTextColor(
+    0,
+    0,
+    0
+  );
+
+
+  // ============================================================
+  // PREPARED BY
+  // ============================================================
+
+  doc.text(
+    'Prepared By',
+    marginLeft,
+    signatureY
+  );
+
+
+  doc.line(
+    marginLeft,
+    signatureY + 8,
+    marginLeft + 45,
+    signatureY + 8
+  );
+
+
+  // ============================================================
+  // RECEIVED BY
+  // ============================================================
+
+  doc.text(
+    'Received By',
+    pageWidth - 65,
+    signatureY
+  );
+
+
+  doc.line(
+    pageWidth - 65,
+    signatureY + 8,
+    pageWidth - marginRight,
+    signatureY + 8
+  );
+
+
+  // ============================================================
+  // OUTPUT
+  // ============================================================
+
+  const fileName =
+    deliveryNoteNo ||
+    'Delivery-Note';
+
+
+  if (
+    type === 'download'
+  ) {
+
+    doc.save(
+      `Delivery-Note-${fileName}.pdf`
+    );
+
   } else {
-    const blob = doc.output('bloburl');
-    let iframe:any;
-     iframe = document.createElement('iframe');
-    iframe.style.display = 'none';
-    iframe.src = blob;
-    document.body.appendChild(iframe);
-    iframe.contentWindow?.focus();
-    iframe.contentWindow?.print();
+
+    const blobUrl =
+      doc.output('bloburl');
+
+
+    const iframe =
+      document.createElement(
+        'iframe'
+      );
+
+
+    iframe.style.position =
+      'fixed';
+
+    iframe.style.right =
+      '0';
+
+    iframe.style.bottom =
+      '0';
+
+    iframe.style.width =
+      '0';
+
+    iframe.style.height =
+      '0';
+
+    iframe.style.border =
+      '0';
+
+
+    iframe.src =
+      blobUrl.toString();
+
+
+    document.body.appendChild(
+      iframe
+    );
+
+
+    iframe.onload = () => {
+
+      setTimeout(() => {
+
+        iframe.contentWindow
+          ?.focus();
+
+        iframe.contentWindow
+          ?.print();
+
+      }, 300);
+
+    };
+
   }
 }
 

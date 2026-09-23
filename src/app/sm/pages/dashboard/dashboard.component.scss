@@ -1,0 +1,465 @@
+/* =====================================================
+   ERP DASHBOARD
+   Microsoft / Oracle inspired
+   ===================================================== */
+
+.erp-dashboard {
+    font-family:
+        "Segoe UI",
+        Arial,
+        Helvetica,
+        sans-serif;
+
+    color: #26364a;
+}
+
+
+/* =====================================================
+   KPI CARDS
+   ===================================================== */
+
+.erp-kpi-card {
+    position: relative;
+
+    min-height: 105px;
+
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+
+    padding: 16px 18px;
+
+    background: #ffffff;
+
+    border: 1px solid #d9dee7;
+    border-radius: 4px;
+
+    transition:
+        border-color .15s ease,
+        box-shadow .15s ease;
+
+    overflow: hidden;
+}
+
+
+.erp-kpi-card:hover {
+    border-color: #b8c3d0;
+
+    box-shadow: 0 2px 7px rgba(30, 45, 65, .08);
+}
+
+
+.erp-clickable {
+    cursor: pointer;
+}
+
+
+.erp-clickable:hover {
+    background: #fafbfd;
+}
+
+
+/* Left blue indicator */
+
+.erp-kpi-card::before {
+    content: "";
+
+    position: absolute;
+
+    left: 0;
+    top: 0;
+    bottom: 0;
+
+    width: 3px;
+
+    background: #2f5f91;
+}
+
+
+/* KPI content */
+
+.erp-kpi-content {
+    min-width: 0;
+}
+
+
+.erp-kpi-label {
+    margin-bottom: 7px;
+
+    font-size: 10px;
+
+    font-weight: 600;
+
+    letter-spacing: .45px;
+
+    color: #718096;
+}
+
+
+.erp-kpi-value {
+    font-size: 20px;
+
+    line-height: 1.2;
+
+    font-weight: 600;
+
+    color: #26364a;
+
+    font-variant-numeric: tabular-nums;
+}
+
+
+.erp-positive {
+    color: #27734a;
+}
+
+
+.erp-due-value {
+    color: #9a6500;
+}
+
+
+/* KPI icon */
+
+.erp-kpi-icon {
+    width: 38px;
+    height: 38px;
+
+    min-width: 38px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    border-radius: 4px;
+
+    background: #edf2f7;
+
+    color: #47627e;
+
+    font-size: 16px;
+}
+
+
+.erp-warning-icon {
+    background: #fff4dc;
+    color: #9a6500;
+}
+
+
+.erp-success-icon {
+    background: #e8f4ec;
+    color: #27734a;
+}
+
+
+.erp-cash-icon {
+    background: #e9f0f8;
+    color: #315f91;
+}
+
+
+/* Cash Available */
+
+.erp-available-card {
+    border-color: #c8d6e5;
+}
+
+
+/* =====================================================
+   SECTION CARDS
+   ===================================================== */
+
+.erp-section-card {
+    margin-top: 16px;
+
+    padding: 0 !important;
+
+    overflow: hidden;
+
+    border: 1px solid #d9dee7;
+}
+
+
+.erp-section-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+
+    min-height: 60px;
+
+    padding: 11px 16px;
+
+    background: #f8f9fb;
+
+    border-bottom: 1px solid #d9dee7;
+}
+
+
+.erp-section-title {
+    font-size: 15px;
+
+    font-weight: 600;
+
+    color: #2f4054;
+}
+
+
+.erp-section-subtitle {
+    margin-top: 2px;
+
+    font-size: 11px;
+
+    color: #7b8795;
+}
+
+
+.erp-record-count {
+    font-size: 11px;
+
+    color: #7b8795;
+
+    padding: 4px 8px;
+
+    background: #eef1f5;
+
+    border: 1px solid #dce1e7;
+
+    border-radius: 3px;
+}
+
+
+/* =====================================================
+   TABLE
+   ===================================================== */
+
+:host ::ng-deep .erp-dashboard-table {
+    font-family:
+        "Segoe UI",
+        Arial,
+        Helvetica,
+        sans-serif;
+
+    font-size: 13px;
+}
+
+
+:host ::ng-deep .erp-dashboard-table thead th {
+    height: 40px;
+
+    padding: 7px 12px !important;
+
+    background: #eef1f5 !important;
+
+    color: #455568 !important;
+
+    font-size: 10px !important;
+
+    font-weight: 600 !important;
+
+    letter-spacing: .35px;
+
+    border-bottom: 1px solid #cfd6df !important;
+
+    white-space: nowrap;
+}
+
+
+:host ::ng-deep .erp-dashboard-table tbody td {
+    height: 42px;
+
+    padding: 7px 12px !important;
+
+    color: #334155;
+
+    border-bottom: 1px solid #e5e8ec !important;
+
+    font-size: 13px;
+
+    white-space: nowrap;
+}
+
+
+:host ::ng-deep .erp-dashboard-table tbody tr:hover {
+    background: #f6f8fb !important;
+}
+
+
+/* =====================================================
+   TABLE DATA
+   ===================================================== */
+
+.erp-invoice-number {
+    color: #1d5a96;
+
+    font-weight: 600;
+}
+
+
+.erp-customer-name {
+    font-weight: 500;
+}
+
+
+.erp-amount {
+    text-align: right;
+
+    font-variant-numeric: tabular-nums;
+
+    font-weight: 500;
+}
+
+
+.erp-balance-due {
+    color: #a04444;
+
+    font-weight: 600;
+}
+
+
+.erp-balance-paid {
+    color: #287548;
+
+    font-weight: 600;
+}
+
+
+/* =====================================================
+   STATUS
+   ===================================================== */
+
+.erp-status {
+    display: inline-flex;
+
+    align-items: center;
+    justify-content: center;
+
+    min-width: 65px;
+
+    padding: 3px 8px;
+
+    border-radius: 3px;
+
+    font-size: 10px;
+
+    font-weight: 600;
+}
+
+
+.status-paid {
+    background: #e8f4ec;
+    color: #277348;
+}
+
+
+.status-pending {
+    background: #fff3d8;
+    color: #966300;
+}
+
+
+.status-partial {
+    background: #e7eff9;
+    color: #315e91;
+}
+
+
+.status-cancelled {
+    background: #fae9e9;
+    color: #a13e3e;
+}
+
+
+/* =====================================================
+   ACTION BUTTON
+   ===================================================== */
+
+:host ::ng-deep .erp-view-button,
+:host ::ng-deep .erp-payment-button {
+
+    width: 29px !important;
+    height: 29px !important;
+
+    min-width: 29px !important;
+
+    padding: 0 !important;
+
+    background: transparent !important;
+
+    border: 1px solid #d2d8df !important;
+
+    color: #526273 !important;
+
+    border-radius: 3px !important;
+}
+
+
+:host ::ng-deep .erp-view-button:hover,
+:host ::ng-deep .erp-payment-button:hover {
+
+    background: #edf2f7 !important;
+
+    border-color: #b8c3cf !important;
+}
+
+
+/* =====================================================
+   CHART
+   ===================================================== */
+
+.erp-chart-container {
+    height: 430px;
+
+    padding: 18px 20px 12px;
+}
+
+
+/* =====================================================
+   EMPTY TABLE
+   ===================================================== */
+
+.erp-empty {
+    padding: 35px !important;
+
+    text-align: center;
+
+    color: #7b8795;
+
+    font-size: 12px;
+}
+
+
+/* =====================================================
+   DIALOG
+   ===================================================== */
+
+.erp-dialog-subtitle {
+    margin-bottom: 12px;
+
+    font-size: 12px;
+
+    color: #7b8795;
+}
+
+
+:host ::ng-deep .p-dialog .p-dialog-header {
+    padding: 14px 18px;
+
+    background: #f8f9fb;
+
+    border-bottom: 1px solid #d9dee7;
+}
+
+
+:host ::ng-deep .p-dialog .p-dialog-title {
+    font-size: 15px;
+
+    font-weight: 600;
+
+    color: #2f4054;
+}
+
+
+:host ::ng-deep .p-dialog .p-dialog-content {
+    padding: 16px 18px;
+}

@@ -10,6 +10,7 @@ import JSZip from 'jszip';
 import jsPDF from 'jspdf';
 import autoTable from 'jspdf-autotable';
 import { companyDetail } from '@/app/environments/environment';
+import { SupplierService } from '@/app/sm/services/supplier.service';
 @Component({
     selector: 'app-sale-list',
            imports: [SharedModule],
@@ -23,23 +24,30 @@ export class SaleList {
   loading = signal(false);
   loading1 = signal(false);
   total_sales = signal(0);
-  constructor(private route: ActivatedRoute,private router: Router,private saleService:SaleService,private fb: FormBuilder,private commonService:CommonService,private confirmationService:ConfirmationService,private messageService:MessageService) {}
+  constructor(private route: ActivatedRoute,private supplierService: SupplierService,private router: Router,private saleService:SaleService,private fb: FormBuilder,private commonService:CommonService,private confirmationService:ConfirmationService,private messageService:MessageService) {}
 
 fromDate: Date | null = null;
 toDate: Date | null = null;
+purpose: string | null = null;
+customersList = signal<any[]>([]);
 ngOnInit(): void {
-
+this.getCustomerList();
   this.route.queryParams.subscribe(params => {
 
     if (params['from'] && params['to']) {
 
       this.fromDate = new Date(params['from']);
       this.toDate = new Date(params['to']);
+      
 
-    } else {
+    }
+    else if (params['purpose']) {
+      this.purpose = params['purpose'];
+    }
+     else {
 
       let minDate = new Date();
-      minDate.setMonth(minDate.getMonth() - 3);
+      minDate.setMonth(minDate.getMonth() - 1);
 
       const today = new Date();
 
@@ -56,7 +64,7 @@ ngOnInit(): void {
     table:'SALE',
         from: this.commonService.formatDate(this.fromDate),
       to: this.commonService.formatDate(this.toDate),
-      purpose:''
+      purpose:this.purpose
 }
 this.commonService.GetTableRange(model).subscribe((data: any) => {
       this.mainList.set(data);
@@ -72,7 +80,11 @@ this.commonService.GetTableRange(model).subscribe((data: any) => {
       this.router.navigate(['/sale',{ id: btoa(id) },]);
   }
  
-
+  getCustomerList() {
+    this.supplierService.getAll().subscribe((data: any) => {
+      this.customersList.set(data);
+    });
+  }
    delete(id: any) {
 
   this.confirmationService.confirm({
@@ -721,5 +733,20 @@ this.commonService.GetBulkInvoice(model).subscribe((data: any) => {
 this.bulkDownloadInvoices(response);
            this.loading1.set(false);
     });
+  }
+  GetDataByCustomer(customer_id:any){
+    this.purpose=customer_id;
+this.getAll();
+  }
+  clear(){
+    this.purpose='';
+    let minDate = new Date();
+      minDate.setMonth(minDate.getMonth() - 1);
+
+      const today = new Date();
+
+      this.toDate = today;
+      this.fromDate = minDate;
+    this.ngOnInit();
   }
 }

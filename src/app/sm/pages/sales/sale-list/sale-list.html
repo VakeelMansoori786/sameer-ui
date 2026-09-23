@@ -2,178 +2,334 @@
 <p-toast key="tst"></p-toast>
 <p-confirmDialog></p-confirmDialog>
 <div class="card">
-  <div class="flex flex-wrap items-start gap-6">
+ <div class="flex flex-wrap items-end gap-6">
 
-    <!-- From Date -->
-    <div class="field w-80">
-      <label>From : </label>
-      <p-datepicker 
-        [(ngModel)]="fromDate"
-        name="fromDate"
-        [showIcon]="true"
-        dateFormat="dd-mm-yy">
-      </p-datepicker>
-    </div>
+  <!-- Customer -->
+  <div class="field w-80">
+    <label>Customer</label>
+    <p-select
+      [(ngModel)]="purpose"
+      [options]="customersList()"
+      optionLabel="name"
+      optionValue="id"
+      placeholder="Select Customer"
+      (onChange)="GetDataByCustomer($event.value)"
+      [filter]="true"
+      class="w-full">
+    </p-select>
+  </div>
 
-    <!-- To Date -->
-    <div class="field w-70">
-      <label>To : </label>
-      <p-datepicker 
-        [(ngModel)]="toDate"
-        name="toDate"
-        [showIcon]="true"
-        dateFormat="dd-mm-yy">
-      </p-datepicker>
-    </div>
+  <!-- From Date -->
+  <div class="field w-50">
+    <label>From :</label>
+    <p-datepicker
+      [(ngModel)]="fromDate"
+      name="fromDate"
+      [showIcon]="true"
+      dateFormat="dd-mm-yy">
+    </p-datepicker>
+  </div>
 
-    <!-- Button -->
-    <p-button  
-      (click)="getAll()" 
-      [loading]="loading()"    
+  <!-- To Date -->
+  <div class="field w-50">
+    <label>To :</label>
+    <p-datepicker
+      [(ngModel)]="toDate"
+      name="toDate"
+      [showIcon]="true"
+      dateFormat="dd-mm-yy">
+    </p-datepicker>
+  </div>
+
+  <!-- Search Button -->
+  <div class="pb-0">
+    <p-button
+      (click)="getAll()"
+      [loading]="loading()"
       label="Search">
     </p-button>
- <p-button  
-      (click)="getAllInvoices()" 
-      [loading]="loading1()"    
-      label="Download Invoices">
-    </p-button>
-        <div class="text-right">
-      <div class="text-sm text-gray-500">Total Sales</div>
-      <div class="text-2xl font-bold">
-        {{ total_sales() | number:'1.2-2' }}
-      </div>
+     <p-button  class="pl-2"
+                    label="Reset"
+                    (click)="clear()">
+            </p-button>
+  </div>
+
+  <!-- Total Sales -->
+  <div class="ml-auto text-right">
+    <div class="text-sm text-gray-500">Total Sales</div>
+    <div class="text-2xl font-bold">
+      {{ total_sales() | number:'1.2-2' }}
     </div>
   </div>
+
 </div>
-<div class="card">
+</div>
+<div class="card erp-table-card">
+
     <p-table
         #dt1
-        [value]="mainList()"      
-        [globalFilterFields]="['invoice_no','sale_date','total','discount','created_at','grand_total','customer_name','customer_phone']"
+        [value]="mainList()"
+        [globalFilterFields]="[
+            'invoice_no',
+            'sale_date',
+            'grand_total',
+            'balance_amount',
+            'status',
+            'customer_name',
+            'customer_phone'
+        ]"
         dataKey="id"
-        [tableStyle]="{ 'min-width': '50rem' }"
+        [tableStyle]="{ 'min-width': '70rem' }"
         [rows]="20"
         [paginator]="true"
-        [rowsPerPageOptions]="[5,10,20]"
+        [rowsPerPageOptions]="[10,20,50,100]"
         [loading]="loading()"
+        styleClass="erp-table"
     >
 
+        <!-- TOOLBAR -->
+        <ng-template #caption>
 
-<ng-template #caption>
-             <div class="flex justify-between items-center w-full">
+            <div class="erp-toolbar">
 
-        <!-- Title -->
-        <h2 class="text-xl font-semibold">Sale</h2>
+                <div class="erp-title">
+                    <i class="pi pi-file-edit"></i>
+                    <span>Sales</span>
+                </div>
 
-        <!-- Right Side -->
-        <div class="flex items-center gap-3">
+                <div class="erp-toolbar-right">
 
-            <!-- Search -->
-            <p-iconfield iconPosition="left">
-                <p-inputicon>
-                    <i class="pi pi-search"></i>
-                </p-inputicon>
-                <input pInputText
-                       type="text"
-                       (input)="dt1.filterGlobal($any($event.target).value, 'contains')"
-                       placeholder="Search..." />
-            </p-iconfield>
+                    <!-- Search -->
+                    <p-iconfield iconPosition="left">
 
-            <!-- Add Button -->
-            <button pButton
-                    type="button"
-                    title="Add"
-                    icon="pi pi-plus"
-                    (click)="add()">
-            </button>
+                        <p-inputicon>
+                            <i class="pi pi-search"></i>
+                        </p-inputicon>
 
-        </div>
+                        <input
+                            pInputText
+                            type="text"
+                            class="erp-search"
+                            (input)="dt1.filterGlobal($any($event.target).value, 'contains')"
+                            placeholder="Search..."
+                        />
 
-    </div>
+                    </p-iconfield>
+
+                    <!-- Add -->
+                    <p-button
+                        icon="pi pi-plus"
+                        label="New"
+                        severity="primary"
+                        (onClick)="add()">
+                    </p-button>
+
+                </div>
+
+            </div>
+
         </ng-template>
+
+
+        <!-- HEADER -->
         <ng-template #header>
+
             <tr>
-                   <th pSortableColumn="sale_date">
-<div class="flex items-center gap-2">
-                        Sale Date
-                        <p-sortIcon field="sale_date" />
+
+                <th pSortableColumn="sale_date">
+                    <div class="erp-header-cell">
+                        SALE DATE
+                        <p-sortIcon field="sale_date"></p-sortIcon>
                     </div>
-                  </th>
+                </th>
+
                 <th pSortableColumn="invoice_no">
-                    <div class="flex items-center gap-2">
-                        Invoice No.
-                        <p-sortIcon field="invoice_no" />
+                    <div class="erp-header-cell">
+                        INVOICE NO.
+                        <p-sortIcon field="invoice_no"></p-sortIcon>
                     </div>
-                    
-                
                 </th>
+
                 <th pSortableColumn="customer_name">
-                    <div class="flex items-center gap-2">
-                        Customer Name
-                        <p-sortIcon field="customer_name" />
+                    <div class="erp-header-cell">
+                        CUSTOMER
+                        <p-sortIcon field="customer_name"></p-sortIcon>
                     </div>
                 </th>
-                  
-                
-                  <th pSortableColumn="grand_total">
-                    <div class="flex items-center gap-2">
-                       Invoice Amount
-                        <p-sortIcon field="grand_total" />
+
+                <th
+                    pSortableColumn="grand_total"
+                    class="text-right">
+
+                    <div class="erp-header-cell justify-end">
+                        INVOICE AMOUNT
+                        <p-sortIcon field="grand_total"></p-sortIcon>
                     </div>
-                  </th>
-                  <th pSortableColumn="balance_amount">
-                    <div class="flex items-center gap-2">
-                      Balance
-                        <p-sortIcon field="balance_amount" />
+
+                </th>
+
+                <th
+                    pSortableColumn="balance_amount"
+                    class="text-right">
+
+                    <div class="erp-header-cell justify-end">
+                        BALANCE
+                        <p-sortIcon field="balance_amount"></p-sortIcon>
                     </div>
-                  </th>
-                  <th pSortableColumn="status">
-                    <div class="flex items-center gap-2">
-                       Status
-                        <p-sortIcon field="status" />
+
+                </th>
+
+                <th pSortableColumn="status">
+
+                    <div class="erp-header-cell">
+                        STATUS
+                        <p-sortIcon field="status"></p-sortIcon>
                     </div>
-                  </th>
-                <th>Action</th>
+
+                </th>
+
+                <th class="text-center">
+                    ACTION
+                </th>
+
             </tr>
+
         </ng-template>
 
+
+        <!-- BODY -->
         <ng-template #body let-row>
+
             <tr>
-                <td>{{ row.sale_date | date:'dd-MM-yyyy'}}</td>
-                <td>{{ row.invoice_no }}</td>
-                <td>{{ row.customer_name }}</td>
-                <td> {{ row.grand_total | currency:'AED'}}</td>
-                <td> {{ row.balance_amount |  currency:'AED' }}</td>
-                <td>{{ row.status }}</td>
-                 <td class="flex gap-2">
-                    <button pButton 
-                            type="button" 
-                            icon="pi pi-pencil"
-                            class="p-button-warning"
-                            (click)="edit(row.id)">
-                    </button>
- <button pButton 
-                            type="button" 
-                            icon="pi pi-eye"
-                            class="p-button-warning"
-                            (click)="invoice(row.id)">
-                    </button>
-                    <button pButton 
-                            type="button" 
-                            icon="pi pi-trash" 
-                            class="p-button-danger"
-                            (click)="delete(row.id)">
-                    </button>
+
+                <!-- Date -->
+                <td class="erp-date">
+                    {{ row.sale_date | date:'dd-MM-yyyy' }}
                 </td>
-                    
+
+
+                <!-- Invoice -->
+                <td class="erp-invoice">
+                    {{ row.invoice_no }}
+                </td>
+
+
+                <!-- Customer -->
+                <td>
+
+                    <button
+                        type="button"
+                        class="erp-customer"
+                        (click)="GetDataByCustomer(row.customer_id)">
+
+                        {{ row.customer_name }}
+
+                    </button>
+
+                </td>
+
+
+                <!-- Invoice Amount -->
+                <td class="erp-number">
+
+                    {{ row.grand_total | currency:'AED ' }}
+
+                </td>
+
+
+                <!-- Balance -->
+                <td class="erp-number">
+
+                    <span
+                        [class.erp-balance]="row.balance_amount > 0"
+                        [class.erp-paid]="row.balance_amount <= 0">
+
+                        {{ row.balance_amount | currency:'AED ' }}
+
+                    </span>
+
+                </td>
+
+
+                <!-- Status -->
+                <td>
+
+                    <span
+                        class="erp-status"
+                        [ngClass]="{
+                            'status-paid': row.status === 'Paid',
+                            'status-pending': row.status === 'Pending',
+                            'status-partial': row.status === 'Partial',
+                            'status-cancelled': row.status === 'Cancelled'
+                        }">
+
+                        {{ row.status }}
+
+                    </span>
+
+                </td>
+
+
+                <!-- Actions -->
+                <td>
+
+                    <div class="erp-actions">
+
+                        <button
+                            pButton
+                            type="button"
+                            icon="pi pi-eye"
+                            class="erp-action-btn"
+                            pTooltip="View"
+                            (click)="invoice(row.id)">
+                        </button>
+
+                        <button
+                            pButton
+                            type="button"
+                            icon="pi pi-pencil"
+                            class="erp-action-btn"
+                            pTooltip="Edit"
+                            (click)="edit(row.id)">
+                        </button>
+
+                        <button
+                            pButton
+                            type="button"
+                            icon="pi pi-trash"
+                            class="erp-action-btn erp-delete"
+                            pTooltip="Delete"
+                            (click)="delete(row.id)">
+                        </button>
+
+                    </div>
+
+                </td>
+
             </tr>
+
         </ng-template>
 
+
+        <!-- EMPTY -->
         <ng-template #emptymessage>
+
             <tr>
-                <td colspan="4">No data found.</td>
+
+                <td colspan="7" class="erp-empty">
+
+                    <i class="pi pi-inbox"></i>
+
+                    <div>
+                        No sales records found
+                    </div>
+
+                </td>
+
             </tr>
+
         </ng-template>
 
     </p-table>
+
 </div>

@@ -1,297 +1,612 @@
-<div class="grid grid-cols-12 gap-6">
+<div class="erp-dashboard">
 
-  <!-- Orders -->
-  <div class="col-span-12 sm:col-span-6 xl:col-span-3">
-    <div class="card h-full">
-      <div class="flex justify-between items-center">
-        <div>
-          <span class="block text-muted-color font-medium mb-2">Orders</span>
-          <div class="text-xl font-semibold">
-            <ng-container *ngIf="!loading(); else sk1">
-              {{ sale().count }}
-            </ng-container>
-            <ng-template #sk1>
-              <p-skeleton width="4rem" height="1.5rem"></p-skeleton>
+    <!-- =========================================
+         KPI SECTION
+         ========================================= -->
+
+    <div class="grid grid-cols-12 gap-4">
+
+        <!-- Orders -->
+        <div class="col-span-12 sm:col-span-6 xl:col-span-3">
+            <div class="erp-kpi-card">
+
+                <div class="erp-kpi-content">
+
+                    <div class="erp-kpi-label">
+                        TOTAL ORDERS
+                    </div>
+
+                    <div class="erp-kpi-value">
+
+                        <ng-container *ngIf="!loading(); else sk1">
+                            {{ sale().count }}
+                        </ng-container>
+
+                        <ng-template #sk1>
+                            <p-skeleton width="4rem" height="1.6rem"></p-skeleton>
+                        </ng-template>
+
+                    </div>
+
+                </div>
+
+                <div class="erp-kpi-icon">
+                    <i class="pi pi-shopping-cart"></i>
+                </div>
+
+            </div>
+        </div>
+
+
+        <!-- Sales -->
+        <div class="col-span-12 sm:col-span-6 xl:col-span-3">
+            <div class="erp-kpi-card">
+
+                <div class="erp-kpi-content">
+
+                    <div class="erp-kpi-label">
+                        SALES AMOUNT
+                    </div>
+
+                    <div class="erp-kpi-value">
+
+                        <ng-container *ngIf="!loading(); else sk2">
+                            {{ sale().total | currency:'AED ' }}
+                        </ng-container>
+
+                        <ng-template #sk2>
+                            <p-skeleton width="7rem" height="1.6rem"></p-skeleton>
+                        </ng-template>
+
+                    </div>
+
+                </div>
+
+                <div class="erp-kpi-icon">
+                    <i class="pi pi-chart-line"></i>
+                </div>
+
+            </div>
+        </div>
+
+
+        <!-- Payment Due -->
+        <div
+            class="col-span-12 sm:col-span-6 xl:col-span-3"
+            (click)="showDue()">
+
+            <div class="erp-kpi-card erp-clickable">
+
+                <div class="erp-kpi-content">
+
+                    <div class="erp-kpi-label">
+                        PAYMENT DUE
+                    </div>
+
+                    <div class="erp-kpi-value erp-due-value">
+
+                        <ng-container *ngIf="!loading(); else sk3">
+                            {{ paymentDue() | currency:'AED ' }}
+                        </ng-container>
+
+                        <ng-template #sk3>
+                            <p-skeleton width="7rem" height="1.6rem"></p-skeleton>
+                        </ng-template>
+
+                    </div>
+
+                </div>
+
+                <div class="erp-kpi-icon erp-warning-icon">
+                    <i class="pi pi-exclamation-circle"></i>
+                </div>
+
+            </div>
+
+        </div>
+
+
+        <!-- Card -->
+        <div class="col-span-12 sm:col-span-6 xl:col-span-3">
+
+            <div class="erp-kpi-card">
+
+                <div class="erp-kpi-content">
+
+                    <div class="erp-kpi-label">
+                        CARD
+                    </div>
+
+                    <div class="erp-kpi-value">
+
+                        <ng-container *ngIf="!loading(); else sk4">
+                            {{ cash().card | currency:'AED ' }}
+                        </ng-container>
+
+                        <ng-template #sk4>
+                            <p-skeleton width="7rem" height="1.6rem"></p-skeleton>
+                        </ng-template>
+
+                    </div>
+
+                </div>
+
+                <div class="erp-kpi-icon">
+                    <i class="pi pi-credit-card"></i>
+                </div>
+
+            </div>
+
+        </div>
+
+
+        <!-- Bank -->
+        <div class="col-span-12 sm:col-span-6 xl:col-span-3">
+
+            <div class="erp-kpi-card">
+
+                <div class="erp-kpi-content">
+
+                    <div class="erp-kpi-label">
+                        BANK
+                    </div>
+
+                    <div class="erp-kpi-value">
+
+                        <ng-container *ngIf="!loading(); else sk5">
+                            {{ cash().bank | currency:'AED ' }}
+                        </ng-container>
+
+                        <ng-template #sk5>
+                            <p-skeleton width="7rem" height="1.6rem"></p-skeleton>
+                        </ng-template>
+
+                    </div>
+
+                </div>
+
+                <div class="erp-kpi-icon">
+                    <i class="pi pi-building"></i>
+                </div>
+
+            </div>
+
+        </div>
+
+
+        <!-- Cheque -->
+        <div class="col-span-12 sm:col-span-6 xl:col-span-3">
+
+            <div class="erp-kpi-card">
+
+                <div class="erp-kpi-content">
+
+                    <div class="erp-kpi-label">
+                        CHEQUE
+                    </div>
+
+                    <div class="erp-kpi-value">
+
+                        <ng-container *ngIf="!loading(); else sk6">
+                            {{ cash().cheque | currency:'AED ' }}
+                        </ng-container>
+
+                        <ng-template #sk6>
+                            <p-skeleton width="7rem" height="1.6rem"></p-skeleton>
+                        </ng-template>
+
+                    </div>
+
+                </div>
+
+                <div class="erp-kpi-icon">
+                    <i class="pi pi-file"></i>
+                </div>
+
+            </div>
+
+        </div>
+
+
+        <!-- Cash In -->
+        <div class="col-span-12 sm:col-span-6 xl:col-span-3">
+
+            <div class="erp-kpi-card">
+
+                <div class="erp-kpi-content">
+
+                    <div class="erp-kpi-label">
+                        CASH IN
+                    </div>
+
+                    <div class="erp-kpi-value erp-positive">
+
+                        <ng-container *ngIf="!loading(); else sk7">
+                            {{ cash().total_cash_in | currency:'AED ' }}
+                        </ng-container>
+
+                        <ng-template #sk7>
+                            <p-skeleton width="7rem" height="1.6rem"></p-skeleton>
+                        </ng-template>
+
+                    </div>
+
+                </div>
+
+                <div class="erp-kpi-icon erp-success-icon">
+                    <i class="pi pi-arrow-down-left"></i>
+                </div>
+
+            </div>
+
+        </div>
+
+
+        <!-- Cash Available -->
+        <div class="col-span-12 sm:col-span-6 xl:col-span-3">
+
+            <div class="erp-kpi-card erp-available-card">
+
+                <div class="erp-kpi-content">
+
+                    <div class="erp-kpi-label">
+                        CASH AVAILABLE
+                    </div>
+
+                    <div class="erp-kpi-value">
+
+                        <ng-container *ngIf="!loading(); else sk8">
+                            {{ cash().available_cash | currency:'AED ' }}
+                        </ng-container>
+
+                        <ng-template #sk8>
+                            <p-skeleton width="7rem" height="1.6rem"></p-skeleton>
+                        </ng-template>
+
+                    </div>
+
+                </div>
+
+                <div class="erp-kpi-icon erp-cash-icon">
+                    <i class="pi pi-wallet"></i>
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <!-- =========================================
+         RECENT SALES
+         ========================================= -->
+
+    <div class="card erp-section-card">
+
+        <div class="erp-section-header">
+
+            <div>
+
+                <div class="erp-section-title">
+                    Recent Sales
+                </div>
+
+                <div class="erp-section-subtitle">
+                    Latest sales transactions
+                </div>
+
+            </div>
+
+            <div class="erp-record-count">
+                {{ recentSale().length || 0 }} Records
+            </div>
+
+        </div>
+
+
+        <p-table
+            [value]="recentSale()"
+            [rows]="5"
+            [paginator]="true"
+            [loading]="loading()"
+            styleClass="erp-dashboard-table"
+        >
+
+            <ng-template #header>
+
+                <tr>
+
+                    <th>INVOICE</th>
+
+                    <th>CUSTOMER</th>
+
+                    <th class="text-right">
+                        AMOUNT
+                    </th>
+
+                    <th class="text-right">
+                        BALANCE
+                    </th>
+
+                    <th>
+                        STATUS
+                    </th>
+
+                    <th class="text-center">
+                        ACTION
+                    </th>
+
+                </tr>
+
             </ng-template>
-          </div>
-        </div>
-        <div class="bg-blue-100 rounded-full w-10 h-10 flex items-center justify-center">
-          <i class="pi pi-shopping-cart text-blue-500"></i>
-        </div>
-      </div>
-    </div>
-  </div>
 
-  <!-- Sales -->
-  <div class="col-span-12 sm:col-span-6 xl:col-span-3">
-    <div class="card h-full">
-      <div class="flex justify-between items-center">
-        <div>
-          <span class="block text-muted-color font-medium mb-2">Sales Amount</span>
-          <div class="text-xl font-semibold">
-            <ng-container *ngIf="!loading(); else sk2">
-              {{ sale().total | currency:'AED' }}
-            </ng-container>
-            <ng-template #sk2>
-              <p-skeleton width="6rem" height="1.5rem"></p-skeleton>
+
+            <ng-template #body let-row>
+
+                <tr *ngIf="!loading(); else skeletonRows">
+
+                    <td class="erp-invoice-number">
+                        {{ row.invoice_no }}
+                    </td>
+
+                    <td>
+                     <button
+                        type="button"
+                        class="erp-customer"
+                        (click)="GetDataByCustomer(row.customer_id)">
+
+                        {{ row.customer_name }}
+
+                    </button>
+                    </td>
+
+                    <td class="erp-amount">
+                        {{ row.grand_total | currency:'AED ' }}
+                    </td>
+
+                    <td class="erp-amount">
+
+                        <span
+                            [class.erp-balance-due]="row.balance_amount > 0"
+                            [class.erp-balance-paid]="row.balance_amount <= 0">
+
+                            {{ row.balance_amount | currency:'AED ' }}
+
+                        </span>
+
+                    </td>
+
+                    <td>
+
+                        <span
+                            class="erp-status"
+                            [ngClass]="{
+                                'status-paid': row.status === 'Paid',
+                                'status-pending': row.status === 'Pending',
+                                'status-partial': row.status === 'Partial',
+                                'status-cancelled': row.status === 'Cancelled'
+                            }">
+
+                            {{ row.status }}
+
+                        </span>
+
+                    </td>
+
+                    <td class="text-center">
+
+                        <button
+                            pButton
+                            type="button"
+                            icon="pi pi-eye"
+                            class="erp-view-button"
+                            pTooltip="View Invoice"
+                            (click)="invoice(row.id)">
+                        </button>
+
+                    </td>
+
+                </tr>
+
             </ng-template>
-          </div>
-        </div>
-        <div class="bg-orange-100 rounded-full w-10 h-10 flex items-center justify-center">
-          <i class="pi pi-dollar text-orange-500"></i>
-        </div>
-      </div>
-    </div>
-  </div>
 
-  <!-- Payment Due -->
-  <div class="col-span-12 sm:col-span-6 xl:col-span-3" (click)="showDue()" style="cursor: pointer;">
-    <div class="card h-full">
-      <div class="flex justify-between items-center">
-        <div>
-          <span class="block text-muted-color font-medium mb-2">Payment Due</span>
-          <div class="text-xl font-semibold">
-            <ng-container *ngIf="!loading(); else sk3">
-              {{ paymentDue() | currency:'AED' }}
-            </ng-container>
-            <ng-template #sk3>
-              <p-skeleton width="6rem" height="1.5rem"></p-skeleton>
+
+            <ng-template #skeletonRows>
+
+                <tr *ngFor="let i of [1,2,3,4,5]">
+
+                    <td>
+                        <p-skeleton width="6rem"></p-skeleton>
+                    </td>
+
+                    <td>
+                        <p-skeleton width="9rem"></p-skeleton>
+                    </td>
+
+                    <td>
+                        <p-skeleton width="6rem"></p-skeleton>
+                    </td>
+
+                    <td>
+                        <p-skeleton width="6rem"></p-skeleton>
+                    </td>
+
+                    <td>
+                        <p-skeleton width="4rem"></p-skeleton>
+                    </td>
+
+                    <td>
+                        <p-skeleton width="2rem" height="2rem"></p-skeleton>
+                    </td>
+
+                </tr>
+
             </ng-template>
-          </div>
-        </div>
-        <div class="bg-orange-100 rounded-full w-10 h-10 flex items-center justify-center">
-          <i class="pi pi-dollar text-orange-500"></i>
-        </div>
-      </div>
-    </div>
-  </div>
 
-  <!-- Card -->
-  <div class="col-span-12 sm:col-span-6 xl:col-span-3">
-    <div class="card h-full">
-      <div class="flex justify-between items-center">
-        <div>
-          <span class="block mb-2">Card</span>
-          <div class="text-xl font-semibold">
-            <ng-container *ngIf="!loading(); else sk4">
-              {{ cash().card | currency:'AED' }}
-            </ng-container>
-            <ng-template #sk4>
-              <p-skeleton width="5rem" height="1.5rem"></p-skeleton>
+
+            <ng-template #emptymessage>
+
+                <tr>
+
+                    <td colspan="6" class="erp-empty">
+                        No sales transactions found.
+                    </td>
+
+                </tr>
+
             </ng-template>
-          </div>
+
+        </p-table>
+
+    </div>
+
+
+    <!-- =========================================
+         SALES CHART
+         ========================================= -->
+
+    <div class="card erp-section-card">
+
+        <div class="erp-section-header">
+
+            <div>
+
+                <div class="erp-section-title">
+                    Sales Analysis
+                </div>
+
+                <div class="erp-section-subtitle">
+                    Sales performance over time
+                </div>
+
+            </div>
+
         </div>
-        <i class="pi pi-credit-card text-cyan-500"></i>
-      </div>
-    </div>
-  </div>
 
-  <!-- Bank -->
-  <div class="col-span-12 sm:col-span-6 xl:col-span-3">
-    <div class="card h-full">
-      <div class="flex justify-between items-center">
-        <div>
-          <span class="block mb-2">Bank</span>
-          <div class="text-xl font-semibold">
-            <ng-container *ngIf="!loading(); else sk5">
-              {{ cash().bank | currency:'AED' }}
-            </ng-container>
-            <ng-template #sk5>
-              <p-skeleton width="5rem" height="1.5rem"></p-skeleton>
-            </ng-template>
-          </div>
+        <div class="erp-chart-container">
+
+            <p-chart
+                type="line"
+                [data]="chartData"
+                [options]="chartOptions"
+                class="h-100">
+            </p-chart>
+
         </div>
-        <i class="pi pi-university text-purple-500"></i>
-      </div>
+
     </div>
-  </div>
 
-  <!-- Cheque -->
-  <div class="col-span-12 sm:col-span-6 xl:col-span-3">
-    <div class="card h-full">
-      <div class="flex justify-between items-center">
-        <div>
-          <span class="block mb-2">Cheque</span>
-          <div class="text-xl font-semibold">
-            <ng-container *ngIf="!loading(); else sk6">
-              {{ cash().cheque | currency:'AED' }}
-            </ng-container>
-            <ng-template #sk6>
-              <p-skeleton width="5rem" height="1.5rem"></p-skeleton>
-            </ng-template>
-          </div>
-        </div>
-        <i class="pi pi-file text-indigo-500"></i>
-      </div>
-    </div>
-  </div>
-
-  <!-- Cash In -->
-  <div class="col-span-12 sm:col-span-6 xl:col-span-3">
-    <div class="card h-full">
-      <div class="flex justify-between items-center">
-        <div>
-          <span class="block mb-2">Cash In</span>
-          <div class="text-xl font-semibold">
-            <ng-container *ngIf="!loading(); else sk7">
-              {{ cash().total_cash_in | currency:'AED' }}
-            </ng-container>
-            <ng-template #sk7>
-              <p-skeleton width="5rem" height="1.5rem"></p-skeleton>
-            </ng-template>
-          </div>
-        </div>
-        <i class="pi pi-wallet text-green-500"></i>
-      </div>
-    </div>
-  </div>
-
-  <!-- Available -->
-  <div class="col-span-12 sm:col-span-6 xl:col-span-3">
-    <div class="card h-full">
-      <div class="flex justify-between items-center">
-        <div>
-          <span class="block mb-2">Cash Available</span>
-          <div class="text-xl font-semibold">
-            <ng-container *ngIf="!loading(); else sk8">
-              {{ cash().available_cash | currency:'AED' }}
-            </ng-container>
-            <ng-template #sk8>
-              <p-skeleton width="5rem" height="1.5rem"></p-skeleton>
-            </ng-template>
-          </div>
-        </div>
-        <i class="pi pi-coins text-yellow-500"></i>
-      </div>
-    </div>
-  </div>
-
-  <!-- Recent Sales Table -->
-  <div class="col-span-12 xl:col-span-12">
-    <div class="card mb-8!">
-      <div class="font-semibold text-xl mb-4">Recent Sales</div>
-
-      <p-table
-        [value]="recentSale()"
-        [rows]="5"
-        [paginator]="true"
-        [loading]="loading()"
-      >
-
-        <ng-template #header>
-          <tr>
-            <th>Invoice</th>
-            <th>Customer</th>
-            <th>Amount</th>
-            <th>Balance</th>
-            <th>Status</th>
-            <th>Action</th>
-          </tr>
-        </ng-template>
-
-        <ng-template #body let-row>
-          <tr *ngIf="!loading(); else skeletonRows">
-            <td>{{ row.invoice_no }}</td>
-            <td>{{ row.customer_name }}</td>
-            <td>{{ row.grand_total | currency:'AED' }}</td>
-            <td>{{ row.balance_amount | currency:'AED' }}</td>
-            <td>{{ row.status }}</td>
-            <td>
-              <button pButton icon="pi pi-eye"  (click)="invoice(row.id)"></button>
-            </td>
-          </tr>
-        </ng-template>
-
-        <ng-template #skeletonRows>
-          <tr *ngFor="let i of [1,2,3,4,5]">
-            <td><p-skeleton width="6rem"></p-skeleton></td>
-            <td><p-skeleton width="8rem"></p-skeleton></td>
-            <td><p-skeleton width="5rem"></p-skeleton></td>
-            <td><p-skeleton width="5rem"></p-skeleton></td>
-            <td><p-skeleton width="4rem"></p-skeleton></td>
-            <td><p-skeleton width="3rem" height="2rem"></p-skeleton></td>
-          </tr>
-        </ng-template>
-
-      </p-table>
-    </div>
-  </div>
-  <div class="col-span-12 xl:col-span-12">
-  <div class="card">
-      <p-chart 
-    type="line" 
-    [data]="chartData" 
-    [options]="chartOptions"
-    class="h-100">
-</p-chart>
-  </div>
-  </div>
 </div>
 
-    <p-dialog 
-  header="Expenses" 
-  [(visible)]="isVisible"
-  [modal]="true"
-  [breakpoints]="{ '960px': '90vw', '640px': '100vw' }"
-  [style]="{ width: '70vw' }"
-  [draggable]="false"
-  [resizable]="false"
+
+<!-- =========================================
+     PAYMENT DUE DIALOG
+     ========================================= -->
+
+<p-dialog
+    header="Payment Due"
+    [(visible)]="isVisible"
+    [modal]="true"
+    [breakpoints]="{
+        '960px': '90vw',
+        '640px': '100vw'
+    }"
+    [style]="{ width: '70vw' }"
+    [draggable]="false"
+    [resizable]="false"
 >
+
+    <div class="erp-dialog-subtitle">
+        Outstanding customer payments
+    </div>
+
     <p-table
         #dt1
-        [value]="paymentDueList()"      
-        [globalFilterFields]="['invoice_no','sale_date','total','discount','created_at','grand_total','customer_name','customer_phone']"
+        [value]="paymentDueList()"
         dataKey="id"
-        [tableStyle]="{ 'min-width': '50rem' }"
+        [tableStyle]="{ 'min-width': '40rem' }"
         [rows]="20"
         [paginator]="true"
         [rowsPerPageOptions]="[5,10,20]"
-
+        styleClass="erp-dashboard-table"
     >
 
-
         <ng-template #header>
+
             <tr>
-                   
+
                 <th pSortableColumn="customer_name">
-                    <div class="flex items-center gap-2">
-                        Customer Name
-                        <p-sortIcon field="customer_name" />
+
+                    <div class="erp-header-cell">
+                        CUSTOMER
+                        <p-sortIcon field="customer_name"></p-sortIcon>
                     </div>
+
                 </th>
-                  
-                  <th pSortableColumn="due_amount">
-                    <div class="flex items-center gap-2">
-                      Due Payment
-                        <p-sortIcon field="due_amount" />
+
+                <th
+                    pSortableColumn="due_amount"
+                    class="text-right">
+
+                    <div class="erp-header-cell justify-end">
+                        DUE PAYMENT
+                        <p-sortIcon field="due_amount"></p-sortIcon>
                     </div>
-                  </th>
-                  <th>
-                   Payment
-                  </th>
+
+                </th>
+
+                <th class="text-center">
+                    ACTION
+                </th>
+
             </tr>
+
         </ng-template>
+
 
         <ng-template #body let-row>
+
             <tr>
-                <td>{{ row.customer_name }}</td>
-                <td> {{ row.due_amount | currency:'AED'}}</td>
-     <td>
-       <button pButton 
-                            type="button" 
-                            icon="pi pi-eye"
-                            class="p-button-warning"
-                            (click)="payment(row.id)">
+
+                <td class="erp-customer-name">
+                    {{ row.customer_name }}
+                </td>
+
+                <td class="erp-amount erp-balance-due">
+                    {{ row.due_amount | currency:'AED ' }}
+                </td>
+
+                <td class="text-center">
+
+                    <button
+                        pButton
+                        type="button"
+                        icon="pi pi-wallet"
+                        class="erp-payment-button"
+                        pTooltip="Receive Payment"
+                        (click)="payment(row.id)">
                     </button>
-     </td>
+
+                </td>
+
             </tr>
+
         </ng-template>
 
+
         <ng-template #emptymessage>
+
             <tr>
-                <td colspan="4">No data found.</td>
+
+                <td colspan="3" class="erp-empty">
+                    No outstanding payments found.
+                </td>
+
             </tr>
+
         </ng-template>
 
     </p-table>
+
 </p-dialog>
