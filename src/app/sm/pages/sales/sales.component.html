@@ -1,226 +1,791 @@
+
 <p-toast key="tst"></p-toast>
 
-<form [formGroup]="salesForm" (ngSubmit)="onSubmit()" class="card p-5 flex flex-col gap-6">
 
-  <!-- Customer + Date -->
-  <div class="flex flex-col md:flex-row gap-6">
+<!-- =========================================================
+     SALES TRANSACTION
+     Oracle / Microsoft Dynamics Style
+     ========================================================= -->
 
-    <div class="w-full">
-      <label>Customer</label>
-      <p-select
-        formControlName="customer_id"
-        [options]="customersList()"
-        optionLabel="name"
-        optionValue="id"
-        placeholder="Select Customer"
-        [filter]="true"
-        [invalid]="salesForm.get('customer_id')?.invalid && salesForm.get('customer_id')?.touched"
-        class="w-full">
-      </p-select>
+<form
+    [formGroup]="salesForm"
+    (ngSubmit)="onSubmit()"
+    class="card erp-form-card">
+
+
+    <!-- =====================================================
+         DOCUMENT HEADER
+         ===================================================== -->
+
+    <div class="erp-form-header">
+
+        <div>
+
+            <div class="erp-title">
+                <i class="pi pi-file-edit"></i>
+
+                <span>
+                    {{ id() !== '0' ? 'Edit Sales Transaction' : 'New Sales Transaction' }}
+                </span>
+            </div>
+
+            <div class="erp-subtitle">
+                Sales order, customer and transaction details
+            </div>
+
+        </div>
+
+
+        <!-- Document ID -->
+        @if (id() !== '0') {
+
+            <div class="erp-document-info">
+
+                <span class="erp-document-label">
+                    Document ID
+                </span>
+
+                <strong>
+                    {{ id() }}
+                </strong>
+
+            </div>
+
+        }
+
     </div>
 
-    <div class="w-full">
-      <label>LPO No</label>
-      <input pInputText type="text" formControlName="lpo_no" class="w-full p-3" 
-        [invalid]="salesForm.get('lpo_no')?.invalid && salesForm.get('lpo_no')?.touched"
-      />
+
+    <!-- =====================================================
+         CUSTOMER / DOCUMENT INFORMATION
+         ===================================================== -->
+
+    <div class="erp-section">
+
+        <div class="erp-section-title">
+            <i class="pi pi-info-circle"></i>
+            Document Information
+        </div>
+
+
+        <div class="erp-form-grid">
+
+
+            <!-- Customer -->
+            <div class="erp-field erp-field-wide">
+
+                <label>
+                    Customer
+                    <span class="erp-required">*</span>
+                </label>
+
+                <p-select
+                    formControlName="customer_id"
+                    [options]="customersList()"
+                    optionLabel="name"
+                    optionValue="id"
+                    placeholder="Select Customer"
+                    [filter]="true"
+                    [showClear]="true"
+
+                    [invalid]="
+                        salesForm.get('customer_id')?.invalid &&
+                        salesForm.get('customer_id')?.touched
+                    "
+
+                    styleClass="w-full">
+
+                </p-select>
+
+            </div>
+
+
+            <!-- LPO -->
+            <div class="erp-field">
+
+                <label>
+                    LPO No
+                </label>
+
+                <input
+                    pInputText
+                    type="text"
+                    formControlName="lpo_no"
+
+                    [invalid]="
+                        salesForm.get('lpo_no')?.invalid &&
+                        salesForm.get('lpo_no')?.touched
+                    "
+
+                    class="w-full">
+
+            </div>
+
+
+            <!-- Sale Date -->
+            <div class="erp-field">
+
+                <label>
+                    Sale Date
+                    <span class="erp-required">*</span>
+                </label>
+
+                <input
+                    pInputText
+                    type="date"
+                    formControlName="sale_date"
+
+                    [invalid]="
+                        salesForm.get('sale_date')?.invalid &&
+                        salesForm.get('sale_date')?.touched
+                    "
+
+                    class="w-full">
+
+            </div>
+
+
+            <!-- Status -->
+            <div class="erp-field">
+
+                <label>
+                    Status
+                </label>
+
+                <p-select
+                    formControlName="status"
+                    [options]="statusList()"
+                    optionLabel="name"
+                    optionValue="name"
+                    placeholder="Select Status"
+                    [filter]="true"
+
+                    [invalid]="
+                        salesForm.get('status')?.invalid &&
+                        salesForm.get('status')?.touched
+                    "
+
+                    styleClass="w-full">
+
+                </p-select>
+
+            </div>
+
+        </div>
+
     </div>
-    <div class="w-full">
-      <label>Sale Date</label>
-      <input pInputText type="date" formControlName="sale_date" class="w-full p-3" dateFormat="dd.mm.yy"
-        [invalid]="salesForm.get('sale_date')?.invalid && salesForm.get('sale_date')?.touched"
-      />
+
+
+    <!-- =====================================================
+         SALES ITEMS
+         ===================================================== -->
+
+    <div class="erp-section">
+
+        <div class="erp-section-header">
+
+            <div class="erp-section-title">
+                <i class="pi pi-shopping-cart"></i>
+
+                <span>Sales Items</span>
+
+                <span class="erp-item-count">
+                    {{ items.length }} items
+                </span>
+
+            </div>
+
+        </div>
+
+
+        <p-table
+            [value]="items.controls"
+
+            styleClass="erp-table erp-line-table"
+
+            [tableStyle]="{
+                'table-layout': 'fixed',
+                'width': '100%'
+            }">
+
+
+            <!-- =================================================
+                 TABLE HEADER
+                 ================================================= -->
+
+            <ng-template #header>
+
+                <tr>
+
+                    <th style="width: 32%">
+                        <div class="erp-header-cell">
+                            Product
+                        </div>
+                    </th>
+
+
+                    <th
+                        style="width: 8%"
+                        class="text-right">
+
+                        <div class="erp-header-cell justify-end">
+                            Qty
+                        </div>
+
+                    </th>
+
+
+                    <th style="width: 10%">
+
+                        <div class="erp-header-cell">
+                            Unit
+                        </div>
+
+                    </th>
+
+
+                    <th
+                        style="width: 13%"
+                        class="text-right">
+
+                        <div class="erp-header-cell justify-end">
+                            Price
+                        </div>
+
+                    </th>
+
+
+                    <th
+                        style="width: 11%"
+                        class="text-right">
+
+                        <div class="erp-header-cell justify-end">
+                            Discount
+                        </div>
+
+                    </th>
+
+
+                    <th
+                        style="width: 14%"
+                        class="text-right">
+
+                        <div class="erp-header-cell justify-end">
+                            Total
+                        </div>
+
+                    </th>
+
+
+                    <th
+                        style="width: 12%"
+                        class="text-center">
+
+                        <div class="erp-header-cell justify-center">
+                            Actions
+                        </div>
+
+                    </th>
+
+                </tr>
+
+            </ng-template>
+
+
+            <!-- =================================================
+                 TABLE BODY
+                 ================================================= -->
+
+            <ng-template
+                #body
+                let-row
+                let-i="rowIndex">
+
+
+                <tr [formGroup]="row">
+
+
+                    <!-- Product -->
+                    <td>
+
+                        <p-autoComplete
+                            formControlName="product"
+
+                            [suggestions]="filteredProducts"
+
+                            (completeMethod)="searchProduct($event)"
+
+                            optionLabel="name"
+
+                            placeholder="Search product..."
+
+                            (onSelect)="onProductSelect($event, i)"
+
+                            appendTo="body"
+
+                            [forceSelection]="false"
+
+                            [invalid]="
+                                row.get('product')?.invalid &&
+                                row.get('product')?.touched
+                            "
+
+                            styleClass="w-full"
+
+                            inputStyleClass="w-full">
+
+                        </p-autoComplete>
+
+                    </td>
+
+
+                    <!-- Qty -->
+                    <td>
+
+                        <input
+                            pInputText
+                            type="number"
+
+                            formControlName="qty"
+
+                            class="erp-input-number"
+
+                            min="0"
+
+                            step="0.01"
+
+                            (input)="calculateRow(i)">
+
+                    </td>
+
+
+                    <!-- Unit -->
+                    <td>
+
+                        <input
+                            pInputText
+                            type="text"
+
+                            formControlName="unit"
+ [invalid]="
+                                row.get('unit')?.invalid &&
+                                row.get('unit')?.touched
+                            "
+                            class="w-full">
+
+                    </td>
+
+
+                    <!-- Price -->
+                    <td>
+
+                        <input
+                            pInputText
+                            type="number"
+
+                            formControlName="price"
+
+                            class="erp-input-number"
+
+                            min="0"
+
+                            step="0.01"
+
+                            (input)="calculateRow(i, true)">
+
+                    </td>
+
+
+                    <!-- Discount -->
+                    <td>
+
+                        <input
+                            pInputText
+                            type="number"
+
+                            formControlName="discount"
+
+                            class="erp-input-number"
+
+                            min="0"
+
+                            step="0.01"
+
+                            (input)="calculateRow(i)">
+
+                    </td>
+
+
+                    <!-- Total -->
+                    <td class="erp-number">
+
+                        <span class="erp-line-total">
+
+                            {{ row.value.total | number:'1.2-2' }}
+
+                        </span>
+
+                    </td>
+
+
+                    <!-- Actions -->
+                    <td>
+
+                        <div class="erp-actions">
+
+
+                            <!-- Delete -->
+                            <button
+                                pButton
+                                type="button"
+
+                                icon="pi pi-trash"
+
+                                class="erp-action-btn erp-delete "
+
+                                pTooltip="Remove Item"
+
+                                tooltipPosition="top"
+
+                                (click)="removeItem(i)">
+                            </button>
+
+
+                            <!-- Add -->
+                            @if (i === items.length - 1) {
+
+                                <button
+                                    pButton
+                                    type="button"
+
+                                    icon="pi pi-plus"
+
+                                    class="erp-action-btn"
+
+                                    pTooltip="Add Item"
+
+                                    tooltipPosition="top"
+
+                                    (click)="addItem()">
+                                </button>
+
+                            }
+
+
+                            <!-- Product History -->
+                            @if (row.value.product_id) {
+
+                                <button
+                                    pButton
+                                    type="button"
+
+                                    icon="pi pi-history"
+
+                                    class="erp-action-btn"
+
+                                    pTooltip="Sales History"
+
+                                    tooltipPosition="top"
+
+                                    (click)="showProductHistory(i)">
+                                </button>
+
+                            }
+
+                        </div>
+
+                    </td>
+
+                </tr>
+
+            </ng-template>
+
+
+            <!-- =================================================
+                 EMPTY
+                 ================================================= -->
+
+            <ng-template #emptymessage>
+
+                <tr>
+
+                    <td
+                        colspan="7"
+                        class="erp-empty">
+
+                        <i class="pi pi-shopping-cart"></i>
+
+                        No sales items added.
+
+                    </td>
+
+                </tr>
+
+            </ng-template>
+
+        </p-table>
+
     </div>
 
-    <div class="w-full">
-      <label>Status</label>
-      <p-select
-        formControlName="status"
-        [options]="statusList()"
-        optionLabel="name"
-        optionValue="name"
-        placeholder="Select status"
-        [filter]="true"
-        [invalid]="salesForm.get('status')?.invalid && salesForm.get('status')?.touched"
-        class="w-full">
-      </p-select>
+
+    <!-- =====================================================
+         TOTALS
+         ===================================================== -->
+
+    <div class="erp-summary-container">
+
+
+        <div class="erp-summary">
+
+
+            <!-- Sub Total -->
+            <div class="erp-summary-row">
+
+                <span>
+                    Subtotal
+                </span>
+
+                <strong>
+                    {{ salesForm.get('total')?.value | number:'1.2-2' }}
+                </strong>
+
+            </div>
+
+
+            <!-- Discount -->
+            <div class="erp-summary-row">
+
+                <label for="discount">
+                    Discount
+                </label>
+
+                <input
+                    pInputText
+                    id="discount"
+                    type="number"
+
+                    formControlName="discount"
+
+                    class="erp-summary-input"
+
+                    min="0"
+                    step="0.01"
+
+                    (input)="calculateGrandTotal()">
+
+            </div>
+
+
+            <!-- VAT -->
+            <div class="erp-summary-option">
+
+                <p-checkbox
+                    formControlName="vat_enabled"
+
+                    [binary]="true"
+
+                    inputId="vat_enabled"
+
+                    (onChange)="calculateGrandTotal()">
+
+                </p-checkbox>
+
+                <label for="vat_enabled">
+                    Apply VAT (5%)
+                </label>
+
+            </div>
+
+
+            <!-- VAT Inclusive -->
+            <div class="erp-summary-option">
+
+                <p-checkbox
+                    formControlName="vat_inclusive"
+
+                    [binary]="true"
+
+                    inputId="vat_inclusive"
+
+                    (onChange)="calculateGrandTotal()">
+
+                </p-checkbox>
+
+                <label for="vat_inclusive">
+                    VAT Inclusive
+                </label>
+
+            </div>
+
+
+            <!-- VAT -->
+            <div class="erp-summary-row">
+
+                <span>
+                    VAT (5%)
+                </span>
+
+                <strong>
+                    {{ salesForm.get('vat_amount')?.value | number:'1.2-2' }}
+                </strong>
+
+            </div>
+
+
+            <!-- Grand Total -->
+            <div class="erp-grand-total">
+
+                <span>
+                    Grand Total
+                </span>
+
+                <strong>
+                    {{ salesForm.get('grand_total')?.value | number:'1.2-2' }}
+                </strong>
+
+            </div>
+
+        </div>
+
     </div>
-  </div>
 
-  <p-table [value]="items.controls" styleClass="p-datatable-sm" [tableStyle]="{'table-layout':'fixed','width':'100%'}">
-    <ng-template #header>
-      <tr>
-        <th style="width:30%">Product</th>
-        <th style="width:6%">Qty</th>
-        <th style="width:10%">Unit</th>
-        <th style="width:8%">Price</th>
-        <th style="width:6%">Discount</th>
-        <th style="width:5%">Total</th>
-        <th style="width:5%">Action</th>
-      </tr>
-    </ng-template>
 
-    <ng-template #body let-row let-i="rowIndex">
-      <tr [formGroup]="row">
+    <!-- =====================================================
+         SAVE BAR
+         ===================================================== -->
 
-        <!-- Product -->
-        <td>
-          <p-autoComplete
-            formControlName="product"
-            [suggestions]="filteredProducts"
-            (completeMethod)="searchProduct($event)"
-            optionLabel="name"
-            placeholder="Search Product"
-            (onSelect)="onProductSelect($event, i)"
-            appendTo="body"
-            [invalid]="row.get('product')?.invalid && row.get('product')?.touched"
-            styleClass="w-full"
-            [forceSelection]="false"
-            inputStyleClass="w-full">
-          </p-autoComplete>
-        </td>
+    <div class="erp-form-footer">
 
-        <!-- Qty -->
-        <td>
-          <input pInputText type="number"
-            formControlName="qty"
-            class="w-full"
-            (input)="calculateRow(i)" />
-        </td>
+        <div class="erp-footer-left">
 
-        <!-- Unit -->
-        <td>
-          <input pInputText type="text"
-            formControlName="unit"
-            class="w-full" />
-        </td>
+            @if (id() !== '0') {
 
-        <!-- Price -->
-        <td>
-          <input pInputText type="number"
-            formControlName="price"
-            class="w-full"
-            (input)="calculateRow(i, true)" />
-        </td>
+                <span class="text-sm text-gray-500">
+                    Existing transaction
+                </span>
 
-        <!-- Discount -->
-        <td>
-          <input pInputText type="number"
-            formControlName="discount"
-            class="w-full"
-            (input)="calculateRow(i)" />
-        </td>
+            } @else {
 
-        <!-- Total -->
-        <td class="text-right">
-          {{ row.value.total | number:'1.2-2' }}
-        </td>
+                <span class="text-sm text-gray-500">
+                    New transaction
+                </span>
 
-        <!-- Action -->
-        <td class="flex gap-2 justify-center">
-          <button pButton type="button" icon="pi pi-trash"
-            (click)="removeItem(i)">
-          </button>
+            }
 
-          @if (i === items.length - 1) {
-            <button pButton type="button" icon="pi pi-plus"
-              (click)="addItem()">
+        </div>
+
+
+        <div class="erp-footer-actions">
+
+            <button
+                pButton
+                type="submit"
+
+                icon="pi pi-save"
+
+                label="Save"
+
+                [disabled]="isSubmitting()"
+
+                [loading]="isSubmitting()">
+
             </button>
-          }
-            @if (row.value.product_id) {
-    <button
-      pButton
-      type="button"
-      icon="pi pi-history"
-      (click)="showProductHistory(i)">
-    </button>
-  }
-        </td>
 
-      </tr>
-    </ng-template>
-  </p-table>
+        </div>
 
-  <!-- Summary -->
-  <div class="flex flex-col md:flex-row gap-6 justify-end">
-
-    <div>
-      <label>Total</label>
-      <input pInputText readonly formControlName="total" />
     </div>
 
-    <div>
-      <label>Discount</label>
-      <input pInputText type="number" formControlName="discount"
-        (input)="calculateGrandTotal()" />
-    </div>
-
-    <!-- VAT Toggle -->
-    <div class="flex items-center gap-2">
-      <p-checkbox
-        formControlName="vat_enabled"
-        binary="true"
-        inputId="vat_enabled"
-        (onChange)="calculateGrandTotal()">
-      </p-checkbox>
-      <label for="vat_enabled">Add VAT (5%)</label>
-    </div>
-
-    <!-- VAT Inclusive Toggle -->
-    <div class="flex items-center gap-2">
-      <p-checkbox
-        formControlName="vat_inclusive"
-        binary="true"
-        inputId="vat_inclusive"
-        (onChange)="calculateGrandTotal()">
-      </p-checkbox>
-      <label for="vat_inclusive">VAT from paid amount</label>
-    </div>
-
-    <!-- VAT Amount -->
-    <div>
-      <label>VAT (5%)</label>
-      <input pInputText readonly formControlName="vat_amount" />
-    </div>
-
-    <div>
-      <label>Grand Total</label>
-      <input pInputText readonly formControlName="grand_total" />
-    </div>
-
-  </div>
-
-  <div class="flex flex-wrap gap-2 w-full">
-    <button pButton type="submit" label="Save"  [disabled]="isSubmitting()"  [loading]="isSubmitting()"
-      class="p-3 text-xl">
-    </button>
-  </div>
 </form>
 
-@if(this.id()!='0'){
-<div class="flex flex-wrap gap-2 w-full">
-  <button pButton type="button" label="Proforma" (click)="GetReport('proforma')"
-    class="p-3 text-xl">
-  </button>
 
-  <button pButton type="button" label="Invoice" (click)="GetReport('invoice')"
-    class="p-3 text-xl">
-  </button>
-  <button pButton type="button" label="Delivery Note" (click)="GetReport('delivery-note')"
-    class="p-3 text-xl">
-  </button>
-</div>
+<!-- =========================================================
+     DOCUMENT REPORTS
+     ========================================================= -->
+
+@if (id() !== '0') {
+
+    <div class="card erp-document-actions">
+
+        <div class="erp-section-title">
+
+            <i class="pi pi-print"></i>
+
+            <span>Documents</span>
+
+        </div>
+
+
+        <div class="erp-document-buttons">
+
+            <button
+                pButton
+                type="button"
+
+                icon="pi pi-file"
+
+                label="Proforma"
+
+                (click)="GetReport('proforma')">
+            </button>
+
+
+            <button
+                pButton
+                type="button"
+
+                icon="pi pi-file-pdf"
+
+                label="Invoice"
+
+                (click)="GetReport('invoice')">
+            </button>
+
+
+            <button
+                pButton
+                type="button"
+
+                icon="pi pi-truck"
+
+                label="Delivery Note"
+
+                (click)="GetReport('delivery-note')">
+            </button>
+
+        </div>
+
+    </div>
+
 }
+
+
+<!-- =========================================================
+     PRODUCT SALES HISTORY
+     ========================================================= -->
+
 <p-dialog
-    header="Product Sale History"
+
+    header="Product Sales History"
+
     [visible]="dialogVisible()"
+
     (visibleChange)="dialogVisible.set($event)"
+
     [modal]="true"
-    [style]="{ width: '90rem' }">
-@if(dialogVisible()){
-    <app-product-sale
-        [customer_id]="customerId()"
-        [product_id]="productId()">
-    </app-product-sale>
-  }
+
+    [style]="{ width: '90rem' }"
+
+    [maximizable]="true">
+
+
+    @if (dialogVisible()) {
+
+        <app-product-sale
+            [customer_id]="customerId()"
+            [product_id]="productId()">
+        </app-product-sale>
+
+    }
+
 </p-dialog>
+

@@ -1,193 +1,565 @@
+
+<!-- =========================================
+     PURCHASE PAGE
+     ========================================= -->
+
 <div class="card">
-  <div class="flex flex-wrap items-start gap-6">
 
-    <!-- From Date -->
-    <div class="field w-80">
-      <label>From : </label>
-      <p-datepicker 
-        [(ngModel)]="fromDate"
-        name="fromDate"
-        [showIcon]="true"
-        dateFormat="dd-mm-yy">
-      </p-datepicker>
-    </div>
+    <!-- ---------- Page Header ---------- -->
+    <div class="erp-toolbar">
 
-    <!-- To Date -->
-    <div class="field w-70">
-      <label>To : </label>
-      <p-datepicker 
-        [(ngModel)]="toDate"
-        name="toDate"
-        [showIcon]="true"
-        dateFormat="dd-mm-yy">
-      </p-datepicker>
-    </div>
+        <div class="erp-title">
+            <i class="pi pi-shopping-cart"></i>
+            <span>Purchase Transactions</span>
+        </div>
 
-    <!-- Button -->
-    <p-button  
-      (click)="getAll()" 
-      [loading]="loading()"    
-      label="Search">
-    </p-button>
-   <div class="text-right">
-      <div class="text-sm text-gray-500">Total Purchases</div>
-      <div class="text-2xl font-bold">
-        {{ total_purchases() | number:'1.2-2' }}
-      </div>
-    </div>
-  </div>
-</div>
-<div class="card">
-    <p-table
-        #dt1
-        [value]="mainList()"
-        [globalFilterFields]="['invoice_no','purchase_date','total','discount','created_at','grand_total','supplier_name','supplier_phone']"
-        dataKey="id"
-        [tableStyle]="{ 'min-width': '50rem' }"
-        [rows]="20"
-        [paginator]="true"
-        [rowsPerPageOptions]="[5,10,20]"
-        [loading]="loading()"
-    >
+        <div class="erp-toolbar-right">
 
+            <!-- Total Purchases -->
+            <div class="text-sm mr-3">
+                <span class="text-gray-500">Total:</span>
+                <strong>
+                    {{ total_purchases() | number:'1.2-2' }}
+                </strong>
+            </div>
 
-<ng-template #caption>
-             <div class="flex justify-between items-center w-full">
-
-        <!-- Title -->
-        <h2 class="text-xl font-semibold">Purchase</h2>
-
-        <!-- Right Side -->
-        <div class="flex items-center gap-3">
-
-            <!-- Search -->
-            <p-iconfield iconPosition="left">
-                <p-inputicon>
-                    <i class="pi pi-search"></i>
-                </p-inputicon>
-                <input pInputText
-                       type="text"
-                       (input)="dt1.filterGlobal($any($event.target).value, 'contains')"
-                       placeholder="Search..." />
-            </p-iconfield>
-
-            <!-- Add Button -->
-            <button pButton
-                    type="button"
-                    title="Add"
-                    icon="pi pi-plus"
-                    (click)="add()">
+            <!-- New Purchase -->
+            <button
+                pButton
+                type="button"
+                icon="pi pi-plus"
+                label="New Purchase"
+                (click)="add()">
             </button>
 
         </div>
 
     </div>
+
+
+    <!-- =========================================
+         FILTERS
+         ========================================= -->
+
+    <div class="p-4 border-b border-gray-200">
+
+        <div class="flex flex-wrap items-end gap-4">
+
+            <!-- From Date -->
+            <div class="field">
+
+                <label class="block text-sm font-medium mb-1">
+                    From Date
+                </label>
+
+                <p-datepicker
+                    [(ngModel)]="fromDate"
+                    name="fromDate"
+                    [showIcon]="true"
+                    [showButtonBar]="true"
+                    dateFormat="dd-mm-yy"
+                    styleClass="w-64">
+                </p-datepicker>
+
+            </div>
+
+
+            <!-- To Date -->
+            <div class="field">
+
+                <label class="block text-sm font-medium mb-1">
+                    To Date
+                </label>
+
+                <p-datepicker
+                    [(ngModel)]="toDate"
+                    name="toDate"
+                    [showIcon]="true"
+                    [showButtonBar]="true"
+                    dateFormat="dd-mm-yy"
+                    styleClass="w-64">
+                </p-datepicker>
+
+            </div>
+
+
+            <!-- Search -->
+            <button
+                pButton
+                type="button"
+                icon="pi pi-search"
+                label="Search"
+                [loading]="loading()"
+                (click)="getAll()">
+            </button>
+
+
+            <!-- Reset -->
+            <button
+                pButton
+                type="button"
+                icon="pi pi-refresh"
+                label="Reset"
+                severity="secondary"
+                (click)="fromDate = null; toDate = null; getAll()">
+            </button>
+
+        </div>
+
+    </div>
+
+</div>
+
+
+<!-- =========================================
+     PURCHASE TABLE
+     ========================================= -->
+
+<div class="card erp-table-card mt-4">
+
+    <p-table
+        #dt1
+        styleClass="erp-table"
+
+        [value]="mainList()"
+
+        dataKey="id"
+
+        [globalFilterFields]="[
+            'invoice_no',
+            'purchase_date',
+            'supplier_name',
+            'supplier_invoice_no',
+            'created_at',
+            'grand_total',
+            'status'
+        ]"
+
+        [tableStyle]="{ 'min-width': '80rem' }"
+
+        [rows]="20"
+        [paginator]="true"
+
+        [rowsPerPageOptions]="[10,20,50,100]"
+
+        [loading]="loading()"
+
+        [showCurrentPageReport]="true"
+
+        currentPageReportTemplate="Showing {first} to {last} of {totalRecords} purchases">
+
+
+        <!-- =========================================
+             TOOLBAR
+             ========================================= -->
+
+        <ng-template #caption>
+
+            <div class="erp-toolbar">
+
+                <!-- Title -->
+                <div class="erp-title">
+
+                    <i class="pi pi-list"></i>
+
+                    <span>Purchase List</span>
+
+                </div>
+
+
+                <!-- Right -->
+                <div class="erp-toolbar-right">
+
+                    <!-- Search -->
+                    <p-iconfield iconPosition="left">
+
+                        <p-inputicon>
+                            <i class="pi pi-search"></i>
+                        </p-inputicon>
+
+                        <input
+                            pInputText
+                            type="text"
+
+                            class="erp-search"
+
+                            (input)="
+                                dt1.filterGlobal(
+                                    $any($event.target).value,
+                                    'contains'
+                                )
+                            "
+
+                            placeholder="Search..." />
+
+                    </p-iconfield>
+
+                </div>
+
+            </div>
+
         </ng-template>
 
-<ng-template #header>
-<tr>
 
-<th pSortableColumn="invoice_no">
-<div class="flex items-center gap-2">
-Invoice No
-<p-sortIcon field="invoice_no" />
-</div>
-</th>
+        <!-- =========================================
+             HEADER
+             ========================================= -->
 
-<th pSortableColumn="supplier_name">
-<div class="flex items-center gap-2">
-Supplier Name
-<p-sortIcon field="supplier_name" />
-</div>
-</th>
+        <ng-template #header>
 
-<th pSortableColumn="supplier_invoice_no">
-<div class="flex items-center gap-2">
-Supplier Invoice No
-<p-sortIcon field="supplier_invoice_no" />
-</div>
-</th>
+            <tr>
 
-<th pSortableColumn="purchase_date">
-<div class="flex items-center gap-2">
-Purchase Date
-<p-sortIcon field="purchase_date" />
-</div>
-</th>
+                <!-- Invoice -->
+                <th pSortableColumn="invoice_no">
 
-<th pSortableColumn="created_at">
-<div class="flex items-center gap-2">
-Create Date
-<p-sortIcon field="created_at" />
-</div>
-</th>
+                    <div class="erp-header-cell">
 
-<th pSortableColumn="grand_total">
-<div class="flex items-center gap-2">
-Grand Total
-<p-sortIcon field="grand_total" />
-</div>
-</th>
+                        Invoice No
 
-<th pSortableColumn="status">
-<div class="flex items-center gap-2">
-Status
-<p-sortIcon field="status" />
-</div>
-</th>
+                        <p-sortIcon
+                            field="invoice_no">
+                        </p-sortIcon>
 
-<th>Action</th>
+                    </div>
 
-</tr>
-</ng-template>
+                </th>
 
-<ng-template #body let-row>
-<tr>
 
-<td>{{ row.invoice_no }}</td>
-<td>{{ row.supplier_name }}</td>
-<td>{{ row.supplier_invoice_no }}</td>
-<td>{{ row.purchase_date | date:'dd-MM-yyyy' }}</td>
-<td>{{ row.created_at | date:'dd-MM-yyyy' }}</td>
-<td>{{ row.grand_total }}</td>
-<td>{{ row.status }}</td>
+                <!-- Supplier -->
+                <th pSortableColumn="supplier_name">
 
-<td class="flex gap-2">
+                    <div class="erp-header-cell">
 
-<button
-pButton
-type="button"
-icon="pi pi-pencil"
-class="p-button-warning"
-(click)="edit(row.id)">
-</button>
+                        Supplier
 
-<button
-pButton
-type="button"
-icon="pi pi-eye"
-class="p-button-info"
-(click)="report(row.id)">
-</button>
+                        <p-sortIcon
+                            field="supplier_name">
+                        </p-sortIcon>
 
-<button
-pButton
-type="button"
-icon="pi pi-trash"
-class="p-button-danger"
-(click)="delete(row.id)">
-</button>
+                    </div>
 
-</td>
+                </th>
 
-</tr>
-</ng-template>
 
-<ng-template #emptymessage>
-<tr>
-<td colspan="8">No data found.</td>
-</tr>
-</ng-template>
+                <!-- Supplier Invoice -->
+                <th pSortableColumn="supplier_invoice_no">
 
-</p-table>
+                    <div class="erp-header-cell">
+
+                        Supplier Invoice
+
+                        <p-sortIcon
+                            field="supplier_invoice_no">
+                        </p-sortIcon>
+
+                    </div>
+
+                </th>
+
+
+                <!-- Purchase Date -->
+                <th pSortableColumn="purchase_date">
+
+                    <div class="erp-header-cell">
+
+                        Purchase Date
+
+                        <p-sortIcon
+                            field="purchase_date">
+                        </p-sortIcon>
+
+                    </div>
+
+                </th>
+
+
+                <!-- Created Date -->
+                <th pSortableColumn="created_at">
+
+                    <div class="erp-header-cell">
+
+                        Created
+
+                        <p-sortIcon
+                            field="created_at">
+                        </p-sortIcon>
+
+                    </div>
+
+                </th>
+
+
+                <!-- Grand Total -->
+                <th
+                    pSortableColumn="grand_total"
+                    class="text-right">
+
+                    <div class="erp-header-cell justify-end">
+
+                        Grand Total
+
+                        <p-sortIcon
+                            field="grand_total">
+                        </p-sortIcon>
+
+                    </div>
+
+                </th>
+
+
+                <!-- Status -->
+                <th pSortableColumn="status">
+
+                    <div class="erp-header-cell">
+
+                        Status
+
+                        <p-sortIcon
+                            field="status">
+                        </p-sortIcon>
+
+                    </div>
+
+                </th>
+
+
+                <!-- Actions -->
+                <th class="text-center">
+
+                    Actions
+
+                </th>
+
+            </tr>
+
+        </ng-template>
+
+
+        <!-- =========================================
+             BODY
+             ========================================= -->
+
+        <ng-template #body let-row>
+
+            <tr>
+
+                <!-- Invoice -->
+                <td>
+
+                    <span class="erp-invoice">
+                        {{ row.invoice_no }}
+                    </span>
+
+                </td>
+
+
+                <!-- Supplier -->
+                <td>
+
+                    <button
+                        type="button"
+                        class="erp-customer"
+                        (click)="report(row.id)">
+
+                        {{ row.supplier_name }}
+
+                    </button>
+
+                    <div
+                        *ngIf="row.supplier_phone"
+                        class="text-xs text-gray-500 mt-1">
+
+                        {{ row.supplier_phone }}
+
+                    </div>
+
+                </td>
+
+
+                <!-- Supplier Invoice -->
+                <td>
+
+                    {{ row.supplier_invoice_no || '—' }}
+
+                </td>
+
+
+                <!-- Purchase Date -->
+                <td>
+
+                    <span class="erp-date">
+
+                        {{ row.purchase_date | date:'dd-MM-yyyy' }}
+
+                    </span>
+
+                </td>
+
+
+                <!-- Created -->
+                <td>
+
+                    <span class="erp-date">
+
+                        {{ row.created_at | date:'dd-MM-yyyy' }}
+
+                    </span>
+
+                </td>
+
+
+                <!-- Grand Total -->
+                <td class="erp-number">
+
+                    {{ row.grand_total | number:'1.2-2' }}
+
+                </td>
+
+
+                <!-- Status -->
+                <td>
+
+                    <!-- PAID -->
+                    <span
+                        *ngIf="row.status === 'PAID'"
+                        class="erp-status status-paid">
+
+                        PAID
+
+                    </span>
+
+
+                    <!-- PENDING -->
+                    <span
+                        *ngIf="row.status === 'PENDING'"
+                        class="erp-status status-pending">
+
+                        PENDING
+
+                    </span>
+
+
+                    <!-- PARTIAL -->
+                    <span
+                        *ngIf="row.status === 'PARTIAL'"
+                        class="erp-status status-partial">
+
+                        PARTIAL
+
+                    </span>
+
+
+                    <!-- CANCELLED -->
+                    <span
+                        *ngIf="row.status === 'CANCELLED'"
+                        class="erp-status status-cancelled">
+
+                        CANCELLED
+
+                    </span>
+
+
+                    <!-- Other -->
+                    <span
+                        *ngIf="
+                            row.status !== 'PAID' &&
+                            row.status !== 'PENDING' &&
+                            row.status !== 'PARTIAL' &&
+                            row.status !== 'CANCELLED'
+                        "
+                      class="erp-status status-paid">
+
+                        {{ row.status }}
+
+                    </span>
+
+                </td>
+
+
+                <!-- =================================
+                     ACTIONS
+                     ================================= -->
+
+                <td>
+
+                    <div class="erp-actions">
+
+                        <!-- View -->
+                        <button
+                            pButton
+                            type="button"
+                            icon="pi pi-eye"
+
+                            class="erp-action-btn"
+
+                            pTooltip="View Purchase"
+                            tooltipPosition="top"
+
+                            (click)="report(row.id)">
+                        </button>
+
+
+                        <!-- Edit -->
+                        <button
+                            pButton
+                            type="button"
+                            icon="pi pi-pencil"
+
+                            class="erp-action-btn"
+
+                            pTooltip="Edit Purchase"
+                            tooltipPosition="top"
+
+                            (click)="edit(row.id)">
+                        </button>
+
+
+                        <!-- Delete -->
+                        <button
+                            pButton
+                            type="button"
+                            icon="pi pi-trash"
+
+                            class="erp-action-btn erp-delete"
+
+                            pTooltip="Delete Purchase"
+                            tooltipPosition="top"
+
+                            (click)="delete(row.id)">
+                        </button>
+
+                    </div>
+
+                </td>
+
+            </tr>
+
+        </ng-template>
+
+
+        <!-- =========================================
+             EMPTY
+             ========================================= -->
+
+        <ng-template #emptymessage>
+
+            <tr>
+
+                <td
+                    colspan="8"
+                    class="erp-empty">
+
+                    <i class="pi pi-inbox"></i>
+
+                    No purchase transactions found.
+
+                </td>
+
+            </tr>
+
+        </ng-template>
+
+
+    </p-table>
+
 </div>

@@ -1,0 +1,416 @@
+
+/* =========================================
+   ERP FORM
+   Oracle / Microsoft Dynamics Style
+   ========================================= */
+
+.erp-form-card {
+    padding: 0 !important;
+    overflow: hidden;
+}
+
+
+/* ---------- Form Header ---------- */
+
+.erp-form-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+
+    padding: 14px 18px;
+
+    background: #f8f9fb;
+
+    border-bottom: 1px solid #d9dee7;
+}
+
+.erp-subtitle {
+    margin-top: 3px;
+
+    font-size: 12px;
+
+    color: #7b8795;
+}
+
+.erp-document-info {
+    display: flex;
+    flex-direction: column;
+
+    align-items: flex-end;
+
+    font-size: 13px;
+}
+
+.erp-document-label {
+    font-size: 10px;
+
+    color: #7b8795;
+
+    text-transform: uppercase;
+
+    letter-spacing: .4px;
+}
+
+
+/* ---------- Section ---------- */
+
+.erp-section {
+    padding: 16px 18px;
+
+    border-bottom: 1px solid #e1e5ea;
+}
+
+.erp-section-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+
+    margin-bottom: 10px;
+}
+
+.erp-section-title {
+    display: flex;
+    align-items: center;
+
+    gap: 7px;
+
+    margin-bottom: 12px;
+
+    font-size: 13px;
+
+    font-weight: 600;
+
+    color: #34465a;
+}
+
+.erp-section-title i {
+    font-size: 13px;
+}
+
+.erp-item-count {
+    margin-left: 4px;
+
+    font-size: 11px;
+
+    font-weight: 500;
+
+    color: #7b8795;
+}
+
+
+/* ---------- Form Grid ---------- */
+
+.erp-form-grid {
+    display: grid;
+
+    grid-template-columns:
+        minmax(220px, 2fr)
+        minmax(160px, 1fr)
+        minmax(160px, 1fr)
+        minmax(160px, 1fr);
+
+    gap: 14px;
+}
+
+.erp-field {
+    min-width: 0;
+}
+
+.erp-field-wide {
+    min-width: 220px;
+}
+
+.erp-field label {
+    display: block;
+
+    margin-bottom: 5px;
+
+    font-size: 12px;
+
+    font-weight: 600;
+
+    color: #4c5b6c;
+}
+
+.erp-required {
+    color: #b34444;
+
+    margin-left: 2px;
+}
+
+
+/* ---------- Inputs ---------- */
+
+:host ::ng-deep .erp-field .p-inputtext,
+:host ::ng-deep .erp-field .p-select {
+    width: 100%;
+
+    height: 34px;
+
+    font-size: 13px;
+}
+
+
+/* ---------- Line Table ---------- */
+
+.erp-line-table {
+    border: 1px solid #d9dee7;
+}
+
+.erp-line-table td {
+    vertical-align: middle;
+}
+
+.erp-input-number {
+    width: 100%;
+
+    text-align: right;
+
+    font-variant-numeric: tabular-nums;
+}
+
+.erp-line-total {
+    font-weight: 600;
+
+    color: #29384d;
+
+    font-variant-numeric: tabular-nums;
+}
+
+
+/* ---------- Summary ---------- */
+
+.erp-summary-container {
+    display: flex;
+
+    justify-content: flex-end;
+
+    padding: 18px;
+
+    background: #fafbfc;
+
+    border-bottom: 1px solid #d9dee7;
+}
+
+.erp-summary {
+    width: 360px;
+
+    border: 1px solid #d9dee7;
+
+    background: #fff;
+}
+
+.erp-summary-row {
+    display: flex;
+
+    align-items: center;
+
+    justify-content: space-between;
+
+    min-height: 38px;
+
+    padding: 7px 12px;
+
+    border-bottom: 1px solid #e5e8ec;
+
+    font-size: 13px;
+
+    color: #526174;
+}
+
+.erp-summary-row strong {
+    color: #29384d;
+
+    font-variant-numeric: tabular-nums;
+}
+
+.erp-summary-input {
+    width: 130px;
+
+    height: 30px !important;
+
+    text-align: right;
+
+    font-size: 13px !important;
+}
+
+.erp-summary-option {
+    display: flex;
+
+    align-items: center;
+
+    gap: 8px;
+
+    min-height: 38px;
+
+    padding: 7px 12px;
+
+    border-bottom: 1px solid #e5e8ec;
+
+    font-size: 12px;
+
+    color: #526174;
+}
+
+
+/* ---------- Grand Total ---------- */
+
+.erp-grand-total {
+    display: flex;
+
+    align-items: center;
+
+    justify-content: space-between;
+
+    padding: 12px;
+
+    background: #eef1f5;
+
+    color: #26364a;
+
+    font-size: 14px;
+
+    font-weight: 700;
+}
+
+.erp-grand-total strong {
+    font-size: 17px;
+
+    font-variant-numeric: tabular-nums;
+}
+
+
+/* ---------- Footer ---------- */
+
+.erp-form-footer {
+    display: flex;
+
+    align-items: center;
+
+    justify-content: space-between;
+
+    padding: 12px 18px;
+
+    background: #f8f9fb;
+}
+
+.erp-footer-actions {
+    display: flex;
+
+    gap: 6px;
+}
+
+
+/* ---------- Document Buttons ---------- */
+
+.erp-document-actions {
+    margin-top: 16px;
+
+    padding: 14px 18px !important;
+}
+
+.erp-document-actions .erp-section-title {
+    margin-bottom: 10px;
+}
+
+.erp-document-buttons {
+    display: flex;
+
+    gap: 6px;
+
+    flex-wrap: wrap;
+}
+
+
+
+/* ---------- Actions ---------- */
+
+.erp-actions {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
+    gap: 4px;
+}
+
+:host ::ng-deep .erp-action-btn {
+    width: 30px !important;
+    height: 30px !important;
+
+    min-width: 30px !important;
+
+    padding: 0 !important;
+
+    border-radius: 3px !important;
+
+    background: transparent !important;
+
+    border: 1px solid #d5dae1 !important;
+
+    color: #536273 !important;
+}
+
+:host ::ng-deep .erp-action-btn:hover {
+    background: #edf2f7 !important;
+    border-color: #b8c2ce !important;
+}
+
+:host ::ng-deep .erp-delete {
+    color: #b34444 !important;
+}
+
+:host ::ng-deep .erp-delete:hover {
+    background: #fbecec !important;
+}
+
+
+
+
+/* ---------- Responsive ---------- */
+
+@media (max-width: 1100px) {
+
+    .erp-form-grid {
+        grid-template-columns:
+            repeat(2, minmax(180px, 1fr));
+    }
+
+}
+
+
+@media (max-width: 700px) {
+
+    .erp-form-header {
+        align-items: flex-start;
+
+        flex-direction: column;
+
+        gap: 8px;
+    }
+
+    .erp-form-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .erp-summary {
+        width: 100%;
+    }
+
+    .erp-summary-container {
+        justify-content: stretch;
+    }
+
+    .erp-form-footer {
+        flex-direction: column;
+
+        align-items: stretch;
+
+        gap: 10px;
+    }
+
+    .erp-footer-actions {
+        justify-content: flex-end;
+    }
+
+}
+
